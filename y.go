@@ -42,6 +42,8 @@ var yyToknames = [...]string{
 	"STR",
 	"'{'",
 	"'}'",
+	"'('",
+	"')'",
 	"'='",
 	"IDENT",
 	"K_VAR",
@@ -57,7 +59,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line lang.y:69
+//line lang.y:72
 
 func atoi(s string) (x int) {
 	x, _ = strconv.Atoi(s)
@@ -78,44 +80,44 @@ var yyExca = [...]int8{
 
 const yyPrivate = 57344
 
-const yyLast = 23
+const yyLast = 26
 
 var yyAct = [...]int8{
-	12, 17, 7, 4, 5, 14, 15, 18, 8, 19,
-	13, 21, 10, 11, 9, 16, 6, 3, 20, 2,
-	1, 0, 22,
+	12, 23, 18, 7, 8, 5, 14, 15, 18, 4,
+	16, 20, 9, 13, 17, 21, 24, 19, 10, 22,
+	11, 6, 3, 2, 1, 25,
 }
 
 var yyPact = [...]int16{
-	-1000, -1000, -7, -9, -1, -1000, -1000, 9, 4, 7,
-	1, -1000, -13, -1000, -1000, -1000, 0, 1, -1000, 3,
-	-1000, 1, -13,
+	-1000, -1000, -3, -10, -7, -1000, -1000, 7, 8, 14,
+	2, -1000, -14, -1000, -1000, -1000, 2, 4, 2, -8,
+	-1000, 6, -1000, -1000, 2, -14,
 }
 
 var yyPgo = [...]int8{
-	0, 20, 19, 17, 0, 16, 15,
+	0, 24, 23, 22, 0, 21, 14,
 }
 
 var yyR1 = [...]int8{
 	0, 1, 2, 2, 3, 3, 5, 6, 6, 4,
-	4, 4, 4,
+	4, 4, 4, 4,
 }
 
 var yyR2 = [...]int8{
 	0, 3, 0, 5, 0, 2, 5, 0, 4, 1,
-	1, 1, 3,
+	1, 1, 3, 3,
 }
 
 var yyChk = [...]int16{
-	-1000, -1, -2, -3, 10, 13, -5, 11, 9, 5,
-	8, 6, -4, 9, 4, 5, -6, 14, 7, 9,
-	-4, 8, -4,
+	-1000, -1, -2, -3, 12, 15, -5, 13, 11, 5,
+	10, 6, -4, 11, 4, 5, 8, -6, 16, -4,
+	7, 11, -4, 9, 10, -4,
 }
 
 var yyDef = [...]int8{
 	2, -2, 4, 0, 0, 1, 5, 0, 0, 0,
-	0, 7, 3, 9, 10, 11, 0, 0, 6, 0,
-	12, 0, 8,
+	0, 7, 3, 9, 10, 11, 0, 0, 0, 0,
+	6, 0, 12, 13, 0, 8,
 }
 
 var yyTok1 = [...]int8{
@@ -123,9 +125,9 @@ var yyTok1 = [...]int8{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 14, 3, 3, 3, 3, 3, 3,
+	8, 9, 3, 16, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 8, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 10, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -135,7 +137,7 @@ var yyTok1 = [...]int8{
 }
 
 var yyTok2 = [...]int8{
-	2, 3, 4, 5, 9, 10, 11, 12, 13,
+	2, 3, 4, 5, 11, 12, 13, 14, 15,
 }
 
 var yyTok3 = [...]int8{
@@ -481,7 +483,7 @@ yydefault:
 
 	case 1:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line lang.y:37
+//line lang.y:39
 		{
 			yyrcvr.lval.top = nTop{
 				vars:    yyDollar[1].top.vars,
@@ -491,71 +493,77 @@ yydefault:
 		}
 	case 2:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line lang.y:45
+//line lang.y:47
 		{
 			yyVAL.top.vars = make(map[nIdent]expr, 2)
 		}
 	case 3:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line lang.y:47
+//line lang.y:49
 		{
 			yyVAL.top.vars[nIdent(yyDollar[3].s)] = yyDollar[5].expr
 		}
 	case 4:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line lang.y:49
+//line lang.y:51
 		{
 			yyVAL.top.tunnels = nil
 		}
 	case 5:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line lang.y:50
+//line lang.y:52
 		{
 			yyVAL.top.tunnels =
 				append(yyVAL.top.tunnels, yyDollar[2].tunnel)
 		}
 	case 6:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line lang.y:55
+//line lang.y:57
 		{
 			yyVAL.tunnel.name = nStrLit(yyDollar[2].s)
 			yyVAL.tunnel.fields = yyDollar[4].fields
 		}
 	case 7:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line lang.y:60
+//line lang.y:62
 		{
 			yyVAL.fields = make(map[nIdent]expr, 4)
 		}
 	case 8:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line lang.y:61
+//line lang.y:63
 		{
 			yyVAL.fields[nIdent(yyDollar[2].s)] = yyDollar[4].expr
 		}
 	case 9:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line lang.y:64
+//line lang.y:66
 		{
 			yyVAL.expr = nVarRef(nIdent(yyDollar[1].s))
 		}
 	case 10:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line lang.y:65
+//line lang.y:67
 		{
 			yyVAL.expr = nIntLit(atoi(yyDollar[1].s))
 		}
 	case 11:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line lang.y:66
+//line lang.y:68
 		{
 			yyVAL.expr = nStrLit(unquote(yyDollar[1].s))
 		}
 	case 12:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line lang.y:67
+//line lang.y:69
 		{
 			yyVAL.expr = nBinOp{'+', yyDollar[1].expr, yyDollar[3].expr}
+		}
+	case 13:
+		yyDollar = yyS[yypt-3 : yypt+1]
+//line lang.y:70
+		{
+			yyVAL.expr = yyDollar[2].expr
 		}
 	}
 	goto yystack /* stack new state and value */

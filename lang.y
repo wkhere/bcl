@@ -24,6 +24,8 @@ import (
 %token STR
 %token '{'
 %token '}'
+%token '('
+%token ')'
 %token '='
 %token IDENT
 %token K_VAR
@@ -65,6 +67,7 @@ expr:
     | INT                   { $$.expr = nIntLit(atoi($1.s)) }
     | STR                   { $$.expr = nStrLit(unquote($1.s)) }
     | expr '+' expr         { $$.expr = nBinOp{'+', $1.expr, $3.expr} }
+    | '(' expr ')'          { $$.expr = $2.expr }
 
 %%
 

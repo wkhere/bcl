@@ -162,7 +162,7 @@ func isSpace(r rune) bool {
 }
 
 func isToken(r rune) bool {
-	return r == '{' || r == '}' || r == '=' || r == '+'
+	return r == '{' || r == '}' || r == '=' || r == '+' || r == '(' || r == ')'
 }
 
 func isDigit(r rune) bool {
