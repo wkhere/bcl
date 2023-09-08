@@ -5,7 +5,7 @@ y.go: lang.y
 	goyacc lang.y
 
 clean:
-	rm tmon
+	rm -f tmon
 
 generated: y.go
 
