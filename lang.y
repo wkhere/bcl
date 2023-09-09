@@ -65,7 +65,7 @@ expr:
       IDENT                 { $$.expr = nVarRef(nIdent($1.s)) }
     | INT                   { $$.expr = nIntLit(atoi($1.s)) }
     | STR                   { $$.expr = nStrLit(unquote($1.s)) }
-    | expr '+' expr         { $$.expr = nBinOp{'+', $1.expr, $3.expr} }
+    | expr '+' expr         { $$.expr = nBinOp{"+", $1.expr, $3.expr} }
     | '(' expr ')'          { $$.expr = $2.expr }
 
 %%

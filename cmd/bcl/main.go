@@ -23,10 +23,11 @@ func run(r io.Reader) error {
 		return err
 	}
 
-	err = bcl.Interp(buf)
+	res, err := bcl.Interp(buf)
 	if err != nil {
 		return err
 	}
+	fmt.Printf("%+v\n", res)
 	return nil
 }
 

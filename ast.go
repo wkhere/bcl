@@ -7,7 +7,10 @@ type (
 
 	expr interface {
 		isexpr()
+		eval(*env) (any, error)
 	}
+
+	op string
 
 	nIntLit int
 	nStrLit string
@@ -16,7 +19,7 @@ type (
 	nVarRef nIdent
 
 	nBinOp struct {
-		op   rune
+		op   op
 		a, b expr
 	}
 
