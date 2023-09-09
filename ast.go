@@ -9,8 +9,6 @@ type (
 		isexpr()
 	}
 
-	nEmpty struct{}
-
 	nIntLit int
 	nStrLit string
 
@@ -34,7 +32,6 @@ type (
 	}
 )
 
-func (nEmpty) isnode()  {}
 func (nIntLit) isnode() {}
 func (nStrLit) isnode() {}
 func (nIdent) isnode()  {}
