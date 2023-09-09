@@ -14,10 +14,10 @@ import (
     // parsed output:
     top nTop
 
-    tunnel  nTunnel
-    fields  map[nIdent]expr
-    ident   nIdent
-    expr    expr
+    blk    nBlock
+    fields map[nIdent]expr
+    ident  nIdent
+    expr   expr
 }
 
 %token INT
@@ -29,17 +29,16 @@ import (
 %token '='
 %token IDENT
 %token K_VAR
-%token K_TUNNEL
 %token ERR_LEX
 %token EOF
 
 %left  '+'
 
 %%
-all: vars tunnels EOF       {
+all: vars blocks EOF       {
                                 yyrcvr.lval.top = nTop{
-                                    vars:    $1.top.vars,
-                                    tunnels: $2.top.tunnels,
+                                    vars:   $1.top.vars,
+                                    blocks: $2.top.blocks,
                                 }
                                 return 0
                             }
@@ -48,15 +47,15 @@ vars: /* empty */           { $$.top.vars = make(map[nIdent]expr, 2) }
     | vars K_VAR IDENT '=' expr
                             { $$.top.vars[nIdent($3.s)] = $5.expr }
 
-tunnels: /* empty */        { $$.top.tunnels = nil }
-    | tunnels tunnel        { $$.top.tunnels =
-                                append($$.top.tunnels, $2.tunnel)
-                            }
+blocks: /* empty */         { $$.top.blocks = nil }
+    | blocks block          { $$.top.blocks = append($$.top.blocks, $2.blk) }
 
-tunnel:
-    K_TUNNEL STR '{' fields '}' {
-                                $$.tunnel.name = nStrLit($2.s)
-                                $$.tunnel.fields = $4.fields
+block:
+    IDENT STR '{' fields '}' {
+                                $$.blk.kind = nIdent($1.s)
+                                $$.blk.name = nStrLit($2.s)
+                                $$.blk.fields = $4.fields
+                                // make sure nBlock has no more fields
                             }
 
 fields: /* empty */         { $$.fields = make(map[nIdent]expr, 4) }

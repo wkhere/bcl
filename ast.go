@@ -22,14 +22,15 @@ type (
 		a, b expr
 	}
 
-	nTunnel struct {
+	nBlock struct {
+		kind   nIdent
 		name   nStrLit
 		fields map[nIdent]expr
 	}
 
 	nTop struct {
-		vars    map[nIdent]expr
-		tunnels []nTunnel
+		vars   map[nIdent]expr
+		blocks []nBlock
 	}
 )
 
@@ -39,7 +40,7 @@ func (nStrLit) isnode() {}
 func (nIdent) isnode()  {}
 func (nVarRef) isnode() {}
 func (nBinOp) isnode()  {}
-func (nTunnel) isnode() {}
+func (nBlock) isnode()  {}
 func (nTop) isnode()    {}
 
 func (nIntLit) isexpr() {}

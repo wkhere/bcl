@@ -24,8 +24,8 @@ func run(r io.Reader) error {
 	top, err := parse(buf)
 	fmt.Println("vars:")
 	fmt.Printf("\t%v\n", top.vars)
-	fmt.Println("tunnels:")
-	for _, x := range top.tunnels {
+	fmt.Println("blocks:")
+	for _, x := range top.blocks {
 		fmt.Printf("\t%+v\n", x)
 	}
 	fmt.Println()
