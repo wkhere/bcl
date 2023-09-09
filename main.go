@@ -22,14 +22,22 @@ func run(r io.Reader) error {
 	}
 
 	top, err := parse(buf)
+	if err != nil {
+		return err
+	}
 	fmt.Println("vars:")
 	fmt.Printf("\t%v\n", top.vars)
 	fmt.Println("blocks:")
 	for _, x := range top.blocks {
 		fmt.Printf("\t%+v\n", x)
 	}
+	err = eval(&top)
+	if err != nil {
+		return err
+	}
+
 	fmt.Println()
-	return err
+	return nil
 }
 
 func main() {

@@ -556,7 +556,7 @@ yydefault:
 		yyDollar = yyS[yypt-3 : yypt+1]
 //line lang.y:68
 		{
-			yyVAL.expr = nBinOp{'+', yyDollar[1].expr, yyDollar[3].expr}
+			yyVAL.expr = nBinOp{"+", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 13:
 		yyDollar = yyS[yypt-3 : yypt+1]
