@@ -35,7 +35,7 @@ import (
 %left  '+'
 
 %%
-all: vars blocks EOF       {
+all: vars blocks EOF        {
                                 yyrcvr.lval.top = nTop{
                                     vars:   $1.top.vars,
                                     blocks: $2.top.blocks,
