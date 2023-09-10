@@ -155,6 +155,8 @@ func (l *lexer) skipUntil(pred func(rune) bool) {
 
 // rune predicates
 
+const shortTokens = "={}+()"
+
 // func isStrictSpace(r rune) bool {
 // 	return r == ' ' || r == '\t'
 // }
@@ -167,8 +169,8 @@ func isSpace(r rune) bool {
 	return unicode.IsSpace(r)
 }
 
-func isToken(r rune) bool {
-	return r == '{' || r == '}' || r == '=' || r == '+' || r == '(' || r == ')'
+func isShortToken(r rune) bool {
+	return strings.ContainsRune(shortTokens, r)
 }
 
 func isDigit(r rune) bool {
@@ -212,8 +214,7 @@ func lexStart(l *lexer) stateFn {
 		// ^^is it needed as a terminator in the yparser?
 		// if not then l.ignore() it
 		return nil
-	case isToken(r):
-		// single-rune token
+	case isShortToken(r):
 		l.emit(itemType(r))
 		return lexStart
 	case isSpace(r):
