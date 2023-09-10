@@ -1,1 +1,8 @@
 - add line info from lex to parse/eval errors
+
+- bin ops: 
+	== !=      # for int str bool
+    < > <= >=  # for int str
+ 	and or 	   # for bool, short-circuit
+
+- getenv(str:type), or getenv(str) meaning that result is treated as str
