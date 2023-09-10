@@ -18,12 +18,9 @@ type yySymType struct {
 	s string
 
 	// parsed output:
-	top nTop
-
-	blk    nBlock
-	fields map[nIdent]expr
-	ident  nIdent
-	expr   expr
+	top  nTop
+	blk  nBlock
+	expr expr
 }
 
 const INT = 57346
@@ -57,7 +54,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line lang.y:71
+//line lang.y:69
 
 func atoi(s string) (x int) {
 	x, _ = strconv.Atoi(s)
@@ -481,7 +478,7 @@ yydefault:
 
 	case 1:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line lang.y:38
+//line lang.y:35
 		{
 			yyrcvr.lval.top = nTop{
 				vars:   yyDollar[1].top.vars,
@@ -491,76 +488,77 @@ yydefault:
 		}
 	case 2:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line lang.y:46
+//line lang.y:43
 		{
 			yyVAL.top.vars = make(map[nIdent]expr, 2)
 		}
 	case 3:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line lang.y:48
+//line lang.y:45
 		{
 			yyVAL.top.vars[nIdent(yyDollar[3].s)] = yyDollar[5].expr
 		}
 	case 4:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line lang.y:50
+//line lang.y:47
 		{
 			yyVAL.top.blocks = nil
 		}
 	case 5:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line lang.y:51
+//line lang.y:48
 		{
 			yyVAL.top.blocks = append(yyVAL.top.blocks, yyDollar[2].blk)
 		}
 	case 6:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line lang.y:54
+//line lang.y:51
 		{
-			yyVAL.blk.kind = nIdent(yyDollar[1].s)
-			yyVAL.blk.name = nStrLit(yyDollar[2].s)
-			yyVAL.blk.fields = yyDollar[4].fields
-			// make sure nBlock has no more fields
+			yyVAL.blk = nBlock{
+				kind:   nIdent(yyDollar[1].s),
+				name:   nStrLit(yyDollar[2].s),
+				fields: yyDollar[4].blk.fields,
+			}
 		}
 	case 7:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line lang.y:61
+//line lang.y:59
 		{
-			yyVAL.fields = make(map[nIdent]expr, 4)
+			yyVAL.blk.fields = make(map[nIdent]expr, 4)
 		}
 	case 8:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line lang.y:62
+//line lang.y:60
 		{
-			yyVAL.fields[nIdent(yyDollar[2].s)] = yyDollar[4].expr
+			yyVAL.blk.fields[nIdent(yyDollar[2].s)] = yyDollar[4].expr
 		}
 	case 9:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line lang.y:65
+//line lang.y:63
 		{
 			yyVAL.expr = nVarRef(nIdent(yyDollar[1].s))
 		}
 	case 10:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line lang.y:66
+//line lang.y:64
 		{
 			yyVAL.expr = nIntLit(atoi(yyDollar[1].s))
 		}
 	case 11:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line lang.y:67
+//line lang.y:65
 		{
 			yyVAL.expr = nStrLit(unquote(yyDollar[1].s))
 		}
 	case 12:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line lang.y:68
+//line lang.y:66
 		{
 			yyVAL.expr = nBinOp{"+", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 13:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line lang.y:69
+//line lang.y:67
 		{
 			yyVAL.expr = yyDollar[2].expr
 		}
