@@ -10,7 +10,7 @@ clean:
 generated: y.go
 
 test: generated
-	go test
+	go test .
 
 bench: generated
 	 go test -bench=. -count=$(cnt) -benchmem .
