@@ -193,7 +193,10 @@ func (l *lexer) errorf(format string, args ...any) stateFn {
 // state functions and related data
 
 var keywords = map[string]itemType{
-	"var": K_VAR,
+	"var":   K_VAR,
+	"true":  K_TRUE,
+	"false": K_FALSE,
+	"not":   K_NOT,
 }
 
 const (

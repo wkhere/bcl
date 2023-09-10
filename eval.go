@@ -98,8 +98,28 @@ func (v nVarRef) eval(env *env) (any, error) {
 	}
 }
 
-func (x nIntLit) eval(env *env) (any, error) { return int(x), nil }
-func (s nStrLit) eval(env *env) (any, error) { return string(s), nil }
+func (x nIntLit) eval(env *env) (any, error)  { return int(x), nil }
+func (s nStrLit) eval(env *env) (any, error)  { return string(s), nil }
+func (b nBoolLit) eval(env *env) (any, error) { return bool(b), nil }
+
+func (o nUnOp) eval(env *env) (any, error) {
+	x, err := o.a.eval(env)
+	if err != nil {
+		return nil, err
+	}
+
+	switch o.op {
+	case "not":
+		switch v := x.(type) {
+		case bool:
+			return !v, nil
+		}
+		return nil, &errOpInvalidType{o.op, x}
+
+	default:
+		return nil, errUnknownOp(o.op)
+	}
+}
 
 func (o nBinOp) eval(env *env) (any, error) {
 	l, err := o.a.eval(env)
@@ -141,6 +161,10 @@ type errRecursionLoop nVarRef
 type errInvalidStage int
 type errUnknownOp op
 
+type errOpInvalidType struct {
+	op op
+	x  any
+}
 type errOpInvalidTypes struct {
 	op   op
 	x, y any
@@ -160,6 +184,10 @@ func (e errInvalidStage) Error() string {
 
 func (e errUnknownOp) Error() string {
 	return fmt.Sprintf("unknown op %v", op(e))
+}
+
+func (e *errOpInvalidType) Error() string {
+	return fmt.Sprintf("op %q: invalid type: %T", e.op, e.x)
 }
 
 func (e *errOpInvalidTypes) Error() string {

@@ -9,10 +9,16 @@ type (
 
 	op string
 
-	nIntLit int
-	nStrLit string
+	nIntLit  int
+	nStrLit  string
+	nBoolLit bool
 
 	nVarRef ident
+
+	nUnOp struct {
+		op op
+		a  expr
+	}
 
 	nBinOp struct {
 		op   op

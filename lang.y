@@ -26,10 +26,13 @@ import (
 %token '='
 %token IDENT
 %token K_VAR
+%token K_TRUE
+%token K_FALSE
 %token ERR_LEX
 %token EOF
 
 %left  '+'
+%right K_NOT
 
 %%
 all: vars blocks EOF        {
@@ -63,9 +66,14 @@ expr:
       IDENT                 { $$.expr = nVarRef(ident($1.s)) }
     | INT                   { $$.expr = nIntLit(atoi($1.s)) }
     | STR                   { $$.expr = nStrLit(unquote($1.s)) }
+    | bool_lit              { $$.expr = $1.expr }
     | expr '+' expr         { $$.expr = nBinOp{"+", $1.expr, $3.expr} }
+    | K_NOT expr            { $$.expr = nUnOp{"not", $2.expr} }
     | '(' expr ')'          { $$.expr = $2.expr }
 
+bool_lit:
+      K_TRUE                { $$.expr = nBoolLit(true) }
+    | K_FALSE               { $$.expr = nBoolLit(false) }
 %%
 
 func atoi(s string) (x int) {
