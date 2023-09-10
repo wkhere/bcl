@@ -31,7 +31,7 @@ import (
 %token ERR_LEX
 %token EOF
 
-%left  '+'
+%left  '+' '-'
 %right K_NOT
 
 %%
@@ -68,6 +68,9 @@ expr:
     | STR                   { $$.expr = nStrLit(unquote($1.s)) }
     | bool_lit              { $$.expr = $1.expr }
     | expr '+' expr         { $$.expr = nBinOp{"+", $1.expr, $3.expr} }
+    | expr '-' expr         { $$.expr = nBinOp{"-", $1.expr, $3.expr} }
+    | '+' expr %prec K_NOT  { $$.expr = $2.expr }    /* NOP */
+    | '-' expr %prec K_NOT  { $$.expr = nUnOp{"-",   $2.expr} }
     | K_NOT expr            { $$.expr = nUnOp{"not", $2.expr} }
     | '(' expr ')'          { $$.expr = $2.expr }
 

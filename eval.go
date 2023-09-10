@@ -109,6 +109,13 @@ func (o nUnOp) eval(env *env) (any, error) {
 	}
 
 	switch o.op {
+	case "-":
+		switch v := x.(type) {
+		case int:
+			return -v, nil
+		}
+		return nil, &errOpInvalidType{o.op, x}
+
 	case "not":
 		switch v := x.(type) {
 		case bool:
@@ -117,7 +124,7 @@ func (o nUnOp) eval(env *env) (any, error) {
 		return nil, &errOpInvalidType{o.op, x}
 
 	default:
-		return nil, errUnknownOp(o.op)
+		return nil, errUnknownOp("unary " + o.op)
 	}
 }
 
@@ -151,15 +158,25 @@ func (o nBinOp) eval(env *env) (any, error) {
 
 		return nil, &errOpInvalidTypes{o.op, l, r}
 
+	case "-":
+		switch lv := l.(type) {
+		case int:
+			switch rv := r.(type) {
+			case int:
+				return lv - rv, nil
+			}
+		}
+		return nil, &errOpInvalidTypes{o.op, l, r}
+
 	default:
-		return nil, errUnknownOp(o.op)
+		return nil, errUnknownOp("binary " + o.op)
 	}
 }
 
 type errNoVar ident
 type errRecursionLoop nVarRef
 type errInvalidStage int
-type errUnknownOp op
+type errUnknownOp string
 
 type errOpInvalidType struct {
 	op op
@@ -183,7 +200,7 @@ func (e errInvalidStage) Error() string {
 }
 
 func (e errUnknownOp) Error() string {
-	return fmt.Sprintf("unknown op %v", op(e))
+	return fmt.Sprintf("unknown op %q", string(e))
 }
 
 func (e *errOpInvalidType) Error() string {

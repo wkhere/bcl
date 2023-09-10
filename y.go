@@ -51,6 +51,7 @@ var yyToknames = [...]string{
 	"ERR_LEX",
 	"EOF",
 	"'+'",
+	"'-'",
 	"K_NOT",
 }
 
@@ -60,7 +61,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line lang.y:77
+//line lang.y:80
 
 func atoi(s string) (x int) {
 	x, _ = strconv.Atoi(s)
@@ -81,48 +82,50 @@ var yyExca = [...]int8{
 
 const yyPrivate = 57344
 
-const yyLast = 31
+const yyLast = 38
 
 var yyAct = [...]int8{
-	12, 14, 15, 22, 28, 18, 4, 8, 13, 7,
-	19, 20, 22, 25, 5, 17, 16, 26, 23, 24,
-	29, 10, 11, 27, 9, 21, 6, 3, 2, 1,
-	30,
+	12, 14, 15, 4, 34, 20, 24, 25, 13, 8,
+	21, 22, 24, 25, 17, 18, 19, 7, 26, 27,
+	28, 29, 5, 30, 35, 32, 33, 31, 10, 11,
+	9, 16, 23, 6, 3, 2, 36, 1,
 }
 
 var yyPact = [...]int16{
-	-1000, -1000, -6, -2, -4, -1000, -1000, 19, 11, 16,
-	-3, -1000, -14, -1000, -1000, -1000, -1000, -3, -3, -1000,
-	-1000, 6, -3, -1000, -5, -1000, 10, -1000, -1000, -3,
-	-14,
+	-1000, -1000, -9, 6, -2, -1000, -1000, 25, 18, 23,
+	-3, -1000, -11, -1000, -1000, -1000, -1000, -3, -3, -3,
+	-3, -1000, -1000, 16, -3, -3, -1000, -1000, -1000, -5,
+	-1000, 14, -1000, -1000, -1000, -3, -11,
 }
 
 var yyPgo = [...]int8{
-	0, 29, 28, 27, 0, 26, 25, 16,
+	0, 37, 35, 34, 0, 33, 32, 31,
 }
 
 var yyR1 = [...]int8{
 	0, 1, 2, 2, 3, 3, 5, 6, 6, 4,
-	4, 4, 4, 4, 4, 4, 7, 7,
+	4, 4, 4, 4, 4, 4, 4, 4, 4, 7,
+	7,
 }
 
 var yyR2 = [...]int8{
 	0, 3, 0, 5, 0, 2, 5, 0, 4, 1,
-	1, 1, 1, 3, 2, 3, 1, 1,
+	1, 1, 1, 3, 3, 2, 2, 2, 3, 1,
+	1,
 }
 
 var yyChk = [...]int16{
 	-1000, -1, -2, -3, 12, 16, -5, 11, 11, 5,
-	10, 6, -4, 11, 4, 5, -7, 18, 8, 13,
-	14, -6, 17, -4, -4, 7, 11, -4, 9, 10,
-	-4,
+	10, 6, -4, 11, 4, 5, -7, 17, 18, 19,
+	8, 13, 14, -6, 17, 18, -4, -4, -4, -4,
+	7, 11, -4, -4, 9, 10, -4,
 }
 
 var yyDef = [...]int8{
 	2, -2, 4, 0, 0, 1, 5, 0, 0, 0,
-	0, 7, 3, 9, 10, 11, 12, 0, 0, 16,
-	17, 0, 0, 14, 0, 6, 0, 13, 15, 0,
-	8,
+	0, 7, 3, 9, 10, 11, 12, 0, 0, 0,
+	0, 19, 20, 0, 0, 0, 15, 16, 17, 0,
+	6, 0, 13, 14, 18, 0, 8,
 }
 
 var yyTok1 = [...]int8{
@@ -130,7 +133,7 @@ var yyTok1 = [...]int8{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	8, 9, 3, 17, 3, 3, 3, 3, 3, 3,
+	8, 9, 3, 17, 3, 18, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 10, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -143,7 +146,7 @@ var yyTok1 = [...]int8{
 
 var yyTok2 = [...]int8{
 	2, 3, 4, 5, 11, 12, 13, 14, 15, 16,
-	18,
+	19,
 }
 
 var yyTok3 = [...]int8{
@@ -574,26 +577,44 @@ yydefault:
 			yyVAL.expr = nBinOp{"+", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 14:
-		yyDollar = yyS[yypt-2 : yypt+1]
+		yyDollar = yyS[yypt-3 : yypt+1]
 //line lang.y:71
 		{
-			yyVAL.expr = nUnOp{"not", yyDollar[2].expr}
+			yyVAL.expr = nBinOp{"-", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 15:
-		yyDollar = yyS[yypt-3 : yypt+1]
+		yyDollar = yyS[yypt-2 : yypt+1]
 //line lang.y:72
 		{
 			yyVAL.expr = yyDollar[2].expr
 		}
 	case 16:
-		yyDollar = yyS[yypt-1 : yypt+1]
+		yyDollar = yyS[yypt-2 : yypt+1]
+//line lang.y:73
+		{
+			yyVAL.expr = nUnOp{"-", yyDollar[2].expr}
+		}
+	case 17:
+		yyDollar = yyS[yypt-2 : yypt+1]
+//line lang.y:74
+		{
+			yyVAL.expr = nUnOp{"not", yyDollar[2].expr}
+		}
+	case 18:
+		yyDollar = yyS[yypt-3 : yypt+1]
 //line lang.y:75
+		{
+			yyVAL.expr = yyDollar[2].expr
+		}
+	case 19:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line lang.y:78
 		{
 			yyVAL.expr = nBoolLit(true)
 		}
-	case 17:
+	case 20:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line lang.y:76
+//line lang.y:79
 		{
 			yyVAL.expr = nBoolLit(false)
 		}

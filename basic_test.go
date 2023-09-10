@@ -6,8 +6,9 @@ const basicInput = `
 var syncthing_port = 8384
 var local_start    = 9384
 var domain = "foo.org"
-var z2 = z + 1
-var z  = local_start + 1000
+var z0 = -z1 + +0      # forward decl
+var z1 = local_start - syncthing_port
+var z2 = -1 - (---5-1) + z1
 var s  = "sth" + 1 + "-" + domain
 var cond  = true
 var cond2 = false
@@ -25,10 +26,12 @@ tunnel "another-syncthing" {
 	host = "yet" + "." + "another.com"
 	local_port  = local_start + 1
 	remote_port = syncthing_port
-	some_field  = z2
 	enabled  = cond
 	prepared = true
 	started  = cond_big
+	v = z0
+	x = z2 - z1
+	y = 3 - ---2 - (+1-1)
 }
 `
 
