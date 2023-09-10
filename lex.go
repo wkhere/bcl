@@ -22,7 +22,11 @@ type item struct {
 
 // newLexer creates new nexer and runs its loop.
 func newLexer(input string) *lexer {
-	l := &lexer{input: input, items: make(chan item), line: 1}
+	l := &lexer{
+		input: input,
+		items: make(chan item, itemsBufSize),
+		line:  1,
+	}
 	go l.run()
 	return l
 }
@@ -35,6 +39,8 @@ func (l *lexer) nextItem() item {
 }
 
 // engine
+
+const itemsBufSize = 10
 
 type lexer struct {
 	input      string
