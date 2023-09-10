@@ -12,12 +12,9 @@ import (
     s string
 
     // parsed output:
-    top nTop
-
-    blk    nBlock
-    fields map[nIdent]expr
-    ident  nIdent
-    expr   expr
+    top  nTop
+    blk  nBlock
+    expr expr
 }
 
 %token INT
@@ -52,14 +49,15 @@ blocks: /* empty */         { $$.top.blocks = nil }
 
 block:
     IDENT STR '{' fields '}' {
-                                $$.blk.kind = nIdent($1.s)
-                                $$.blk.name = nStrLit($2.s)
-                                $$.blk.fields = $4.fields
-                                // make sure nBlock has no more fields
+                                $$.blk = nBlock{
+                                    kind:   nIdent($1.s),
+                                    name:   nStrLit($2.s),
+                                    fields: $4.blk.fields,
+                                }
                             }
 
-fields: /* empty */         { $$.fields = make(map[nIdent]expr, 4) }
-    | fields IDENT '=' expr { $$.fields[nIdent($2.s)] = $4.expr }
+fields: /* empty */         { $$.blk.fields = make(map[nIdent]expr, 4) }
+    | fields IDENT '=' expr { $$.blk.fields[nIdent($2.s)] = $4.expr }
 
 expr:
       IDENT                 { $$.expr = nVarRef(nIdent($1.s)) }
