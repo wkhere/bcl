@@ -1,11 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"unsafe"
+)
 
 // external API
 func parse(input []byte) (_ nTop, err error) {
 	l := newLexer(string(input))
 	p := yyNewParser()
+	fmt.Printf("sizeof yySymType:    %4d\n", unsafe.Sizeof(yySymType{}))
+	fmt.Printf("sizeof yyParserImpl: %4d\n", unsafe.Sizeof(yyParserImpl{}))
 	res := p.Parse(l)
 	if res == 0 && l.err == nil {
 		return p.(*yyParserImpl).lval.top, nil

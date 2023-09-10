@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"unsafe"
 )
 
 type args struct {
@@ -25,6 +26,9 @@ func run(r io.Reader) error {
 	if err != nil {
 		return err
 	}
+	fmt.Printf("sizeof top:        %4d\n", unsafe.Sizeof(top))
+	fmt.Printf("sizeof top.vars:   %4d\n", unsafe.Sizeof(top.vars))
+	fmt.Printf("sizeof top.blocks: %4d\n", unsafe.Sizeof(top.blocks))
 	fmt.Println("vars:")
 	fmt.Printf("\t%v\n", top.vars)
 	fmt.Println("blocks:")
