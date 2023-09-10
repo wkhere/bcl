@@ -83,7 +83,7 @@ func (v nVarRef) eval(env *env) (any, error) {
 			return val, nil
 		}
 		if _, mark := env.varMark[ident(v)]; mark {
-			return nil, errRecursionLoop(v)
+			return nil, errCycle(v)
 		}
 		return resolveVar(ident(v), env)
 
@@ -194,7 +194,7 @@ func (o nBinOp) eval(env *env) (any, error) {
 }
 
 type errNoVar ident
-type errRecursionLoop nVarRef
+type errCycle nVarRef
 type errInvalidStage int
 type errUnknownOp string
 
@@ -211,8 +211,8 @@ func (e errNoVar) Error() string {
 	return fmt.Sprintf("var %s not defined", string(e))
 }
 
-func (e errRecursionLoop) Error() string {
-	return fmt.Sprintf("var %s: recursion loop", string(e))
+func (e errCycle) Error() string {
+	return fmt.Sprintf("var %s: cycle detected", string(e))
 }
 
 func (e errInvalidStage) Error() string {
