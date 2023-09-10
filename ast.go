@@ -1,12 +1,7 @@
 package bcl
 
 type (
-	node interface {
-		isnode()
-	}
-
 	expr interface {
-		isexpr()
 		eval(*env) (any, error)
 	}
 
@@ -35,15 +30,3 @@ type (
 		blocks []nBlock
 	}
 )
-
-func (nIntLit) isnode() {}
-func (nStrLit) isnode() {}
-func (nVarRef) isnode() {}
-func (nBinOp) isnode()  {}
-func (nBlock) isnode()  {}
-func (nTop) isnode()    {}
-
-func (nIntLit) isexpr() {}
-func (nStrLit) isexpr() {}
-func (nVarRef) isexpr() {}
-func (nBinOp) isexpr()  {}
