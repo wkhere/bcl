@@ -3,6 +3,7 @@ package bcl
 import (
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 type (
@@ -175,7 +176,14 @@ func (o nBinOp) eval(env *env) (any, error) {
 			case int:
 				return lv * rv, nil
 			}
+
+		case string:
+			switch rv := r.(type) {
+			case int:
+				return strings.Repeat(lv, rv), nil
+			}
 		}
+
 		return nil, &errOpInvalidTypes{o.op, l, r}
 
 	case "/":
