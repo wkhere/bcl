@@ -8,8 +8,8 @@ import (
 type (
 	env struct {
 		stage   evalStage
-		varDefs map[nIdent]expr
-		varMark map[nIdent]mark
+		varDefs map[ident]expr
+		varMark map[ident]mark
 		varVals map[nVarRef]any
 	}
 
@@ -26,7 +26,7 @@ const (
 func eval(top *nTop) (bb []Block, _ error) {
 	env := &env{
 		varDefs: top.vars,
-		varMark: make(map[nIdent]mark, len(top.vars)),
+		varMark: make(map[ident]mark, len(top.vars)),
 		varVals: make(map[nVarRef]any, len(top.vars)),
 		stage:   stResolveVars,
 	}
@@ -60,7 +60,7 @@ func eval(top *nTop) (bb []Block, _ error) {
 	return bb, nil
 }
 
-func resolveVar(ident nIdent, env *env) (any, error) {
+func resolveVar(ident ident, env *env) (any, error) {
 	expr, ok := env.varDefs[ident]
 	if !ok {
 		return nil, errNoVar(ident)
@@ -82,10 +82,10 @@ func (v nVarRef) eval(env *env) (any, error) {
 		if val, ok := env.varVals[v]; ok {
 			return val, nil
 		}
-		if _, mark := env.varMark[nIdent(v)]; mark {
+		if _, mark := env.varMark[ident(v)]; mark {
 			return nil, errRecursionLoop(v)
 		}
-		return resolveVar(nIdent(v), env)
+		return resolveVar(ident(v), env)
 
 	case stResolveBlockFields:
 		if val, ok := env.varVals[v]; ok {
@@ -136,7 +136,7 @@ func (o nBinOp) eval(env *env) (any, error) {
 	}
 }
 
-type errNoVar nIdent
+type errNoVar ident
 type errRecursionLoop nVarRef
 type errInvalidStage int
 type errUnknownOp op

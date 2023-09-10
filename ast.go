@@ -10,13 +10,14 @@ type (
 		eval(*env) (any, error)
 	}
 
+	ident string
+
 	op string
 
 	nIntLit int
 	nStrLit string
 
-	nIdent  string
-	nVarRef nIdent
+	nVarRef ident
 
 	nBinOp struct {
 		op   op
@@ -24,20 +25,19 @@ type (
 	}
 
 	nBlock struct {
-		kind   nIdent
+		kind   ident
 		name   nStrLit
-		fields map[nIdent]expr
+		fields map[ident]expr
 	}
 
 	nTop struct {
-		vars   map[nIdent]expr
+		vars   map[ident]expr
 		blocks []nBlock
 	}
 )
 
 func (nIntLit) isnode() {}
 func (nStrLit) isnode() {}
-func (nIdent) isnode()  {}
 func (nVarRef) isnode() {}
 func (nBinOp) isnode()  {}
 func (nBlock) isnode()  {}

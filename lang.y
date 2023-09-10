@@ -40,9 +40,9 @@ all: vars blocks EOF        {
                                 return 0
                             }
 
-vars: /* empty */           { $$.top.vars = make(map[nIdent]expr, 2) }
+vars: /* empty */           { $$.top.vars = make(map[ident]expr, 2) }
     | vars K_VAR IDENT '=' expr
-                            { $$.top.vars[nIdent($3.s)] = $5.expr }
+                            { $$.top.vars[ident($3.s)] = $5.expr }
 
 blocks: /* empty */         { $$.top.blocks = nil }
     | blocks block          { $$.top.blocks = append($$.top.blocks, $2.blk) }
@@ -50,17 +50,17 @@ blocks: /* empty */         { $$.top.blocks = nil }
 block:
     IDENT STR '{' fields '}' {
                                 $$.blk = nBlock{
-                                    kind:   nIdent($1.s),
+                                    kind:   ident($1.s),
                                     name:   nStrLit($2.s),
                                     fields: $4.blk.fields,
                                 }
                             }
 
-fields: /* empty */         { $$.blk.fields = make(map[nIdent]expr, 4) }
-    | fields IDENT '=' expr { $$.blk.fields[nIdent($2.s)] = $4.expr }
+fields: /* empty */         { $$.blk.fields = make(map[ident]expr, 4) }
+    | fields IDENT '=' expr { $$.blk.fields[ident($2.s)] = $4.expr }
 
 expr:
-      IDENT                 { $$.expr = nVarRef(nIdent($1.s)) }
+      IDENT                 { $$.expr = nVarRef(ident($1.s)) }
     | INT                   { $$.expr = nIntLit(atoi($1.s)) }
     | STR                   { $$.expr = nStrLit(unquote($1.s)) }
     | expr '+' expr         { $$.expr = nBinOp{"+", $1.expr, $3.expr} }

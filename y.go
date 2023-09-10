@@ -490,13 +490,13 @@ yydefault:
 		yyDollar = yyS[yypt-0 : yypt+1]
 //line lang.y:43
 		{
-			yyVAL.top.vars = make(map[nIdent]expr, 2)
+			yyVAL.top.vars = make(map[ident]expr, 2)
 		}
 	case 3:
 		yyDollar = yyS[yypt-5 : yypt+1]
 //line lang.y:45
 		{
-			yyVAL.top.vars[nIdent(yyDollar[3].s)] = yyDollar[5].expr
+			yyVAL.top.vars[ident(yyDollar[3].s)] = yyDollar[5].expr
 		}
 	case 4:
 		yyDollar = yyS[yypt-0 : yypt+1]
@@ -515,7 +515,7 @@ yydefault:
 //line lang.y:51
 		{
 			yyVAL.blk = nBlock{
-				kind:   nIdent(yyDollar[1].s),
+				kind:   ident(yyDollar[1].s),
 				name:   nStrLit(yyDollar[2].s),
 				fields: yyDollar[4].blk.fields,
 			}
@@ -524,19 +524,19 @@ yydefault:
 		yyDollar = yyS[yypt-0 : yypt+1]
 //line lang.y:59
 		{
-			yyVAL.blk.fields = make(map[nIdent]expr, 4)
+			yyVAL.blk.fields = make(map[ident]expr, 4)
 		}
 	case 8:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line lang.y:60
 		{
-			yyVAL.blk.fields[nIdent(yyDollar[2].s)] = yyDollar[4].expr
+			yyVAL.blk.fields[ident(yyDollar[2].s)] = yyDollar[4].expr
 		}
 	case 9:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line lang.y:63
 		{
-			yyVAL.expr = nVarRef(nIdent(yyDollar[1].s))
+			yyVAL.expr = nVarRef(ident(yyDollar[1].s))
 		}
 	case 10:
 		yyDollar = yyS[yypt-1 : yypt+1]
