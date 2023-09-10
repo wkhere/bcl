@@ -155,7 +155,7 @@ func (l *lexer) skipUntil(pred func(rune) bool) {
 
 // rune predicates
 
-const shortTokens = "={}+-()"
+const shortTokens = "={}+-*/()"
 
 // func isStrictSpace(r rune) bool {
 // 	return r == ' ' || r == '\t'

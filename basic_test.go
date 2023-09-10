@@ -8,7 +8,7 @@ var local_start    = 9384
 var domain = "foo.org"
 var z0 = -z1 + +0      # forward decl
 var z1 = local_start - syncthing_port
-var z2 = -1 - (---5-1) + z1
+var z2 = -1 - (---10/2-1) + z1
 var s  = "sth" + 1 + "-" + domain
 var cond  = true
 var cond2 = false
@@ -29,9 +29,10 @@ tunnel "another-syncthing" {
 	enabled  = cond
 	prepared = true
 	started  = cond_big
+	u = 4+3*2
 	v = z0
 	x = z2 - z1
-	y = 3 - ---2 - (+1-1)
+	y = 3 - ---8/4 - (+1-3/2)
 }
 `
 

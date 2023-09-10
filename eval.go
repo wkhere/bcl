@@ -168,6 +168,26 @@ func (o nBinOp) eval(env *env) (any, error) {
 		}
 		return nil, &errOpInvalidTypes{o.op, l, r}
 
+	case "*":
+		switch lv := l.(type) {
+		case int:
+			switch rv := r.(type) {
+			case int:
+				return lv * rv, nil
+			}
+		}
+		return nil, &errOpInvalidTypes{o.op, l, r}
+
+	case "/":
+		switch lv := l.(type) {
+		case int:
+			switch rv := r.(type) {
+			case int:
+				return lv / rv, nil
+			}
+		}
+		return nil, &errOpInvalidTypes{o.op, l, r}
+
 	default:
 		return nil, errUnknownOp("binary " + o.op)
 	}
