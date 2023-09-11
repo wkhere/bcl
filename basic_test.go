@@ -6,7 +6,7 @@ import (
 	_ "embed"
 )
 
-//go:embed test.conf
+//go:embed test.bcl
 var basicInput []byte
 
 func basicRun() ([]Block, error) {
