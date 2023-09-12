@@ -131,19 +131,21 @@ func (l *lexer) acceptOne(valid string) bool {
 	return false
 }
 
-// acceptRun consumes a run of runes from the valid set.
-func (l *lexer) acceptRun(valid string) {
+// acceptRunFromSet consumes a run of runes from the valid set.
+func (l *lexer) acceptRunFromSet(valid string) {
 	for strings.ContainsRune(valid, l.next()) {
 	}
 	l.backup()
 }
 
-func (l *lexer) acceptAny(pred func(rune) bool) {
+// acceptRun consumes a run of runes satisfying the predicate.
+func (l *lexer) acceptRun(pred func(rune) bool) {
 	for pred(l.next()) {
 	}
 	l.backup()
 }
 
+// skipUntil consumes runes until a predidate is satisfied.
 func (l *lexer) skipUntil(pred func(rune) bool) {
 	for {
 		if c := l.next(); c == eof || pred(c) {
@@ -233,7 +235,7 @@ func lexStart(l *lexer) stateFn {
 }
 
 func lexSpace(l *lexer) stateFn {
-	l.acceptAny(isSpace)
+	l.acceptRun(isSpace)
 	l.ignore()
 	return lexStart
 }
@@ -274,7 +276,7 @@ loop:
 }
 
 func lexInt(l *lexer) stateFn {
-	l.acceptRun(digits)
+	l.acceptRunFromSet(digits)
 	l.emit(INT)
 	return lexStart
 }
