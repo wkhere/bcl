@@ -55,14 +55,14 @@ func Save(dest any, blocks []Block) error {
 
 func save1(v reflect.Value, block *Block) error {
 	t := v.Type()
-	if st, bt := t.Name(), block.Type; !snakeEq(st, bt) {
+	if st, bt := t.Name(), block.Type; !unsnakeEq(st, bt) {
 		return StructErr(
 			fmt.Sprintf("mismatch: struct type %s, block type %s", st, bt),
 		)
 	}
 
 	setField := func(name string, x any) error {
-		f, ok := t.FieldByNameFunc(snakeMatcher(name))
+		f, ok := t.FieldByNameFunc(unsnakeMatcher(name))
 		if !ok {
 			return StructErr(
 				fmt.Sprintf(
@@ -98,15 +98,15 @@ func save1(v reflect.Value, block *Block) error {
 	return nil
 }
 
-func snakeMatcher(snake string) func(string) bool {
+func unsnakeMatcher(snake string) func(string) bool {
 	u := strings.ReplaceAll(snake, "_", "")
 	return func(s string) bool {
 		return strings.EqualFold(s, u)
 	}
 }
 
-func snakeEq(orig, snake string) bool {
-	return snakeMatcher(snake)(orig)
+func unsnakeEq(orig, snake string) bool {
+	return unsnakeMatcher(snake)(orig)
 }
 
 type TypeErr string
