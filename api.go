@@ -61,8 +61,27 @@ func save1(v reflect.Value, block *Block) error {
 		)
 	}
 
+	tagged := map[string]int{}
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		if tagv := f.Tag.Get("bcl"); tagv != "" {
+			tagged[tagv] = i
+		}
+	}
+
 	setField := func(name string, x any) error {
-		f, ok := t.FieldByNameFunc(unsnakeMatcher(name))
+		var f reflect.StructField
+		var ok bool
+		if len(tagged) > 0 {
+			var i int
+			i, ok = tagged[name]
+			if ok {
+				f = t.Field(i)
+			}
+		}
+		if !ok {
+			f, ok = t.FieldByNameFunc(unsnakeMatcher(name))
+		}
 		if !ok {
 			return StructErr(
 				fmt.Sprintf("field mapping for %q not found in struct", name),
