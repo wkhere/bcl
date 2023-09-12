@@ -65,23 +65,17 @@ func save1(v reflect.Value, block *Block) error {
 		f, ok := t.FieldByNameFunc(unsnakeMatcher(name))
 		if !ok {
 			return StructErr(
-				fmt.Sprintf(
-					"field mapping for %q not found in struct", name,
-				),
+				fmt.Sprintf("field mapping for %q not found in struct", name),
 			)
 		}
 		if !f.IsExported() {
-			return StructErr(
-				fmt.Sprintf("found field %q but is unexported", f.Name),
-			)
+			return StructErr(fmt.Sprintf("found field %q but is unexported", f.Name))
 		}
 
 		vx := reflect.ValueOf(x)
 		if st, bt := f.Type, vx.Type(); st != bt {
 			return StructErr(
-				fmt.Sprintf(
-					"type mismatch for the mapped field: "+
-						"struct.%s has %s, block.%s has %s",
+				fmt.Sprintf("type mismatch for the mapped field: struct.%s has %s, block.%s has %s",
 					f.Name, st, name, bt,
 				),
 			)
