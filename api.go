@@ -70,6 +70,12 @@ func save1(v reflect.Value, block *Block) error {
 				),
 			)
 		}
+		if !f.IsExported() {
+			return StructErr(
+				fmt.Sprintf("found field %q but is unexported", f.Name),
+			)
+		}
+
 		vx := reflect.ValueOf(x)
 		if st, bt := f.Type, vx.Type(); st != bt {
 			return StructErr(
