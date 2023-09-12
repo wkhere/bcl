@@ -54,7 +54,7 @@ blocks: /* empty */         { $$.top.blocks = nil }
 block:
     IDENT STR '{' fields '}' {
                                 $$.blk = nBlock{
-                                    kind:   ident($1.s),
+                                    typ:    ident($1.s),
                                     name:   nStrLit($2.s),
                                     fields: $4.blk.fields,
                                 }

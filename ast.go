@@ -26,7 +26,7 @@ type (
 	}
 
 	nBlock struct {
-		kind   ident
+		typ    ident
 		name   nStrLit
 		fields map[ident]expr
 	}

@@ -535,7 +535,7 @@ yydefault:
 //line lang.y:55
 		{
 			yyVAL.blk = nBlock{
-				kind:   ident(yyDollar[1].s),
+				typ:    ident(yyDollar[1].s),
 				name:   nStrLit(yyDollar[2].s),
 				fields: yyDollar[4].blk.fields,
 			}

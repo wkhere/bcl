@@ -44,7 +44,7 @@ func eval(top *nTop) (bb []Block, _ error) {
 
 	for _, nb := range top.blocks {
 		b := Block{
-			Kind:   string(nb.kind),
+			Type:   string(nb.typ),
 			Name:   string(nb.name),
 			Fields: make(map[string]any, len(nb.fields)),
 		}
