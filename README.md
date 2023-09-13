@@ -15,7 +15,7 @@ but more basic:
   inside the brackets; no need for an artificial `resource` keyword
 * dead-simple API: variables get evaluated automatically and fill the fields of
   the output structure;
-  no need to invoke arcane wisdom for evaluation
+  no [strange limitations] of where variables can be defined
 * detection of variable reference cycles
 * _O(N)_ lexer and parser
 * deserialization aka unmarshalling to static Go structs
@@ -70,3 +70,6 @@ Output:
   - [ ] allow fields to be missing in the target struct
 
 * [ ] port to more programming languages
+
+
+[strange limitations]: https://stackoverflow.com/a/73745980/229154
