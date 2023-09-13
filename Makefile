@@ -1,3 +1,5 @@
+default: test
+
 bcl: *.go y.go cmd/bcl/*.go
 	go build ./cmd/bcl
 
@@ -10,10 +12,10 @@ clean:
 generated: y.go
 
 test: generated
-	go test .
+	go test -v ./...
 
 bench: generated
 	 go test -bench=. -count=$(cnt) -benchmem .
 cnt=5
 
-.PHONY: generated test bench clean
+.PHONY: default generated test bench clean
