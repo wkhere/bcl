@@ -108,12 +108,12 @@ func (l *lexer) backup() {
 	}
 }
 
-// peek returns but does not consume the next rune in the input.
-func (l *lexer) peek() rune {
-	r := l.next()
-	l.backup()
-	return r
-}
+// // peek returns but does not consume the next rune in the input.
+// func (l *lexer) peek() rune {
+// 	r := l.next()
+// 	l.backup()
+// 	return r
+// }
 
 // ignore skips over the pending input before this point.
 func (l *lexer) ignore() {
@@ -122,14 +122,14 @@ func (l *lexer) ignore() {
 
 // input-consuming helpers
 
-// accept consumes the next rune if it's from the valid set.
-func (l *lexer) acceptOne(valid string) bool {
-	if strings.ContainsRune(valid, l.next()) {
-		return true
-	}
-	l.backup()
-	return false
-}
+// // accept consumes the next rune if it's from the valid set.
+// func (l *lexer) acceptOne(valid string) bool {
+// 	if strings.ContainsRune(valid, l.next()) {
+// 		return true
+// 	}
+// 	l.backup()
+// 	return false
+// }
 
 // acceptRunFromSet consumes a run of runes from the valid set.
 func (l *lexer) acceptRunFromSet(valid string) {
@@ -145,15 +145,15 @@ func (l *lexer) acceptRun(pred func(rune) bool) {
 	l.backup()
 }
 
-// skipUntil consumes runes until a predidate is satisfied.
-func (l *lexer) skipUntil(pred func(rune) bool) {
-	for {
-		if c := l.next(); c == eof || pred(c) {
-			break
-		}
-	}
-	l.backup()
-}
+// // skipUntil consumes runes until a predidate is satisfied.
+// func (l *lexer) skipUntil(pred func(rune) bool) {
+// 	for {
+// 		if c := l.next(); c == eof || pred(c) {
+// 			break
+// 		}
+// 	}
+// 	l.backup()
+// }
 
 // rune predicates
 
