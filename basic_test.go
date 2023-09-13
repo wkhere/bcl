@@ -16,7 +16,7 @@ func basicRun() ([]Block, error) {
 func TestBasic(t *testing.T) {
 	_, err := basicRun()
 	if err != nil {
-		t.Error("unexpected error:", err)
+		t.Error(err)
 	}
 }
 
