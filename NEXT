@@ -6,3 +6,5 @@
  	and or 	   # for bool, short-circuit
 
 - getenv(str:type), or getenv(str) meaning that result is treated as str
+
+- make yacc tokens unexported
