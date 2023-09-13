@@ -1,6 +1,8 @@
 BCL
 ===
 
+[![Build Status](https://github.com/wkhere/bcl/actions/workflows/go.yml/badge.svg)](https://github.com/wkhere/bcl/actions/workflows/go.yml)
+
 Basic Configuration Language.
 
 __BCL__ is like HCL (the language driving Terraform, Packer and friends),
