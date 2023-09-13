@@ -11,15 +11,15 @@ type Block struct {
 	Fields     map[string]any
 }
 
-func InterpAndSave(dest any, input []byte) error {
-	res, err := Interp(input)
+func Unmarshal(input []byte, dest any) error {
+	res, err := Interpret(input)
 	if err != nil {
 		return err
 	}
-	return Save(dest, res)
+	return AppendBlocks(dest, res)
 }
 
-func Interp(input []byte) ([]Block, error) {
+func Interpret(input []byte) ([]Block, error) {
 	top, err := parse(input)
 	if err != nil {
 		return nil, err
@@ -28,9 +28,9 @@ func Interp(input []byte) ([]Block, error) {
 	return eval(&top)
 }
 
-// Save saves the blocks into the dest, which needs to be a pointer
+// AppendBlocks adds the blocks to the dest, which needs to be a pointer
 // to a slice of structs.
-func Save(dest any, blocks []Block) error {
+func AppendBlocks(dest any, blocks []Block) error {
 	destPtr := reflect.ValueOf(dest)
 	if destPtr.Kind() != reflect.Pointer {
 		return TypeErr("expected pointer to a slice of structs")
@@ -43,7 +43,7 @@ func Save(dest any, blocks []Block) error {
 
 	newSlice := reflect.MakeSlice(destSlice.Type(), len(blocks), len(blocks))
 	for i, block := range blocks {
-		err := save1(newSlice.Index(i), &block)
+		err := copyBlock(newSlice.Index(i), &block)
 		if err != nil {
 			return err
 		}
@@ -53,7 +53,7 @@ func Save(dest any, blocks []Block) error {
 	return nil
 }
 
-func save1(v reflect.Value, block *Block) error {
+func copyBlock(v reflect.Value, block *Block) error {
 	t := v.Type()
 	if st, bt := t.Name(), block.Type; !unsnakeEq(st, bt) {
 		return StructErr(

@@ -10,7 +10,7 @@ import (
 var basicInput []byte
 
 func basicRun() ([]Block, error) {
-	return Interp(basicInput)
+	return Interpret(basicInput)
 }
 
 func TestBasic(t *testing.T) {

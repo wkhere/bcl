@@ -24,7 +24,7 @@ func TestSimpleSave(t *testing.T) {
 	}
 	var a []Struct1
 
-	err := InterpAndSave(&a, []byte(bcl))
+	err := Unmarshal([]byte(bcl), &a)
 	if err != nil {
 		t.Error(err)
 	}

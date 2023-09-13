@@ -23,7 +23,7 @@ func run(r io.Reader) error {
 		return err
 	}
 
-	res, err := bcl.Interp(buf)
+	res, err := bcl.Interpret(buf)
 	if err != nil {
 		return err
 	}
