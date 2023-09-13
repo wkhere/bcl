@@ -2,6 +2,7 @@ BCL
 ===
 
 [![Build Status](https://github.com/wkhere/bcl/actions/workflows/go.yml/badge.svg)](https://github.com/wkhere/bcl/actions/workflows/go.yml)
+[![Coverage Status](https://coveralls.io/repos/github/wkhere/bcl/badge.svg?branch=master)](https://coveralls.io/github/wkhere/bcl?branch=master)
 
 Basic Configuration Language.
 
