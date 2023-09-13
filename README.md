@@ -59,15 +59,15 @@ Output:
 
 ### TODO
 
-* data types:
+* [ ] data types:
   - [ ] lists
   - [ ] floats
   - [ ] nested blocks?
-* more operators
+* [ ] more operators
 * [ ] string interpolation
 * [ ] `getenv()` builtin
 
-* unmarshalling options:
+* [ ] unmarshalling options:
   - [ ] allow fields to be missing in the target struct
 
 * [ ] port to more programming languages
