@@ -1,8 +1,8 @@
-var syncthing_port = 8384
-var local_start    = 9384
+var service1_default_port    = 8400
+var service1_local_base_port = 9400
 var domain = "foo.org"
 var z0 = -z1 + +0      # forward decl
-var z1 = local_start - syncthing_port
+var z1 = service1_local_base_port - service1_default_port
 var z2 = -1 - (---10/2-1) + z1
 var s  = "sth" + 1 + "-" + domain
 var cond  = true
@@ -10,17 +10,17 @@ var cond2 = false
 var cond_big = not not not not cond
 
 
-tunnel "hosty-syncthing" {
-	local_port  = local_start
-	remote_port = syncthing_port
+tunnel "hostyhost-service1" {
+	local_port  = service1_local_base_port
+	remote_port = service1_default_port
 	host = "hosty." + domain
 	enabled = not cond2
 }
 
-tunnel "another-syncthing" {
+service1 "another-service1" {
 	host = "yet" + "." + "another.com"
-	local_port  = local_start + 1
-	remote_port = syncthing_port
+	local_port  = service1_local_base_port + 1
+	remote_port = service1_default_port
 	enabled  = cond
 	prepared = true
 	started  = cond_big
