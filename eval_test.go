@@ -13,16 +13,15 @@ type evaltc struct {
 	errs     string
 }
 
-type emap map[string]any
+// shorter syntax in literals:
+type emap = map[string]any
+type bb = []Block
 
 func evalid(in string, bb []Block) evaltc { return evaltc{in, nil, bb, ""} }
 func eerror(in string, e string) evaltc   { return evaltc{in, nil, bb{}, e} }
 
 func evalidRaw(in nTop, bb []Block) evaltc { return evaltc{"", &in, bb, ""} }
 func eerrorRaw(in nTop, e string) evaltc   { return evaltc{"", &in, bb{}, e} }
-
-// shorter syntax in tab literals:
-type bb = []Block
 
 var evalTab = []evaltc{
 	evalid(``, bb{}),
