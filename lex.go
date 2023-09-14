@@ -73,7 +73,7 @@ func (l *lexer) emit(t itemType) {
 
 func (l *lexer) emitError(format string, args ...any) {
 	l.items <- item{
-		typ:  ERR_LEX,
+		typ:  tERR,
 		err:  fmt.Errorf(format, args...),
 		line: l.line,
 	}
@@ -197,10 +197,10 @@ func (l *lexer) errorf(format string, args ...any) stateFn {
 // state functions and related data
 
 var keywords = map[string]itemType{
-	"var":   K_VAR,
-	"true":  K_TRUE,
-	"false": K_FALSE,
-	"not":   K_NOT,
+	"var":   tVAR,
+	"true":  tTRUE,
+	"false": tFALSE,
+	"not":   tNOT,
 }
 
 const (
@@ -212,7 +212,7 @@ func lexStart(l *lexer) stateFn {
 
 	switch r := l.next(); {
 	case r == eof:
-		l.emit(EOF)
+		l.emit(tEOF)
 		// ^^is it needed as a terminator in the yparser?
 		// if not then l.ignore() it
 		return nil
@@ -267,7 +267,7 @@ loop:
 			case isKey:
 				l.emit(key)
 			default:
-				l.emit(IDENT)
+				l.emit(tIDENT)
 			}
 			break loop
 		}
@@ -277,7 +277,7 @@ loop:
 
 func lexInt(l *lexer) stateFn {
 	l.acceptRunFromSet(digits)
-	l.emit(INT)
+	l.emit(tINT)
 	return lexStart
 }
 
@@ -299,6 +299,6 @@ loop:
 			break loop
 		}
 	}
-	l.emit(STR)
+	l.emit(tSTR)
 	return lexStart
 }

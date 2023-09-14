@@ -22,13 +22,13 @@ var lexTab = []struct {
 	input string
 	items ii
 }{
-	{"", ii{{EOF, "", nil, 1}}},
-	{"!", ii{{ERR_LEX, "", fmt.Errorf("unknown char %#U", '!'), 1}}},
-	{`"`, ii{{ERR_LEX, "", fmt.Errorf("unterminated quoted string"), 1}}},
-	{"\"\n", ii{{ERR_LEX, "", fmt.Errorf("unterminated quoted string"), 1}}},
-	{"\"\n", ii{{ERR_LEX, "", fmt.Errorf("unterminated quoted string"), 1}}},
-	{`"\`, ii{{ERR_LEX, "", fmt.Errorf("unterminated quoted string"), 1}}},
-	{`"\a`, ii{{ERR_LEX, "", fmt.Errorf("unterminated quoted string"), 1}}},
+	{"", ii{{tEOF, "", nil, 1}}},
+	{"!", ii{{tERR, "", fmt.Errorf("unknown char %#U", '!'), 1}}},
+	{`"`, ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}}},
+	{"\"\n", ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}}},
+	{"\"\n", ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}}},
+	{`"\`, ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}}},
+	{`"\a`, ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}}},
 }
 
 func TestLexer(t *testing.T) {

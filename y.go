@@ -17,38 +17,38 @@ type yySymType struct {
 	expr expr
 }
 
-const INT = 57346
-const STR = 57347
-const IDENT = 57348
-const K_VAR = 57349
-const K_TRUE = 57350
-const K_FALSE = 57351
-const ERR_LEX = 57352
-const EOF = 57353
-const K_NOT = 57354
+const tINT = 57346
+const tSTR = 57347
+const tIDENT = 57348
+const tVAR = 57349
+const tTRUE = 57350
+const tFALSE = 57351
+const tERR = 57352
+const tEOF = 57353
+const tNOT = 57354
 
 var yyToknames = [...]string{
 	"$end",
 	"error",
 	"$unk",
-	"INT",
-	"STR",
+	"tINT",
+	"tSTR",
 	"'{'",
 	"'}'",
 	"'('",
 	"')'",
 	"'='",
-	"IDENT",
-	"K_VAR",
-	"K_TRUE",
-	"K_FALSE",
-	"ERR_LEX",
-	"EOF",
+	"tIDENT",
+	"tVAR",
+	"tTRUE",
+	"tFALSE",
+	"tERR",
+	"tEOF",
 	"'+'",
 	"'-'",
 	"'*'",
 	"'/'",
-	"K_NOT",
+	"tNOT",
 }
 
 var yyStatenames = [...]string{}
