@@ -66,6 +66,11 @@ type S struct {
 	X    int
 }
 
+type S2 struct {
+	Name string
+	X    int `bcl:"y"`
+}
+
 var reflectTab = []reflecttc{
 	rvalid(``, &rr{}, &rr{}),
 
@@ -98,8 +103,10 @@ var reflectTab = []reflecttc{
 
 	rerror(``, []S{}, "expected pointer to a slice of structs"),
 
-	rvalid(`s "foo"{x=10}`, &[]S{}, &[]S{{Name: "foo", X: 10}}),
-	rerror(`y "foo"{x=10}`, &[]S{}, "mismatch: struct type S, block type y"),
+	rvalid(`s "foo"{x=1}`, &[]S{}, &[]S{{Name: "foo", X: 1}}),
+	rerror(`y "foo"{x=1}`, &[]S{}, "mismatch: struct type S, block type y"),
+	rerror(`s "foo"{y=1}`, &[]S{}, `field mapping for "y" not found in struct`),
+	rvalid(`s2 "foo"{y=1}`, &[]S2{}, &[]S2{{Name: "foo", X: 1}}),
 	rerror(`s "foo"{x=""}`, &[]S{},
 		"type mismatch.+ struct.X has int, block.x has string",
 	),
