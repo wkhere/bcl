@@ -43,7 +43,7 @@ func TestParse(t *testing.T) {
 
 		case err != nil && tc.errs != "":
 			if !strings.Contains(err.Error(), tc.errs) {
-				t.Errorf("tc#%d error mismatch\nhave %v\nwant pattern %q",
+				t.Errorf("tc#%d error mismatch\nhave %v\nwant %s",
 					i, err, tc.errs,
 				)
 			}
