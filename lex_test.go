@@ -18,17 +18,35 @@ func (s istream) collect() (a []item) {
 // shorter syntax in tab literals:
 type ii = []item
 
+func teof(line int) item { return item{tEOF, "", nil, line} }
+
 var lexTab = []struct {
 	input string
 	items ii
 }{
-	{"", ii{{tEOF, "", nil, 1}}},
+	{"", ii{teof(1)}},
+
 	{"!", ii{{tERR, "", fmt.Errorf("unknown char %#U", '!'), 1}}},
+
 	{`"`, ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}}},
 	{"\"\n", ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}}},
 	{"\"\n", ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}}},
 	{`"\`, ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}}},
 	{`"\a`, ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}}},
+
+	{`1234`, ii{{tINT, "1234", nil, 1}, teof(1)}},
+	{`12.34`, ii{{tFLOAT, "12.34", nil, 1}, teof(1)}},
+	{`1234e10`, ii{{tFLOAT, "1234e10", nil, 1}, teof(1)}},
+	{`1234E10`, ii{{tFLOAT, "1234E10", nil, 1}, teof(1)}},
+	{`1234e+10`, ii{{tFLOAT, "1234e+10", nil, 1}, teof(1)}},
+	{`1234e-10`, ii{{tFLOAT, "1234e-10", nil, 1}, teof(1)}},
+	{`12.34e10`, ii{{tFLOAT, "12.34e10", nil, 1}, teof(1)}},
+	{`12.34e+10`, ii{{tFLOAT, "12.34e+10", nil, 1}, teof(1)}},
+	{`12.34e-10`, ii{{tFLOAT, "12.34e-10", nil, 1}, teof(1)}},
+	{`12.`, ii{{tERR, "", fmt.Errorf("need more digits after a dot"), 1}}},
+	{`12e`, ii{{tERR, "", fmt.Errorf("need more digits for an exponent"), 1}}},
+
+	{`0x10`, ii{{tINT, "0x10", nil, 1}, teof(1)}},
 }
 
 func TestLexer(t *testing.T) {

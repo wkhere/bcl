@@ -110,12 +110,12 @@ func (l *lexer) backup() {
 	}
 }
 
-// // peek returns but does not consume the next rune in the input.
-// func (l *lexer) peek() rune {
-// 	r := l.next()
-// 	l.backup()
-// 	return r
-// }
+// peek returns but does not consume the next rune in the input.
+func (l *lexer) peek() rune {
+	r := l.next()
+	l.backup()
+	return r
+}
 
 // ignore skips over the pending input before this point.
 func (l *lexer) ignore() {
@@ -124,24 +124,26 @@ func (l *lexer) ignore() {
 
 // input-consuming helpers
 
-// // accept consumes the next rune if it's from the valid set.
-// func (l *lexer) acceptOne(valid string) bool {
-// 	if strings.ContainsRune(valid, l.next()) {
-// 		return true
-// 	}
-// 	l.backup()
-// 	return false
-// }
-
-// acceptRunFromSet consumes a run of runes from the valid set.
-func (l *lexer) acceptRunFromSet(valid string) {
-	for strings.ContainsRune(valid, l.next()) {
+// accept consumes the next rune if it's from the valid set.
+func (l *lexer) accept(valid string) bool {
+	if strings.ContainsRune(valid, l.next()) {
+		return true
 	}
 	l.backup()
+	return false
 }
 
-// acceptRun consumes a run of runes satisfying the predicate.
-func (l *lexer) acceptRun(pred func(rune) bool) {
+// acceptRun consumes a run of runes from the valid set.
+func (l *lexer) acceptRun(valid string) (accepted bool) {
+	for strings.ContainsRune(valid, l.next()) {
+		accepted = true
+	}
+	l.backup()
+	return accepted
+}
+
+// acceptRunFunc consumes a run of runes satisfying the predicate.
+func (l *lexer) acceptRunFunc(pred func(rune) bool) {
 	for pred(l.next()) {
 	}
 	l.backup()
@@ -207,6 +209,7 @@ var keywords = map[string]itemType{
 
 const (
 	digits      = "0123456789"
+	hexdigits   = "0123456789abcdefABCDEF"
 	lineComment = '#'
 )
 
@@ -230,14 +233,14 @@ func lexStart(l *lexer) stateFn {
 	case isAlpha(r) || r == '_':
 		return lexIdentifier
 	case isDigit(r):
-		return lexInt
+		return lexNumber
 	default:
 		return l.errorf("unknown char %#U", r)
 	}
 }
 
 func lexSpace(l *lexer) stateFn {
-	l.acceptRun(isSpace)
+	l.acceptRunFunc(isSpace)
 	l.ignore()
 	return lexStart
 }
@@ -277,9 +280,41 @@ loop:
 	return lexStart
 }
 
-func lexInt(l *lexer) stateFn {
-	l.acceptRunFromSet(digits)
+func lexNumber(l *lexer) stateFn {
+	l.backup()
+	if l.accept("0") && l.accept("xX") {
+		return lexHex
+	}
+	l.acceptRun(digits)
+	if r := l.peek(); r == '.' || r == 'e' || r == 'E' {
+		return lexFloat
+	}
 	l.emit(tINT)
+	return lexStart
+}
+
+func lexHex(l *lexer) stateFn {
+	l.acceptRun(hexdigits)
+	// omitting hex floats
+	l.emit(tINT)
+	return lexStart
+}
+
+func lexFloat(l *lexer) stateFn {
+	if l.accept(".") {
+		ok := l.acceptRun(digits)
+		if !ok {
+			return l.errorf("need more digits after a dot")
+		}
+	}
+	if l.accept("eE") {
+		l.accept("+-")
+		ok := l.acceptRun(digits)
+		if !ok {
+			return l.errorf("need more digits for an exponent")
+		}
+	}
+	l.emit(tFLOAT)
 	return lexStart
 }
 

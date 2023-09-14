@@ -18,6 +18,7 @@ import (
 }
 
 %token tINT
+%token tFLOAT
 %token tSTR
 %token '{'
 %token '}'
