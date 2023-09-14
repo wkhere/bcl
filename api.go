@@ -42,6 +42,13 @@ func Interpret(input []byte) ([]Block, error) {
 // the snake underscores are simply removed and then the strings are compared,
 // case-insentitive.
 //
+// The name corresponcence can be also set explicitly,
+// by typing a tag keyed `bcl` at the struct field:
+//
+//	type Record struct {
+//		Status string `bcl:"my_status"`
+//	}
+//
 // The lack of corresponding fields in the Go struct is reported as error.
 // So is type mismatch of the fields.
 func AppendBlocks(dest any, blocks []Block) error {
