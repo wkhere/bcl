@@ -64,6 +64,11 @@ func atoi(s string) int {
 	return int(x)
 }
 
+func atof(s string) float64 {
+	x, _ := strconv.ParseFloat(s, 64)
+	return x
+}
+
 func unquote(s string) (unquoted string) {
 	unquoted, _ = strconv.Unquote(s)
 	return
@@ -77,54 +82,55 @@ var yyExca = [...]int8{
 
 const yyPrivate = 57344
 
-const yyLast = 50
+const yyLast = 51
 
 var yyAct = [...]int8{
-	12, 38, 24, 25, 26, 27, 26, 27, 7, 24,
-	25, 26, 27, 5, 4, 8, 39, 10, 28, 29,
-	30, 31, 11, 9, 16, 34, 35, 36, 37, 23,
-	32, 14, 6, 15, 33, 3, 20, 2, 1, 13,
-	40, 21, 22, 0, 0, 17, 18, 0, 0, 19,
+	12, 39, 25, 26, 27, 28, 27, 28, 7, 25,
+	26, 27, 28, 5, 33, 4, 8, 11, 34, 29,
+	30, 31, 32, 40, 10, 9, 35, 36, 37, 38,
+	17, 24, 14, 15, 16, 6, 3, 21, 2, 1,
+	13, 41, 22, 23, 0, 0, 18, 19, 0, 0,
+	20,
 }
 
 var yyPact = [...]int16{
-	-1000, -1000, 1, -4, 3, -1000, -1000, 17, 6, 15,
-	27, -1000, -16, -1000, -1000, -1000, -1000, 27, 27, 27,
-	27, -1000, -1000, 22, 27, 27, 27, 27, -1000, -1000,
-	-1000, -9, -1000, 5, -14, -14, -1000, -1000, -1000, 27,
-	-16,
+	-1000, -1000, 2, -4, 4, -1000, -1000, 19, 13, 10,
+	28, -1000, -16, -1000, -1000, -1000, -1000, -1000, 28, 28,
+	28, 28, -1000, -1000, 6, 28, 28, 28, 28, -1000,
+	-1000, -1000, -9, -1000, 12, -14, -14, -1000, -1000, -1000,
+	28, -16,
 }
 
 var yyPgo = [...]int8{
-	0, 38, 37, 35, 0, 32, 29, 24,
+	0, 39, 38, 36, 0, 35, 31, 30,
 }
 
 var yyR1 = [...]int8{
 	0, 1, 2, 2, 3, 3, 5, 6, 6, 4,
 	4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-	4, 7, 7,
+	4, 4, 7, 7,
 }
 
 var yyR2 = [...]int8{
 	0, 3, 0, 5, 0, 2, 5, 0, 4, 1,
-	1, 1, 1, 3, 3, 3, 3, 2, 2, 2,
-	3, 1, 1,
+	1, 1, 1, 1, 3, 3, 3, 3, 2, 2,
+	2, 3, 1, 1,
 }
 
 var yyChk = [...]int16{
 	-1000, -1, -2, -3, 13, 17, -5, 12, 12, 6,
-	11, 7, -4, 12, 4, 6, -7, 18, 19, 22,
-	9, 14, 15, -6, 18, 19, 20, 21, -4, -4,
-	-4, -4, 8, 12, -4, -4, -4, -4, 10, 11,
-	-4,
+	11, 7, -4, 12, 4, 5, 6, -7, 18, 19,
+	22, 9, 14, 15, -6, 18, 19, 20, 21, -4,
+	-4, -4, -4, 8, 12, -4, -4, -4, -4, 10,
+	11, -4,
 }
 
 var yyDef = [...]int8{
 	2, -2, 4, 0, 0, 1, 5, 0, 0, 0,
-	0, 7, 3, 9, 10, 11, 12, 0, 0, 0,
-	0, 21, 22, 0, 0, 0, 0, 0, 17, 18,
-	19, 0, 6, 0, 13, 14, 15, 16, 20, 0,
-	8,
+	0, 7, 3, 9, 10, 11, 12, 13, 0, 0,
+	0, 0, 22, 23, 0, 0, 0, 0, 0, 18,
+	19, 20, 0, 6, 0, 14, 15, 16, 17, 21,
+	0, 8,
 }
 
 var yyTok1 = [...]int8{
@@ -548,59 +554,64 @@ yydefault:
 	case 11:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
-			yyVAL.expr = nStrLit(unquote(yyDollar[1].s))
+			yyVAL.expr = nFloatLit(atof(yyDollar[1].s))
 		}
 	case 12:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
-			yyVAL.expr = yyDollar[1].expr
+			yyVAL.expr = nStrLit(unquote(yyDollar[1].s))
 		}
 	case 13:
-		yyDollar = yyS[yypt-3 : yypt+1]
+		yyDollar = yyS[yypt-1 : yypt+1]
 		{
-			yyVAL.expr = nBinOp{"+", yyDollar[1].expr, yyDollar[3].expr}
+			yyVAL.expr = yyDollar[1].expr
 		}
 	case 14:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = nBinOp{"-", yyDollar[1].expr, yyDollar[3].expr}
+			yyVAL.expr = nBinOp{"+", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 15:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = nBinOp{"*", yyDollar[1].expr, yyDollar[3].expr}
+			yyVAL.expr = nBinOp{"-", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 16:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = nBinOp{"/", yyDollar[1].expr, yyDollar[3].expr}
+			yyVAL.expr = nBinOp{"*", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 17:
-		yyDollar = yyS[yypt-2 : yypt+1]
+		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = yyDollar[2].expr
+			yyVAL.expr = nBinOp{"/", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 18:
 		yyDollar = yyS[yypt-2 : yypt+1]
 		{
-			yyVAL.expr = nUnOp{"-", yyDollar[2].expr}
+			yyVAL.expr = yyDollar[2].expr
 		}
 	case 19:
 		yyDollar = yyS[yypt-2 : yypt+1]
 		{
-			yyVAL.expr = nUnOp{"not", yyDollar[2].expr}
+			yyVAL.expr = nUnOp{"-", yyDollar[2].expr}
 		}
 	case 20:
+		yyDollar = yyS[yypt-2 : yypt+1]
+		{
+			yyVAL.expr = nUnOp{"not", yyDollar[2].expr}
+		}
+	case 21:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
 			yyVAL.expr = yyDollar[2].expr
 		}
-	case 21:
+	case 22:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
 			yyVAL.expr = nBoolLit(true)
 		}
-	case 22:
+	case 23:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
 			yyVAL.expr = nBoolLit(false)

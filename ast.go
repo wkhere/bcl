@@ -9,9 +9,10 @@ type (
 
 	op string
 
-	nIntLit  int
-	nStrLit  string
-	nBoolLit bool
+	nIntLit   int
+	nFloatLit float64
+	nStrLit   string
+	nBoolLit  bool
 
 	nVarRef ident
 

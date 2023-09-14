@@ -46,6 +46,7 @@ var evalTab = []evaltc{
 	eerror(`var s=2/"a"`, `op "/": invalid types: int, string`),
 
 	evalid(`var x=-1  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": -1}}}),
+	evalid(`var x=--1  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": 1}}}),
 	eerror(`var x=-"a"`, `op "-": invalid type: string`),
 
 	evalid(`var x=not false  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
@@ -58,6 +59,32 @@ var evalTab = []evaltc{
 	eerror(`var x=1+(not 1)`, `op "not": invalid type: int`),
 	eerror(`var x=(not 1)+1`, `op "not": invalid type: int`),
 
+	evalid(`var x=1.23    blk "b" {x=x}`, bb{{"blk", "b", emap{"x": +1.23}}}),
+	evalid(`var x=--1.23  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": +1.23}}}),
+	evalid(`var x=-1.23   blk "b" {x=x}`, bb{{"blk", "b", emap{"x": -1.23}}}),
+	evalid(`var x=1+1.23  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": +2.23}}}),
+	evalid(`var x=1.23+1  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": +2.23}}}),
+	evalid(`var x=1.2+1.5 blk "b" {x=x}`, bb{{"blk", "b", emap{"x": +2.7}}}),
+	eerror(`var s="a"+2.0  `, `invalid types: string, float64`),
+
+	evalid(`var x=1.2-10  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": -8.8}}}),
+	evalid(`var x=10-1.2  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": +8.8}}}),
+	evalid(`var x=2.5-0.5 blk "b" {x=x}`, bb{{"blk", "b", emap{"x": +2.0}}}),
+	eerror(`var s="a"-2.0  `, `invalid types: string, float64`),
+
+	evalid(`var x=10*1.2  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": 12.0}}}),
+	evalid(`var x=1.2*10  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": 12.0}}}),
+	evalid(`var x=1.2*0.5  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": 0.6}}}),
+	eerror(`var s="a"*2.0  `, `invalid types: string, float64`),
+
+	evalid(`var x=10/2.5  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": 4.0}}}),
+	evalid(`var x=1.2/10  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": 0.12}}}),
+	evalid(`var x=1.2/0.5  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": 2.4}}}),
+	eerror(`var x=true/2.0 `, `invalid types: bool, float64`),
+	eerror(`var x=2.0/true `, `invalid types: float64, bool`),
+	eerror(`var s="a"/2.0  `, `invalid types: string, float64`),
+	eerror(`var s=2.0/"a"  `, `invalid types: float64, string`),
+
 	eerrorRaw(
 		nTop{vars: vmap{"a": nUnOp{"@", nIntLit(1)}}},
 		`unknown op "unary @"`,
@@ -67,7 +94,10 @@ var evalTab = []evaltc{
 		`unknown op "binary @"`,
 	),
 
-	eerror(`var x=1/0`, `division by zero`),
+	eerror(`var x=1/0    `, `division by zero`),
+	eerror(`var x=1.0/0  `, `division by zero`),
+	eerror(`var x=1/0.0  `, `division by zero`),
+	eerror(`var x=1.0/0.0`, `division by zero`),
 }
 
 func TestEval(t *testing.T) {

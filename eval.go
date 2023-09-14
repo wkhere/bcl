@@ -99,9 +99,10 @@ func (v nVarRef) eval(env *env) (any, error) {
 	}
 }
 
-func (x nIntLit) eval(env *env) (any, error)  { return int(x), nil }
-func (s nStrLit) eval(env *env) (any, error)  { return string(s), nil }
-func (b nBoolLit) eval(env *env) (any, error) { return bool(b), nil }
+func (x nIntLit) eval(env *env) (any, error)   { return int(x), nil }
+func (x nFloatLit) eval(env *env) (any, error) { return float64(x), nil }
+func (s nStrLit) eval(env *env) (any, error)   { return string(s), nil }
+func (b nBoolLit) eval(env *env) (any, error)  { return bool(b), nil }
 
 func (o nUnOp) eval(env *env) (any, error) {
 	x, err := o.a.eval(env)
@@ -113,6 +114,8 @@ func (o nUnOp) eval(env *env) (any, error) {
 	case "-":
 		switch v := x.(type) {
 		case int:
+			return -v, nil
+		case float64:
 			return -v, nil
 		}
 		return nil, &errOpInvalidType{o.op, x}
@@ -146,6 +149,16 @@ func (o nBinOp) eval(env *env) (any, error) {
 			switch rv := r.(type) {
 			case int:
 				return lv + rv, nil
+			case float64:
+				return float64(lv) + rv, nil
+			}
+
+		case float64:
+			switch rv := r.(type) {
+			case float64:
+				return lv + rv, nil
+			case int:
+				return lv + float64(rv), nil
 			}
 
 		case string:
@@ -165,8 +178,19 @@ func (o nBinOp) eval(env *env) (any, error) {
 			switch rv := r.(type) {
 			case int:
 				return lv - rv, nil
+			case float64:
+				return float64(lv) - rv, nil
+			}
+
+		case float64:
+			switch rv := r.(type) {
+			case float64:
+				return lv - rv, nil
+			case int:
+				return lv - float64(rv), nil
 			}
 		}
+
 		return nil, &errOpInvalidTypes{o.op, l, r}
 
 	case "*":
@@ -175,6 +199,16 @@ func (o nBinOp) eval(env *env) (any, error) {
 			switch rv := r.(type) {
 			case int:
 				return lv * rv, nil
+			case float64:
+				return float64(lv) * rv, nil
+			}
+
+		case float64:
+			switch rv := r.(type) {
+			case float64:
+				return lv * rv, nil
+			case int:
+				return lv * float64(rv), nil
 			}
 
 		case string:
@@ -195,8 +229,28 @@ func (o nBinOp) eval(env *env) (any, error) {
 					return nil, fmt.Errorf("division by zero")
 				}
 				return lv / rv, nil
+			case float64:
+				if rv == 0.0 {
+					return nil, fmt.Errorf("division by zero")
+				}
+				return float64(lv) / rv, nil
+			}
+
+		case float64:
+			switch rv := r.(type) {
+			case float64:
+				if rv == 0.0 {
+					return nil, fmt.Errorf("division by zero")
+				}
+				return lv / rv, nil
+			case int:
+				if rv == 0 {
+					return nil, fmt.Errorf("division by zero")
+				}
+				return lv / float64(rv), nil
 			}
 		}
+
 		return nil, &errOpInvalidTypes{o.op, l, r}
 
 	default:

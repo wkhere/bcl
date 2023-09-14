@@ -67,6 +67,7 @@ fields: /* empty */         { $$.blk.fields = make(map[ident]expr, 4) }
 expr:
       tIDENT                 { $$.expr = nVarRef(ident($1.s)) }
     | tINT                   { $$.expr = nIntLit(atoi($1.s)) }
+    | tFLOAT                 { $$.expr = nFloatLit(atof($1.s)) }
     | tSTR                   { $$.expr = nStrLit(unquote($1.s)) }
     | bool_lit              { $$.expr = $1.expr }
     | expr '+' expr         { $$.expr = nBinOp{"+", $1.expr, $3.expr} }
@@ -86,6 +87,11 @@ bool_lit:
 func atoi(s string) int {
     x, _ := strconv.ParseInt(s, 0, 64)
     return int(x)
+}
+
+func atof(s string) float64 {
+    x, _ := strconv.ParseFloat(s, 64)
+    return x
 }
 
 func unquote(s string) (unquoted string) {
