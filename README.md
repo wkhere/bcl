@@ -51,7 +51,7 @@ fmt.Printf("%+v\n", config)
 ```
 Output:
 ```
-[{Name:"myservice-prod" LocalPort:9401 RemotePort:8400 Host:prod.internal.acme.com Enabled:true}]
+[{Name:myservice-prod LocalPort:9401 RemotePort:8400 Host:prod.internal.acme.com Enabled:true}]
 ```
 ### Expressions, data conversions
 
