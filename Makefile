@@ -18,8 +18,8 @@ bench: generated
 	 go test -bench=. -count=$(cnt) -benchmem .
 cnt=5
 
-cover:
+cov:
 	go test -coverprofile=cov .
-	go tool cover -html=cov -o cov.html && browse cov.html
+	go tool cover -html=cov -o cov.html
 
-.PHONY: default generated test bench cover clean
+.PHONY: default generated test bench cov clean
