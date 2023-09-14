@@ -519,7 +519,7 @@ yydefault:
 		{
 			yyVAL.blk = nBlock{
 				typ:    ident(yyDollar[1].s),
-				name:   nStrLit(yyDollar[2].s),
+				name:   nStrLit(unquote(yyDollar[2].s)),
 				fields: yyDollar[4].blk.fields,
 			}
 		}

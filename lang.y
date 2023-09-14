@@ -55,7 +55,7 @@ block:
     IDENT STR '{' fields '}' {
                                 $$.blk = nBlock{
                                     typ:    ident($1.s),
-                                    name:   nStrLit($2.s),
+                                    name:   nStrLit(unquote($2.s)),
                                     fields: $4.blk.fields,
                                 }
                             }
