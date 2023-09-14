@@ -50,6 +50,7 @@ var lexTab = []struct {
 	{`12e`, ii{{tERR, "", fmt.Errorf("need more digits for an exponent"), 1}}},
 
 	{`0x10`, ii{{tINT, "0x10", nil, 1}, teof(1)}},
+	{`0X10`, ii{{tINT, "0X10", nil, 1}, teof(1)}},
 	{`0x10.0`, ii{{tINT, "0x10", nil, 1}, terrchar('.', 1)}},
 }
 
