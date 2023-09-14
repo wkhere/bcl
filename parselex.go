@@ -32,13 +32,9 @@ func (l *lexer) Error(e string) {
 		if approx == "" {
 			approx = l.prevItem.val
 		}
-		l.err = fmt.Errorf(
-			"line %d: %s near %q", l.line, e, approx,
-		)
+		l.err = fmt.Errorf("line %d: %s near %q", l.line, e, approx)
 	} else {
 		// error from lex
-		l.err = fmt.Errorf(
-			"line %d: %s: %s", l.line, e, l.lastItem.err,
-		)
+		l.err = fmt.Errorf("line %d: %s: %s", l.line, e, l.lastItem.err)
 	}
 }
