@@ -34,6 +34,7 @@ func newLexer(input string) *lexer {
 // The parser calls nextItem to get the actual item.
 func (l *lexer) nextItem() item {
 	item := <-l.items
+	l.prevItem = l.lastItem
 	l.lastItem = item
 	return item
 }
@@ -49,6 +50,7 @@ type lexer struct {
 	items      chan item
 	line       int
 	// interface with parser:
+	prevItem item
 	lastItem item
 	err      error
 }

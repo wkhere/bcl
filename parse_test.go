@@ -18,9 +18,9 @@ func perror(inp string, e string) parsetc { return parsetc{inp, nTop{}, e} }
 
 var parseTab = []parsetc{
 	pvalid(``, nTop{vars: vmap{}}),
+
 	perror(`!`, `line 1: syntax error: unknown char`),
-	perror(`foo `, `line 1: syntax error near ""`),
-	// ^^unfortunately error doesn't show prev token
+	perror(`foo `, `line 1: syntax error near "foo"`),
 	perror(`foo bar`, `line 1: syntax error near "bar"`),
 
 	pvalid(`var a = 1`, nTop{vars: vmap{"a": nIntLit(1)}}),
@@ -31,6 +31,8 @@ var parseTab = []parsetc{
 	perror(`+ 1`, `line 1: syntax error near "+"`),
 	perror(`a + 1`, `line 1: syntax error near "+"`),
 	perror(`var a + 1`, `line 1: syntax error near "+"`),
+
+	perror(`var a=1aaa`, `line 1: syntax error near "aaa"`),
 }
 
 func TestParse(t *testing.T) {

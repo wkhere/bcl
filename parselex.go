@@ -28,8 +28,12 @@ func (l *lexer) Lex(lval *yySymType) int {
 func (l *lexer) Error(e string) {
 	if l.lastItem.err == nil {
 		// error from yacc
+		approx := l.lastItem.val
+		if approx == "" {
+			approx = l.prevItem.val
+		}
 		l.err = fmt.Errorf(
-			"line %d: %s near %q", l.line, e, l.lastItem.val,
+			"line %d: %s near %q", l.line, e, approx,
 		)
 	} else {
 		// error from lex
