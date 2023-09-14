@@ -67,6 +67,8 @@ var evalTab = []evaltc{
 		nTop{vars: vmap{"a": nBinOp{"@", nIntLit(1), nIntLit(2)}}},
 		`unknown op "binary @"`,
 	),
+
+	eerror(`var x=1/0`, `division by zero`),
 }
 
 func TestEval(t *testing.T) {

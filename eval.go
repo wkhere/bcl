@@ -191,6 +191,9 @@ func (o nBinOp) eval(env *env) (any, error) {
 		case int:
 			switch rv := r.(type) {
 			case int:
+				if rv == 0 {
+					return nil, fmt.Errorf("division by zero")
+				}
 				return lv / rv, nil
 			}
 		}

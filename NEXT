@@ -1,6 +1,6 @@
 - add line info from lex to parse/eval errors
 
-- handle division by zero
++ handle division by zero
 
 - bin ops: 
 	== !=      # for int str bool
