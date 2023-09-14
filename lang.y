@@ -65,18 +65,18 @@ fields: /* empty */         { $$.blk.fields = make(map[ident]expr, 4) }
     | fields tIDENT '=' expr { $$.blk.fields[ident($2.s)] = $4.expr }
 
 expr:
-      tIDENT                 { $$.expr = nVarRef(ident($1.s)) }
-    | tINT                   { $$.expr = nIntLit(atoi($1.s)) }
-    | tFLOAT                 { $$.expr = nFloatLit(atof($1.s)) }
-    | tSTR                   { $$.expr = nStrLit(unquote($1.s)) }
+      tIDENT                { $$.expr = nVarRef(ident($1.s)) }
+    | tINT                  { $$.expr = nIntLit(atoi($1.s)) }
+    | tFLOAT                { $$.expr = nFloatLit(atof($1.s)) }
+    | tSTR                  { $$.expr = nStrLit(unquote($1.s)) }
     | bool_lit              { $$.expr = $1.expr }
     | expr '+' expr         { $$.expr = nBinOp{"+", $1.expr, $3.expr} }
     | expr '-' expr         { $$.expr = nBinOp{"-", $1.expr, $3.expr} }
     | expr '*' expr         { $$.expr = nBinOp{"*", $1.expr, $3.expr} }
     | expr '/' expr         { $$.expr = nBinOp{"/", $1.expr, $3.expr} }
-    | '+' expr %prec tNOT  { $$.expr = $2.expr }    /* NOP */
-    | '-' expr %prec tNOT  { $$.expr = nUnOp{"-",   $2.expr} }
-    | tNOT expr            { $$.expr = nUnOp{"not", $2.expr} }
+    | '+' expr %prec tNOT   { $$.expr = $2.expr }    /* NOP */
+    | '-' expr %prec tNOT   { $$.expr = nUnOp{"-",   $2.expr} }
+    | tNOT expr             { $$.expr = nUnOp{"not", $2.expr} }
     | '(' expr ')'          { $$.expr = $2.expr }
 
 bool_lit:
