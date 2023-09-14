@@ -6,17 +6,17 @@ import (
 	"testing"
 )
 
-type parseTC struct {
+type parsetc struct {
 	input string
 	top   nTop
 	errs  string
 }
 type vmap = map[ident]expr
 
-func pvalid(inp string, top nTop) parseTC { return parseTC{inp, top, ""} }
-func perror(inp string, e string) parseTC { return parseTC{inp, nTop{}, e} }
+func pvalid(inp string, top nTop) parsetc { return parsetc{inp, top, ""} }
+func perror(inp string, e string) parsetc { return parsetc{inp, nTop{}, e} }
 
-var parseTab = []parseTC{
+var parseTab = []parsetc{
 	pvalid(``, nTop{vars: vmap{}}),
 	perror(`!`, `line 1: syntax error: unknown char`),
 	perror(`foo `, `line 1: syntax error near ""`),
