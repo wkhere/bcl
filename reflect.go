@@ -64,13 +64,17 @@ func copyBlock(v reflect.Value, block *Block) error {
 			)
 		}
 		if !f.IsExported() {
-			return StructErr(fmt.Sprintf("found field %q but is unexported", f.Name))
+			return StructErr(
+				fmt.Sprintf("found field %q but is unexported", f.Name),
+			)
 		}
 
 		vx := reflect.ValueOf(x)
 		if st, bt := f.Type, vx.Type(); st != bt {
 			return StructErr(
-				fmt.Sprintf("type mismatch for the mapped field: struct.%s has %s, block.%s has %s",
+				fmt.Sprintf(
+					"type mismatch for the mapped field: "+
+						"struct.%s has %s, block.%s has %s",
 					f.Name, st, name, bt,
 				),
 			)
