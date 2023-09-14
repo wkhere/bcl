@@ -67,10 +67,10 @@ Output:
 * [ ] more operators
 * [ ] string interpolation
 * [ ] `getenv()` builtin
-
 * [ ] unmarshalling options:
   * [ ] allow fields to be missing in the target struct
-
+  * [ ] allow struct type to be named differently than block type
+        (at runtime, without struct tags)
 * [ ] port to more programming languages
 
 
