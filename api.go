@@ -18,7 +18,7 @@ func Unmarshal(input []byte, dest any) error {
 }
 
 // Block is a dynamic result of BCL interpretation. It can be put into
-// a static structure via AppendBlocks.
+// a static structure via [AppendBlocks].
 type Block struct {
 	Type, Name string
 	Fields     map[string]any
