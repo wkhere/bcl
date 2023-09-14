@@ -17,14 +17,14 @@ func Unmarshal(input []byte, dest any) error {
 	return AppendBlocks(dest, res)
 }
 
-// Block is a dynamic result of BCL interpretation. It can be put into
-// a static structure via [AppendBlocks].
+// Block is a dynamic result of running BCL [Interpret].
+// It can be put into a static structure via [AppendBlocks].
 type Block struct {
 	Type, Name string
 	Fields     map[string]any
 }
 
-// Interpret parses and evaluates the input, creating Blocks.
+// Interpret parses and evaluates the BCL input, creating Blocks.
 func Interpret(input []byte) ([]Block, error) {
 	top, err := parse(input)
 	if err != nil {
