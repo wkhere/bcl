@@ -31,7 +31,7 @@ func appendBlocks(dest any, blocks []Block) error {
 
 func copyBlock(v reflect.Value, block *Block) error {
 	t := v.Type()
-	if st, bt := t.Name(), block.Type; !unsnakeEq(st, bt) {
+	if st, bt := t.Name(), block.Type; st != "" && !unsnakeEq(st, bt) {
 		return StructErr(
 			fmt.Sprintf("mismatch: struct type %s, block type %s", st, bt),
 		)
