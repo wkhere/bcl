@@ -59,9 +59,9 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-func atoi(s string) (x int) {
-	x, _ = strconv.Atoi(s)
-	return
+func atoi(s string) int {
+	x, _ := strconv.ParseInt(s, 0, 64)
+	return int(x)
 }
 
 func unquote(s string) (unquoted string) {

@@ -33,6 +33,10 @@ var parseTab = []parsetc{
 	perror(`var a + 1`, `line 1: syntax error near "+"`),
 
 	perror(`var a=1aaa`, `line 1: syntax error near "aaa"`),
+
+	pvalid(`var a=0xfce2`, top1var("a", nIntLit(64738))),
+	pvalid(`var a=0xFCE2`, top1var("a", nIntLit(64738))),
+	pvalid(`var a=0XFCE2`, top1var("a", nIntLit(64738))),
 }
 
 func TestParse(t *testing.T) {
