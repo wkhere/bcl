@@ -8,7 +8,7 @@ import (
 
 // Unmarshal interprets the BCL input, and stores the result in dest,
 // which should be a slice of structs.
-// See AppendBlocks for a struct format.
+// See [AppendBlocks] for a struct format.
 func Unmarshal(input []byte, dest any) error {
 	res, err := Interpret(input)
 	if err != nil {
