@@ -16,6 +16,8 @@ type vmap = map[ident]expr
 func pvalid(inp string, top nTop) parsetc { return parsetc{inp, top, ""} }
 func perror(inp string, e string) parsetc { return parsetc{inp, nTop{}, e} }
 
+func top1var(name ident, expr expr) nTop { return nTop{vars: vmap{name: expr}} }
+
 var parseTab = []parsetc{
 	pvalid(``, nTop{vars: vmap{}}),
 
@@ -23,10 +25,8 @@ var parseTab = []parsetc{
 	perror(`foo `, `line 1: syntax error near "foo"`),
 	perror(`foo bar`, `line 1: syntax error near "bar"`),
 
-	pvalid(`var a = 1`, nTop{vars: vmap{"a": nIntLit(1)}}),
-	pvalid(`var a = 1 + 2`, nTop{vars: vmap{
-		"a": nBinOp{"+", nIntLit(1), nIntLit(2)},
-	}}),
+	pvalid(`var a = 1`, top1var("a", nIntLit(1))),
+	pvalid(`var a = 1 + 2`, top1var("a", nBinOp{"+", nIntLit(1), nIntLit(2)})),
 
 	perror(`+ 1`, `line 1: syntax error near "+"`),
 	perror(`a + 1`, `line 1: syntax error near "+"`),

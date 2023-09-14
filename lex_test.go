@@ -19,6 +19,9 @@ func (s istream) collect() (a []item) {
 type ii = []item
 
 func teof(line int) item { return item{tEOF, "", nil, line} }
+func terrchar(c rune, line int) item {
+	return item{tERR, "", fmt.Errorf("unknown char %#U", c), line}
+}
 
 var lexTab = []struct {
 	input string
@@ -26,7 +29,7 @@ var lexTab = []struct {
 }{
 	{"", ii{teof(1)}},
 
-	{"!", ii{{tERR, "", fmt.Errorf("unknown char %#U", '!'), 1}}},
+	{"!", ii{terrchar('!', 1)}},
 
 	{`"`, ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}}},
 	{"\"\n", ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}}},
@@ -47,6 +50,7 @@ var lexTab = []struct {
 	{`12e`, ii{{tERR, "", fmt.Errorf("need more digits for an exponent"), 1}}},
 
 	{`0x10`, ii{{tINT, "0x10", nil, 1}, teof(1)}},
+	{`0x10.0`, ii{{tINT, "0x10", nil, 1}, terrchar('.', 1)}},
 }
 
 func TestLexer(t *testing.T) {
