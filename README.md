@@ -25,7 +25,7 @@ but more basic:
 ### Example:
 BCL:
 ```hcl
-var domain = "internal.acme.com"
+var domain = "acme.com"
 var default_port    = 8400
 var local_port_base = default_port + 1000
 
@@ -54,7 +54,7 @@ fmt.Printf("%+v\n", config)
 ```
 Output:
 ```
-[{Name:myservice-prod LocalPort:9401 RemotePort:8400 Host:prod.internal.acme.com Enabled:true MaxLatency:8.5}]
+[{Name:myservice-prod LocalPort:9401 RemotePort:8400 Host:prod.acme.com Enabled:true MaxLatency:8.5}]
 
 ```
 ### Expressions, data conversions
