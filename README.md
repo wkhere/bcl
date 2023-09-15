@@ -55,8 +55,7 @@ fmt.Printf("%+v\n", config)
 ```
 Output:
 ```
-[{Name:myservice-prod LocalPort:9401 RemotePort:8400 Host:prod.acme.com Enabled:true MaxLatency:8.5}]
-
+[{Name:myservice-prod Host:prod.acme.com LocalPort:9401 RemotePort:8400 Enabled:true MaxLatency:8.5}]
 ```
 ### Expressions, data conversions
 
