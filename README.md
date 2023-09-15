@@ -34,6 +34,7 @@ tunnel "myservice-prod" {
 	local_port  = local_port_base + 1
 	remote_port = default_port
 	enabled = true
+	max_latency = 8.5 # [ms]
 }
 ```
 Go:
@@ -42,6 +43,7 @@ type Tunnel struct {
 	Host                  string
 	LocalPort, RemotePort int
 	Enabled               bool
+	MaxLatency            float64
 }
 var config []Tunnel
 
@@ -52,7 +54,8 @@ fmt.Printf("%+v\n", config)
 ```
 Output:
 ```
-[{Name:myservice-prod LocalPort:9401 RemotePort:8400 Host:prod.internal.acme.com Enabled:true}]
+[{Name:myservice-prod LocalPort:9401 RemotePort:8400 Host:prod.internal.acme.com Enabled:true MaxLatency:8.5}]
+
 ```
 ### Expressions, data conversions
 
@@ -61,8 +64,8 @@ Output:
 ### TODO
 
 * [ ] data types:
+  * [x] floats
   * [ ] lists
-  * [ ] floats
   * [ ] nested blocks?
 * [ ] more operators
 * [ ] string interpolation
