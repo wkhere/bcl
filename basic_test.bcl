@@ -8,6 +8,7 @@ var s  = "sth" + 1 + "-" + domain
 var cond  = true
 var cond2 = false
 var cond_big = not not not not cond
+var pi = 3.14159265
 
 
 tunnel "hostyhost-service1" {
@@ -29,4 +30,8 @@ service1 "another-service1" {
 	v = z0
 	x = z2 - z1
 	y = 3 - ---8/4 - (+1-3/2)
+}
+
+just_a_test "test" {
+	almost_pi = pi
 }
