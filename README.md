@@ -40,6 +40,7 @@ tunnel "myservice-prod" {
 Go:
 ```Go
 type Tunnel struct {
+	Name                  string
 	Host                  string
 	LocalPort, RemotePort int
 	Enabled               bool
