@@ -209,7 +209,7 @@ var keywords = map[string]itemType{
 
 const (
 	digits      = "0123456789"
-	hexdigits   = "0123456789abcdefABCDEF"
+	hexdigits   = digits + "abcdefABCDEF"
 	lineComment = '#'
 )
 
