@@ -11,7 +11,7 @@ type Struct1 struct {
 	Field1       int
 	Field2       string
 	Status       bool `bcl:"field3"`
-	AnotherField int
+	AnotherField float64
 	Other        int `foo:"bar" bcl:"other_field"`
 }
 
@@ -21,7 +21,7 @@ func simpleUnmarshal(dest any) error {
 		field1 = 10
 		field2 = "abc"
 		field3 = true
-		another_field = 10
+		another_field = 10.2
 		other_field = 42
 	}`
 	return Unmarshal([]byte(bcl), dest)
