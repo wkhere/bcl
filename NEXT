@@ -1,12 +1,21 @@
-- add line info from lex to parse/eval errors
-
++ make yacc tokens unexported
 + handle division by zero
 
+- add line info from lex to parse/eval errors
+
 - bin ops: 
-	== !=      # for int str bool
-    < > <= >=  # for int str
+	== !=      # for int float str bool
+    < > <= >=  # for int float str
  	and or 	   # for bool, short-circuit
 
-- getenv(str:type), or getenv(str) meaning that result is treated as str
+- builtin functions:
+	- getenv(key) 
+	- simple type conversion
 
-+ make yacc tokens unexported
+- compatibility with HCL-style resources, which look like:
+  resource "type" "name" .... { }
+
+- nested structs/dicts; design carefully
+
+- ability to use reference to other block's field, possibly nested
+
