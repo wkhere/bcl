@@ -1,7 +1,7 @@
 Changelog
 =========
 
-### v0.6.0 (2023-09-18)
+### v0.6.0-dev
 * API change: CopyBlocks, not AppendBlocks, so it copies, not appends
 * introduce this changelog
   (future version tags will not have annotations, desciption of changes
