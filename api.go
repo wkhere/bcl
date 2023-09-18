@@ -20,7 +20,7 @@ type Block struct {
 
 // Interpret parses and evaluates the BCL input, creating Blocks.
 func Interpret(input []byte) ([]Block, error) {
-	top, err := parse(input)
+	top, err := parse(string(input))
 	if err != nil {
 		return nil, err
 

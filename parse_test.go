@@ -41,7 +41,7 @@ var parseTab = []parsetc{
 
 func TestParse(t *testing.T) {
 	for i, tc := range parseTab {
-		top, err := parse([]byte(tc.input))
+		top, err := parse(tc.input)
 
 		switch {
 		case err != nil && tc.errs == "":

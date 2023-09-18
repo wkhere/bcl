@@ -3,8 +3,8 @@ package bcl
 import "fmt"
 
 // external API
-func parse(input []byte) (_ nTop, err error) {
-	l := newLexer(string(input))
+func parse(input string) (_ nTop, err error) {
+	l := newLexer(input)
 	p := yyNewParser()
 	res := p.Parse(l)
 	if res == 0 && l.err == nil {
