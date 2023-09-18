@@ -32,6 +32,7 @@ import (
 %token tERR
 %token tEOF
 
+%nonassoc ':'
 %left  '+' '-'
 %left  '*' '/'
 %right tNOT
@@ -78,6 +79,8 @@ expr:
     | '-' expr %prec tNOT   { $$.expr = nUnOp{"-",   $2.expr} }
     | tNOT expr             { $$.expr = nUnOp{"not", $2.expr} }
     | '(' expr ')'          { $$.expr = $2.expr }
+    | tIDENT '(' expr ')'   { /* builtin functions */ }
+    | expr ':' tIDENT       { /* type coertions */ }
 
 bool_lit:
       tTRUE                { $$.expr = nBoolLit(true) }
