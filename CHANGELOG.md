@@ -6,9 +6,9 @@ Changelog
 * lex: record item's position not line number,
   calculate line numbers only when errors are printed;
   this fixes wrong reporting of line numbers for some parse errors
-* cmd/bcl: read file as well as stdin
+* cmd/bcl: read a file as well as stdin
 * introduce this changelog
-  (future version tags will not have annotations, desciption of changes
+  (future version tags will not have annotations, description of changes
    should go here)
 
 ### v0.5.1
