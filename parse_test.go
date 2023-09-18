@@ -2,6 +2,8 @@ package bcl
 
 import (
 	"reflect"
+	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -41,7 +43,7 @@ var parseTab = []parsetc{
 
 func TestParse(t *testing.T) {
 	for i, tc := range parseTab {
-		top, err := parse([]byte(tc.input))
+		top, err := parse(tc.input)
 
 		switch {
 		case err != nil && tc.errs == "":
@@ -61,6 +63,63 @@ func TestParse(t *testing.T) {
 			if !reflect.DeepEqual(top, tc.top) {
 				t.Errorf("tc#%d mismatch:\nhave %+v\nwant %+v", i, top, tc.top)
 			}
+		}
+	}
+}
+
+func TestParseMultipleLines(t *testing.T) {
+	const (
+		input1 = `
+		var x = 1
+		testBlock "foo" []`
+
+		input2 = `
+		this is wr&%#@%&6ong
+		`
+
+		input3 = `
+		= abc def ghi
+		`
+
+		input4 = `
+		!%^$@%!
+		`
+	)
+
+	var linep = regexp.MustCompile(`^line (\d+):`)
+
+	var tab = []struct {
+		input    string
+		failLine int
+	}{
+		{input1, 3},
+		{input2, 2},
+		{input3, 2},
+		{input4, 2},
+	}
+
+	for i, tc := range tab {
+		_, err := parse(tc.input)
+		if err == nil {
+			t.Errorf("tc#%d no error but expected one", i)
+			continue
+		}
+
+		m := linep.FindStringSubmatch(err.Error())
+		if len(m) == 0 {
+			t.Errorf("tc#%d expected to find line numer in: %v", i, err)
+			continue
+		}
+		line, err2 := strconv.Atoi(m[1])
+		if err2 != nil {
+			t.Errorf("tc#%d can't parse line number in: %v\n%v", i, err, err2)
+			continue
+		}
+		if line != tc.failLine {
+			t.Errorf(
+				"tc#%d mismatch: have line %d with error, want %d; error:\n%v",
+				i, line, tc.failLine, err,
+			)
 		}
 	}
 }

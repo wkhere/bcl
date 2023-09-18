@@ -14,10 +14,10 @@ import (
 type itemType int // yacc tokens
 
 type item struct {
-	typ  itemType
-	val  string
-	err  error // either val or err is set
-	line int
+	typ itemType
+	val string
+	err error // either val or err is set
+	pos int
 }
 
 // newLexer creates new nexer and runs its loop.
@@ -25,7 +25,6 @@ func newLexer(input string) *lexer {
 	l := &lexer{
 		input: input,
 		items: make(chan item, itemsBufSize),
-		line:  1,
 	}
 	go l.run()
 	return l
@@ -48,7 +47,7 @@ type lexer struct {
 	start, pos int
 	width      int
 	items      chan item
-	line       int
+
 	// interface with parser:
 	prevItem item
 	lastItem item
@@ -66,18 +65,18 @@ func (l *lexer) run() {
 
 func (l *lexer) emit(t itemType) {
 	l.items <- item{
-		typ:  t,
-		val:  string(l.input[l.start:l.pos]),
-		line: l.line,
+		typ: t,
+		val: string(l.input[l.start:l.pos]),
+		pos: l.pos,
 	}
 	l.start = l.pos
 }
 
 func (l *lexer) emitError(format string, args ...any) {
 	l.items <- item{
-		typ:  tERR,
-		err:  fmt.Errorf(format, args...),
-		line: l.line,
+		typ: tERR,
+		err: fmt.Errorf(format, args...),
+		pos: l.pos,
 	}
 }
 
@@ -95,9 +94,6 @@ func (l *lexer) next() (r rune) {
 	}
 	r, l.width = utf8.DecodeRuneInString(l.input[l.pos:])
 	l.pos += l.width
-	if r == '\n' {
-		l.line++
-	}
 	return r
 }
 
@@ -105,9 +101,6 @@ func (l *lexer) next() (r rune) {
 // Can be called only once per call of next.
 func (l *lexer) backup() {
 	l.pos -= l.width
-	if l.width == 1 && l.input[l.pos] == '\n' {
-		l.line--
-	}
 }
 
 // peek returns but does not consume the next rune in the input.
@@ -328,9 +321,6 @@ loop:
 			}
 			fallthrough
 		case eof, '\n':
-			if r == '\n' {
-				l.line--
-			}
 			return l.errorf("unterminated quoted string")
 		case '"':
 			break loop
