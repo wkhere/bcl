@@ -1,6 +1,9 @@
 package bcl
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // external API
 func parse(input string) (_ nTop, err error) {
@@ -25,16 +28,44 @@ func (l *lexer) Lex(lval *yySymType) int {
 	return int(item.typ)
 }
 
-func (l *lexer) Error(e string) {
+func (l *lexer) Error(msg string) {
 	if l.lastItem.err == nil {
 		// error from yacc
-		approx := l.lastItem.val
-		if approx == "" {
-			approx = l.prevItem.val
+		approx := l.lastItem
+		if approx.val == "" {
+			approx = l.prevItem
 		}
-		l.err = fmt.Errorf("line %d: %s near %q", l.line, e, approx)
+		l.err = &errNearItem{approx, lineCalc(l.input), msg}
 	} else {
 		// error from lex
-		l.err = fmt.Errorf("line %d: %s: %s", l.line, e, l.lastItem.err)
+		l.err = &errAtItem{l.lastItem, lineCalc(l.input), msg}
 	}
+}
+
+type lineCalc string
+
+func (lc lineCalc) lineAt(pos int) int {
+	return strings.Count(string(lc)[:pos], "\n") + 1
+}
+
+type errNearItem struct {
+	item
+	lineCalc
+	msg string
+}
+
+func (e *errNearItem) Error() string {
+	line := e.lineCalc.lineAt(e.item.pos)
+	return fmt.Sprintf("line %d: %s near %q", line, e.msg, e.item.val)
+}
+
+type errAtItem struct {
+	item
+	lineCalc
+	msg string
+}
+
+func (e *errAtItem) Error() string {
+	line := e.lineCalc.lineAt(e.item.pos)
+	return fmt.Sprintf("line %d: %s: %s", line, e.msg, e.item.err)
 }
