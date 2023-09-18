@@ -8,17 +8,41 @@ import (
 	"github.com/wkhere/bcl"
 )
 
-type args struct {
-	//...
+type parsedArgs struct {
+	file string
+	help func()
 }
 
-func parseArgs(aa []string) (*args, error) {
-	//...
-	return &args{}, nil
+func parseArgs(args []string) (a parsedArgs, _ error) {
+	const usage = "usage: bcl [FILE|-]"
+	switch {
+	case len(args) == 0:
+		a.file = "-"
+
+	case args[0] == "-h":
+		a.help = func() {
+			fmt.Println(usage)
+		}
+		return a, nil
+
+	case len(args) == 1:
+		a.file = args[0]
+
+	default:
+		return a, fmt.Errorf(usage)
+	}
+	return a, nil
 }
 
-func run(r io.Reader) error {
-	buf, err := io.ReadAll(os.Stdin)
+func readBuffer(file string) ([]byte, error) {
+	if file == "-" {
+		return io.ReadAll(os.Stdin)
+	}
+	return os.ReadFile(file)
+}
+
+func run(a *parsedArgs) error {
+	buf, err := readBuffer(a.file)
 	if err != nil {
 		return err
 	}
@@ -32,13 +56,16 @@ func run(r io.Reader) error {
 }
 
 func main() {
-	args, err := parseArgs(os.Args[1:])
+	a, err := parseArgs(os.Args[1:])
 	if err != nil {
 		die(2, err)
 	}
+	if a.help != nil {
+		a.help()
+		os.Exit(0)
+	}
 
-	_ = args //tmp
-	err = run(os.Stdin)
+	err = run(&a)
 	if err != nil {
 		die(1, err)
 	}

@@ -3,6 +3,7 @@ Changelog
 
 ### v0.6.0-dev
 * API change: CopyBlocks, not AppendBlocks, so it copies, not appends
+* `cmd/bcl`: read file as well as stdin
 * introduce this changelog
   (future version tags will not have annotations, desciption of changes
    should go here)
