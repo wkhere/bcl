@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func appendBlocks(dest any, blocks []Block) error {
+func copyBlocks(dest any, blocks []Block) error {
 	destPtr := reflect.ValueOf(dest)
 	if destPtr.Kind() != reflect.Pointer {
 		return TypeErr("expected pointer to a slice of structs")
@@ -25,7 +25,7 @@ func appendBlocks(dest any, blocks []Block) error {
 		}
 	}
 
-	destSlice.Set(reflect.AppendSlice(destSlice, newSlice))
+	destSlice.Set(newSlice)
 	return nil
 }
 

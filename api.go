@@ -8,11 +8,11 @@ func Unmarshal(input []byte, dest any) error {
 	if err != nil {
 		return err
 	}
-	return AppendBlocks(dest, res)
+	return CopyBlocks(dest, res)
 }
 
 // Block is a dynamic result of running BCL [Interpret].
-// It can be put into a static structure via [AppendBlocks].
+// It can be put into a static structure via [CopyBlocks].
 type Block struct {
 	Type, Name string
 	Fields     map[string]any
@@ -28,8 +28,8 @@ func Interpret(input []byte) ([]Block, error) {
 	return eval(&top)
 }
 
-// AppendBlocks adds the blocks to the dest, which needs to be a pointer
-// to a slice of structs.
+// CopyBlocks copies the blocks to the dest,
+// which needs to be a pointer to a slice of structs.
 //
 // The requirements for the struct are:
 //   - struct type name should correspond to the BCL block type
@@ -51,6 +51,8 @@ func Interpret(input []byte) ([]Block, error) {
 //
 // The lack of corresponding fields in the Go struct is reported as error.
 // So is type mismatch of the fields.
-func AppendBlocks(dest any, blocks []Block) error {
-	return appendBlocks(dest, blocks)
+//
+// If the slice pointed by dest contained any elements, they are overwritten.
+func CopyBlocks(dest any, blocks []Block) error {
+	return copyBlocks(dest, blocks)
 }
