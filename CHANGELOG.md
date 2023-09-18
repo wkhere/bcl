@@ -4,8 +4,8 @@ Changelog
 ### v0.6.0-dev
 * API change: CopyBlocks, not AppendBlocks, so it copies, not appends
 * lex: record item's position not line number,
-  calculate line numbers only when errors are printed
-  - this fixes wrong reporting of lines numbers for some parse errors
+  calculate line numbers only when errors are printed;
+  this fixes wrong reporting of line numbers for some parse errors
 * `cmd/bcl`: read file as well as stdin
 * introduce this changelog
   (future version tags will not have annotations, desciption of changes
