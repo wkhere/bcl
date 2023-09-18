@@ -6,7 +6,7 @@ Changelog
 * lex: record item's position not line number,
   calculate line numbers only when errors are printed;
   this fixes wrong reporting of line numbers for some parse errors
-* `cmd/bcl`: read file as well as stdin
+* cmd/bcl: read file as well as stdin
 * introduce this changelog
   (future version tags will not have annotations, desciption of changes
    should go here)
@@ -48,7 +48,7 @@ Changelog
 * save to []struct via reflection
 
 ### v0.2.0
-* int arithmetics; bool still has only `not` operator
+* int arithmetics; bool still has only 'not' operator
 
 ### v0.1.0
 * initial version: parse and eval to dict-like blocks, with a restricted grammar
