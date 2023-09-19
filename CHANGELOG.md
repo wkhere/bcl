@@ -1,4 +1,4 @@
-### v0.6.0-dev
+### v0.6.0
 * API change: CopyBlocks, not AppendBlocks, so it copies, not appends
 * lex: record item's position not line number,
   calculate line numbers only when errors are printed;
