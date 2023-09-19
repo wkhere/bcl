@@ -1,6 +1,3 @@
-Changelog
-=========
-
 ### v0.6.0-dev
 * API change: CopyBlocks, not AppendBlocks, so it copies, not appends
 * lex: record item's position not line number,
