@@ -9,8 +9,10 @@
  	and or 	   # for bool, short-circuit
 
 - builtin functions:
-	- getenv(key) 
+	- getenv(key)
+	- cmd(...) to run commands and catch the output!
 	- simple type conversion
+	- consider replacing cmd & type conversions with sigils
 
 - compatibility with HCL-style resources, which look like:
   resource "type" "name" .... { }
