@@ -7,10 +7,10 @@ import (
 )
 
 type evaltc struct {
-	input    string
-	inputRaw *nTop
-	blks     []Block
-	errs     string
+	input string
+	ast   *nTop
+	blks  []Block
+	errs  string
 }
 
 // shorter syntax in literals:
@@ -86,11 +86,11 @@ var evalTab = []evaltc{
 	eerror(`var s=2.0/"a"  `, `invalid types: float64, string`),
 
 	eerrorRaw(
-		nTop{vars: vmap{"a": nUnOp{"@", nIntLit(1)}}},
+		nTop{vars: vmap{"a": nUnOp{"@", nIntLit{1, 0}}}},
 		`unknown op "unary @"`,
 	),
 	eerrorRaw(
-		nTop{vars: vmap{"a": nBinOp{"@", nIntLit(1), nIntLit(2)}}},
+		nTop{vars: vmap{"a": nBinOp{"@", nIntLit{1, 0}, nIntLit{2, 0}}}},
 		`unknown op "binary @"`,
 	),
 
@@ -105,8 +105,8 @@ func TestEval(t *testing.T) {
 		var blks []Block
 		var err error
 
-		if tc.inputRaw != nil {
-			blks, err = eval(tc.inputRaw)
+		if tc.ast != nil {
+			blks, err = eval(tc.ast, lineCalc(tc.input))
 		} else {
 			blks, err = Interpret([]byte(tc.input))
 		}

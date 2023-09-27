@@ -20,12 +20,13 @@ type Block struct {
 
 // Interpret parses and evaluates the BCL input, creating Blocks.
 func Interpret(input []byte) ([]Block, error) {
-	top, err := parse(string(input))
+	inputStr := string(input)
+	top, err := parse(inputStr)
 	if err != nil {
 		return nil, err
 
 	}
-	return eval(&top)
+	return eval(&top, lineCalc(inputStr))
 }
 
 // CopyBlocks copies the blocks to the dest,

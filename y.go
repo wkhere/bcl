@@ -6,10 +6,15 @@ import (
 	"strconv"
 )
 
+type strpos struct {
+	s   string
+	pos pos
+}
+
 type yySymType struct {
 	yys int
 	// lexer input:
-	s string
+	t strpos
 
 	// parsed output:
 	top  nTop
@@ -499,6 +504,7 @@ yydefault:
 			yyrcvr.lval.top = nTop{
 				vars:   yyDollar[1].top.vars,
 				blocks: yyDollar[2].top.blocks,
+				pos:    0,
 			}
 			return 0
 		}
@@ -510,7 +516,7 @@ yydefault:
 	case 3:
 		yyDollar = yyS[yypt-5 : yypt+1]
 		{
-			yyVAL.top.vars[ident(yyDollar[3].s)] = yyDollar[5].expr
+			yyVAL.top.vars[ident(yyDollar[3].t.s)] = yyDollar[5].expr
 		}
 	case 4:
 		yyDollar = yyS[yypt-0 : yypt+1]
@@ -526,9 +532,10 @@ yydefault:
 		yyDollar = yyS[yypt-5 : yypt+1]
 		{
 			yyVAL.blk = nBlock{
-				typ:    ident(yyDollar[1].s),
-				name:   nStrLit(unquote(yyDollar[2].s)),
+				typ:    ident(yyDollar[1].t.s),
+				name:   ident(unquote(yyDollar[2].t.s)),
 				fields: yyDollar[4].blk.fields,
+				pos:    yyDollar[1].t.pos,
 			}
 		}
 	case 7:
@@ -539,27 +546,27 @@ yydefault:
 	case 8:
 		yyDollar = yyS[yypt-4 : yypt+1]
 		{
-			yyVAL.blk.fields[ident(yyDollar[2].s)] = yyDollar[4].expr
+			yyVAL.blk.fields[ident(yyDollar[2].t.s)] = yyDollar[4].expr
 		}
 	case 9:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
-			yyVAL.expr = nVarRef(ident(yyDollar[1].s))
+			yyVAL.expr = nVarRef{ident(yyDollar[1].t.s), yyDollar[1].t.pos}
 		}
 	case 10:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
-			yyVAL.expr = nIntLit(atoi(yyDollar[1].s))
+			yyVAL.expr = nIntLit{atoi(yyDollar[1].t.s), yyDollar[1].t.pos}
 		}
 	case 11:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
-			yyVAL.expr = nFloatLit(atof(yyDollar[1].s))
+			yyVAL.expr = nFloatLit{atof(yyDollar[1].t.s), yyDollar[1].t.pos}
 		}
 	case 12:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
-			yyVAL.expr = nStrLit(unquote(yyDollar[1].s))
+			yyVAL.expr = nStrLit{unquote(yyDollar[1].t.s), yyDollar[1].t.pos}
 		}
 	case 13:
 		yyDollar = yyS[yypt-1 : yypt+1]
@@ -609,12 +616,12 @@ yydefault:
 	case 22:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
-			yyVAL.expr = nBoolLit(true)
+			yyVAL.expr = nBoolLit{true, yyDollar[1].t.pos}
 		}
 	case 23:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
-			yyVAL.expr = nBoolLit(false)
+			yyVAL.expr = nBoolLit{false, yyDollar[1].t.pos}
 		}
 	}
 	goto yystack /* stack new state and value */
