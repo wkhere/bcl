@@ -7,10 +7,10 @@ import (
 )
 
 type evaltc struct {
-	input    string
-	inputRaw *nTop
-	blks     []Block
-	errs     string
+	input string
+	ast   *nTop
+	blks  []Block
+	errs  string
 }
 
 // shorter syntax in literals:
@@ -105,8 +105,8 @@ func TestEval(t *testing.T) {
 		var blks []Block
 		var err error
 
-		if tc.inputRaw != nil {
-			blks, err = eval(tc.inputRaw)
+		if tc.ast != nil {
+			blks, err = eval(tc.ast, lineCalc(tc.input))
 		} else {
 			blks, err = Interpret([]byte(tc.input))
 		}

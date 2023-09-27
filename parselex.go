@@ -2,7 +2,6 @@ package bcl
 
 import (
 	"fmt"
-	"strings"
 )
 
 // external API
@@ -40,12 +39,6 @@ func (l *lexer) Error(msg string) {
 		// error from lex
 		l.err = &errAtItem{l.lastItem, lineCalc(l.input), msg}
 	}
-}
-
-type lineCalc string
-
-func (lc lineCalc) lineAt(pos int) int {
-	return strings.Count(string(lc)[:pos], "\n") + 1
 }
 
 type errNearItem struct {

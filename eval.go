@@ -1,6 +1,7 @@
 package bcl
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -12,6 +13,7 @@ type (
 		varDefs map[ident]expr
 		varMark map[ident]mark
 		varVals map[ident]any
+		lc      lineCalc
 	}
 
 	evalStage int
@@ -24,12 +26,13 @@ const (
 	stResolveBlockFields
 )
 
-func eval(top *nTop) (bb []Block, _ error) {
+func eval(top *nTop, lc lineCalc) (bb []Block, _ error) {
 	env := &env{
 		varDefs: top.vars,
 		varMark: make(map[ident]mark, len(top.vars)),
 		varVals: make(map[ident]any, len(top.vars)),
 		stage:   stResolveVars,
+		lc:      lc,
 	}
 
 	for ident, _ := range env.varDefs {
@@ -64,7 +67,7 @@ func eval(top *nTop) (bb []Block, _ error) {
 func resolveVar(ident ident, env *env) (any, error) {
 	expr, ok := env.varDefs[ident]
 	if !ok {
-		return nil, errNoVar(ident)
+		return nil, errNoVar{ident, 0}
 	}
 
 	env.varMark[ident] = mark{}
@@ -84,15 +87,21 @@ func (v nVarRef) eval(env *env) (any, error) {
 			return val, nil
 		}
 		if _, mark := env.varMark[v.ident]; mark {
-			return nil, errCycle(v.ident)
+			return nil, errCycle{v.ident, nodeLine(v, env)}
 		}
-		return resolveVar(v.ident, env)
+		val, err := resolveVar(v.ident, env)
+		var noVar errNoVar
+		if errors.As(err, &noVar) {
+			noVar.line = nodeLine(v, env)
+			err = noVar
+		}
+		return val, err
 
 	case stResolveBlockFields:
 		if val, ok := env.varVals[v.ident]; ok {
 			return val, nil
 		}
-		return nil, errNoVar(v.ident)
+		return nil, errNoVar{v.ident, nodeLine(v, env)}
 
 	default:
 		return nil, errInvalidStage(env.stage)
@@ -118,17 +127,17 @@ func (o nUnOp) eval(env *env) (any, error) {
 		case float64:
 			return -v, nil
 		}
-		return nil, &errOpInvalidType{o.op, x}
+		return nil, &errOpInvalidType{o.op, x, nodeLine(o, env)}
 
 	case "not":
 		switch v := x.(type) {
 		case bool:
 			return !v, nil
 		}
-		return nil, &errOpInvalidType{o.op, x}
+		return nil, &errOpInvalidType{o.op, x, nodeLine(o, env)}
 
 	default:
-		return nil, errUnknownOp("unary " + o.op)
+		return nil, errUnknownOp{"unary " + o.op, nodeLine(o, env)}
 	}
 }
 
@@ -170,7 +179,7 @@ func (o nBinOp) eval(env *env) (any, error) {
 			}
 		}
 
-		return nil, &errOpInvalidTypes{o.op, l, r}
+		return nil, &errOpInvalidTypes{o.op, l, r, nodeLine(o, env)}
 
 	case "-":
 		switch lv := l.(type) {
@@ -191,7 +200,7 @@ func (o nBinOp) eval(env *env) (any, error) {
 			}
 		}
 
-		return nil, &errOpInvalidTypes{o.op, l, r}
+		return nil, &errOpInvalidTypes{o.op, l, r, nodeLine(o, env)}
 
 	case "*":
 		switch lv := l.(type) {
@@ -218,7 +227,7 @@ func (o nBinOp) eval(env *env) (any, error) {
 			}
 		}
 
-		return nil, &errOpInvalidTypes{o.op, l, r}
+		return nil, &errOpInvalidTypes{o.op, l, r, nodeLine(o, env)}
 
 	case "/":
 		switch lv := l.(type) {
@@ -251,47 +260,67 @@ func (o nBinOp) eval(env *env) (any, error) {
 			}
 		}
 
-		return nil, &errOpInvalidTypes{o.op, l, r}
+		return nil, &errOpInvalidTypes{o.op, l, r, nodeLine(o, env)}
 
 	default:
-		return nil, errUnknownOp("binary " + o.op)
+		return nil, errUnknownOp{"binary " + o.op, nodeLine(o, env)}
 	}
 }
 
-type errNoVar ident
-type errCycle ident
-type errInvalidStage int
-type errUnknownOp string
-
-type errOpInvalidType struct {
-	op op
-	x  any
-}
-type errOpInvalidTypes struct {
-	op   op
-	x, y any
+func nodeLine(n node, env *env) int {
+	return env.lc.lineAt(n.getpos())
 }
 
-func (e errNoVar) Error() string {
-	return fmt.Sprintf("var %s not defined", string(e))
-}
+type (
+	errInvalidStage int
 
-func (e errCycle) Error() string {
-	return fmt.Sprintf("var %s: cycle detected", string(e))
-}
+	errNoVar struct {
+		ident
+		line int
+	}
+	errCycle struct {
+		ident
+		line int
+	}
+	errUnknownOp struct {
+		op
+		line int
+	}
+	errOpInvalidType struct {
+		op   op
+		x    any
+		line int
+	}
+	errOpInvalidTypes struct {
+		op   op
+		x, y any
+		line int
+	}
+)
 
 func (e errInvalidStage) Error() string {
 	return fmt.Sprintf("invalid eval stage: %d", int(e))
 }
 
+func (e errNoVar) Error() string {
+	return fmt.Sprintf("line %d: var %s not defined", e.line, e.ident)
+}
+
+func (e errCycle) Error() string {
+	return fmt.Sprintf("line %d: var %s: cycle detected", e.line, e.ident)
+}
+
 func (e errUnknownOp) Error() string {
-	return fmt.Sprintf("unknown op %q", string(e))
+	return fmt.Sprintf("line %d: unknown op %q", e.line, e.op)
 }
 
 func (e *errOpInvalidType) Error() string {
-	return fmt.Sprintf("op %q: invalid type: %T", e.op, e.x)
+	return fmt.Sprintf("line %d: op %q: invalid type: %T", e.line, e.op, e.x)
 }
 
 func (e *errOpInvalidTypes) Error() string {
-	return fmt.Sprintf("op %q: invalid types: %T, %T", e.op, e.x, e.y)
+	return fmt.Sprintf(
+		"line %d: op %q: invalid types: %T, %T",
+		e.line, e.op, e.x, e.y,
+	)
 }
