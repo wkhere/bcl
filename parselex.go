@@ -24,7 +24,7 @@ func parse(input string) (_ nTop, err error) {
 func (l *lexer) Lex(lval *yySymType) int {
 	item := l.nextItem()
 	//fmt.Printf("%v ", item) //dbg
-	*lval = yySymType{s: item.val}
+	*lval = yySymType{t: strpos{s: item.val, pos: pos(item.pos)}}
 	return int(item.typ)
 }
 

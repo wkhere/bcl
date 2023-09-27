@@ -86,11 +86,11 @@ var evalTab = []evaltc{
 	eerror(`var s=2.0/"a"  `, `invalid types: float64, string`),
 
 	eerrorRaw(
-		nTop{vars: vmap{"a": nUnOp{"@", nIntLit(1)}}},
+		nTop{vars: vmap{"a": nUnOp{"@", nIntLit{1, 0}}}},
 		`unknown op "unary @"`,
 	),
 	eerrorRaw(
-		nTop{vars: vmap{"a": nBinOp{"@", nIntLit(1), nIntLit(2)}}},
+		nTop{vars: vmap{"a": nBinOp{"@", nIntLit{1, 0}, nIntLit{2, 0}}}},
 		`unknown op "binary @"`,
 	),
 

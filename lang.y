@@ -5,11 +5,16 @@ import (
     "strconv"
 )
 
+type strpos struct {
+    s   string
+    pos pos
+}
+
 %}
 
 %union {
     // lexer input:
-    s string
+    t strpos
 
     // parsed output:
     top  nTop
@@ -41,13 +46,14 @@ all: vars blocks tEOF        {
                                 yyrcvr.lval.top = nTop{
                                     vars:   $1.top.vars,
                                     blocks: $2.top.blocks,
+                                    pos:    0,
                                 }
                                 return 0
                             }
 
 vars: /* empty */           { $$.top.vars = make(map[ident]expr, 2) }
     | vars tVAR tIDENT '=' expr
-                            { $$.top.vars[ident($3.s)] = $5.expr }
+                            { $$.top.vars[ident($3.t.s)] = $5.expr }
 
 blocks: /* empty */         { $$.top.blocks = nil }
     | blocks block          { $$.top.blocks = append($$.top.blocks, $2.blk) }
@@ -55,20 +61,21 @@ blocks: /* empty */         { $$.top.blocks = nil }
 block:
     tIDENT tSTR '{' fields '}' {
                                 $$.blk = nBlock{
-                                    typ:    ident($1.s),
-                                    name:   nStrLit(unquote($2.s)),
+                                    typ:    ident($1.t.s),
+                                    name:   ident(unquote($2.t.s)),
                                     fields: $4.blk.fields,
+                                    pos:    $1.t.pos,
                                 }
                             }
 
 fields: /* empty */         { $$.blk.fields = make(map[ident]expr, 4) }
-    | fields tIDENT '=' expr { $$.blk.fields[ident($2.s)] = $4.expr }
+    | fields tIDENT '=' expr { $$.blk.fields[ident($2.t.s)] = $4.expr }
 
 expr:
-      tIDENT                { $$.expr = nVarRef(ident($1.s)) }
-    | tINT                  { $$.expr = nIntLit(atoi($1.s)) }
-    | tFLOAT                { $$.expr = nFloatLit(atof($1.s)) }
-    | tSTR                  { $$.expr = nStrLit(unquote($1.s)) }
+      tIDENT                { $$.expr = nVarRef{ident($1.t.s), $1.t.pos} }
+    | tINT                  { $$.expr = nIntLit{atoi($1.t.s),  $1.t.pos} }
+    | tFLOAT                { $$.expr = nFloatLit{atof($1.t.s),  $1.t.pos} }
+    | tSTR                  { $$.expr = nStrLit{unquote($1.t.s), $1.t.pos} }
     | bool_lit              { $$.expr = $1.expr }
     | expr '+' expr         { $$.expr = nBinOp{"+", $1.expr, $3.expr} }
     | expr '-' expr         { $$.expr = nBinOp{"-", $1.expr, $3.expr} }
@@ -80,8 +87,8 @@ expr:
     | '(' expr ')'          { $$.expr = $2.expr }
 
 bool_lit:
-      tTRUE                { $$.expr = nBoolLit(true) }
-    | tFALSE               { $$.expr = nBoolLit(false) }
+      tTRUE                { $$.expr = nBoolLit{true,  $1.t.pos} }
+    | tFALSE               { $$.expr = nBoolLit{false, $1.t.pos} }
 %%
 
 func atoi(s string) int {

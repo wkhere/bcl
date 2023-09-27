@@ -11,7 +11,7 @@ type (
 		stage   evalStage
 		varDefs map[ident]expr
 		varMark map[ident]mark
-		varVals map[nVarRef]any
+		varVals map[ident]any
 	}
 
 	evalStage int
@@ -28,7 +28,7 @@ func eval(top *nTop) (bb []Block, _ error) {
 	env := &env{
 		varDefs: top.vars,
 		varMark: make(map[ident]mark, len(top.vars)),
-		varVals: make(map[nVarRef]any, len(top.vars)),
+		varVals: make(map[ident]any, len(top.vars)),
 		stage:   stResolveVars,
 	}
 
@@ -73,36 +73,36 @@ func resolveVar(ident ident, env *env) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	env.varVals[nVarRef(ident)] = v
+	env.varVals[ident] = v
 	return v, nil
 }
 
 func (v nVarRef) eval(env *env) (any, error) {
 	switch env.stage {
 	case stResolveVars:
-		if val, ok := env.varVals[v]; ok {
+		if val, ok := env.varVals[v.ident]; ok {
 			return val, nil
 		}
-		if _, mark := env.varMark[ident(v)]; mark {
-			return nil, errCycle(v)
+		if _, mark := env.varMark[v.ident]; mark {
+			return nil, errCycle(v.ident)
 		}
-		return resolveVar(ident(v), env)
+		return resolveVar(v.ident, env)
 
 	case stResolveBlockFields:
-		if val, ok := env.varVals[v]; ok {
+		if val, ok := env.varVals[v.ident]; ok {
 			return val, nil
 		}
-		return nil, errNoVar(v)
+		return nil, errNoVar(v.ident)
 
 	default:
 		return nil, errInvalidStage(env.stage)
 	}
 }
 
-func (x nIntLit) eval(env *env) (any, error)   { return int(x), nil }
-func (x nFloatLit) eval(env *env) (any, error) { return float64(x), nil }
-func (s nStrLit) eval(env *env) (any, error)   { return string(s), nil }
-func (b nBoolLit) eval(env *env) (any, error)  { return bool(b), nil }
+func (x nIntLit) eval(env *env) (any, error)   { return x.int, nil }
+func (x nFloatLit) eval(env *env) (any, error) { return x.float64, nil }
+func (s nStrLit) eval(env *env) (any, error)   { return s.string, nil }
+func (b nBoolLit) eval(env *env) (any, error)  { return b.bool, nil }
 
 func (o nUnOp) eval(env *env) (any, error) {
 	x, err := o.a.eval(env)
@@ -259,7 +259,7 @@ func (o nBinOp) eval(env *env) (any, error) {
 }
 
 type errNoVar ident
-type errCycle nVarRef
+type errCycle ident
 type errInvalidStage int
 type errUnknownOp string
 
