@@ -1,7 +1,7 @@
 ### v0.6.1
 * get line info to eval errors: in the impl, position is carried over from lexer
   to ast and is used in eval, so it's possible in the future to have
-  more sophisticated error reporting than a line nubmer
+  more sophisticated error reporting than a line number
 
 ### v0.6.0
 * API change: CopyBlocks, not AppendBlocks, so it copies, not appends
