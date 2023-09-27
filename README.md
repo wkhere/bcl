@@ -63,7 +63,7 @@ Output:
 
 ### TODO
 
-* [ ] get line info to eval errors
+* [x] get line info to eval errors
 * [ ] more data types
   * [x] floats
   * [ ] lists
