@@ -1,3 +1,5 @@
+### v0.6.2-dev
+
 ### v0.6.1
 * get line info to eval errors: in the impl, position is carried over from lexer
   to ast and is used in eval, so it's possible in the future to have
