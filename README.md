@@ -82,7 +82,7 @@ At the same time:
 
 * writing a recursive descent parser is a nice effort and BCL will have one at the right moment.
 
-I hope this explacation can halt unproductive discussions. 
+I hope this explanation can halt unproductive discussions. 
 
 ### TODO
 
