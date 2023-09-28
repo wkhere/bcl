@@ -75,7 +75,7 @@ I can see on Hacker News, Reddit etc, that using yacc can spring quite a heated 
 * I know yacc well enough
 * I know the theory behind LALR(1) parsers well enough
 * I like the fact that generating parser without grammar conflicts is a guarantee that its complexity is linear;
-  plus, I have totally zero problems with writing a grammar without conflicts
+  plus, I have totally zero problems writing a grammar without conflicts
 * I find yacc useful especially at the experimenting phase, when grammar can change.
 
 At the same time:
