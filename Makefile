@@ -19,7 +19,8 @@ bench: generated
 cnt=5
 
 cov:
-	go test -coverprofile=cov .
+	go test -coverprofile=cov -run=$(sel) .
 	go tool cover -html=cov -o cov.html
+sel=.
 
 .PHONY: default generated test bench cov clean
