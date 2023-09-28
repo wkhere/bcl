@@ -100,52 +100,52 @@ const yyPrivate = 57344
 const yyLast = 57
 
 var yyAct = [...]int8{
-	12, 39, 25, 26, 27, 28, 27, 28, 7, 8,
-	33, 4, 40, 5, 34, 25, 26, 27, 28, 29,
-	30, 31, 32, 10, 11, 9, 35, 36, 37, 38,
-	17, 24, 14, 15, 16, 6, 3, 21, 2, 1,
-	13, 41, 22, 23, 0, 0, 0, 0, 0, 0,
-	0, 0, 18, 19, 0, 0, 20,
+	12, 43, 29, 30, 35, 25, 26, 4, 36, 25,
+	26, 27, 28, 29, 30, 27, 28, 29, 30, 31,
+	32, 33, 34, 8, 44, 10, 37, 38, 39, 40,
+	41, 42, 14, 15, 16, 9, 7, 21, 11, 17,
+	13, 5, 22, 23, 24, 45, 27, 28, 29, 30,
+	6, 3, 18, 19, 2, 1, 20,
 }
 
 var yyPact = [...]int16{
-	-1000, -1000, -2, -4, -3, -1000, -1000, 19, 12, 17,
-	28, -1000, -22, -1000, -1000, -1000, -1000, -1000, 28, 28,
-	28, 28, -1000, -1000, 2, 28, 28, 28, 28, -1000,
-	-1000, -1000, -9, -1000, 1, -20, -20, -1000, -1000, -1000,
-	28, -22,
+	-1000, -1000, -6, 24, 11, -1000, -1000, 29, 14, 31,
+	28, -1000, -13, -1000, -1000, -1000, -1000, -1000, 28, 28,
+	28, 28, -1000, -1000, -4, 28, 28, 28, 28, 28,
+	28, -1000, -1000, -1000, -9, -1000, 13, 22, 22, -24,
+	-24, -1000, -1000, -1000, 28, -13,
 }
 
 var yyPgo = [...]int8{
-	0, 39, 38, 36, 0, 35, 31, 30,
+	0, 55, 54, 51, 0, 50, 44, 39,
 }
 
 var yyR1 = [...]int8{
 	0, 1, 2, 2, 3, 3, 5, 6, 6, 4,
 	4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-	4, 4, 7, 7,
+	4, 4, 4, 4, 7, 7,
 }
 
 var yyR2 = [...]int8{
 	0, 3, 0, 5, 0, 2, 5, 0, 4, 1,
-	1, 1, 1, 1, 3, 3, 3, 3, 2, 2,
-	2, 3, 1, 1,
+	1, 1, 1, 1, 3, 3, 3, 3, 3, 3,
+	2, 2, 2, 3, 1, 1,
 }
 
 var yyChk = [...]int16{
 	-1000, -1, -2, -3, 13, 17, -5, 12, 12, 6,
 	11, 7, -4, 12, 4, 5, 6, -7, 24, 25,
-	28, 9, 14, 15, -6, 24, 25, 26, 27, -4,
-	-4, -4, -4, 8, 12, -4, -4, -4, -4, 10,
-	11, -4,
+	28, 9, 14, 15, -6, 18, 19, 24, 25, 26,
+	27, -4, -4, -4, -4, 8, 12, -4, -4, -4,
+	-4, -4, -4, 10, 11, -4,
 }
 
 var yyDef = [...]int8{
 	2, -2, 4, 0, 0, 1, 5, 0, 0, 0,
 	0, 7, 3, 9, 10, 11, 12, 13, 0, 0,
-	0, 0, 22, 23, 0, 0, 0, 0, 0, 18,
-	19, 20, 0, 6, 0, 14, 15, 16, 17, 21,
-	0, 8,
+	0, 0, 24, 25, 0, 0, 0, 0, 0, 0,
+	0, 20, 21, 22, 0, 6, 0, 14, 15, 16,
+	17, 18, 19, 23, 0, 8,
 }
 
 var yyTok1 = [...]int8{
@@ -586,49 +586,59 @@ yydefault:
 	case 14:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = nBinOp{"+", yyDollar[1].expr, yyDollar[3].expr}
+			yyVAL.expr = nBinOp{"==", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 15:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = nBinOp{"-", yyDollar[1].expr, yyDollar[3].expr}
+			yyVAL.expr = nBinOp{"!=", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 16:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = nBinOp{"*", yyDollar[1].expr, yyDollar[3].expr}
+			yyVAL.expr = nBinOp{"+", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 17:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = nBinOp{"/", yyDollar[1].expr, yyDollar[3].expr}
+			yyVAL.expr = nBinOp{"-", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 18:
-		yyDollar = yyS[yypt-2 : yypt+1]
+		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = yyDollar[2].expr
+			yyVAL.expr = nBinOp{"*", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 19:
-		yyDollar = yyS[yypt-2 : yypt+1]
+		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = nUnOp{"-", yyDollar[2].expr}
+			yyVAL.expr = nBinOp{"/", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 20:
 		yyDollar = yyS[yypt-2 : yypt+1]
 		{
-			yyVAL.expr = nUnOp{"not", yyDollar[2].expr}
+			yyVAL.expr = yyDollar[2].expr
 		}
 	case 21:
+		yyDollar = yyS[yypt-2 : yypt+1]
+		{
+			yyVAL.expr = nUnOp{"-", yyDollar[2].expr}
+		}
+	case 22:
+		yyDollar = yyS[yypt-2 : yypt+1]
+		{
+			yyVAL.expr = nUnOp{"not", yyDollar[2].expr}
+		}
+	case 23:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
 			yyVAL.expr = yyDollar[2].expr
 		}
-	case 22:
+	case 24:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
 			yyVAL.expr = nBoolLit{true, yyDollar[1].t.pos}
 		}
-	case 23:
+	case 25:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
 			yyVAL.expr = nBoolLit{false, yyDollar[1].t.pos}

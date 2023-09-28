@@ -152,6 +152,72 @@ func (o nBinOp) eval(env *env) (any, error) {
 	}
 
 	switch o.op {
+	case "==":
+		switch lv := l.(type) {
+		case int:
+			switch rv := r.(type) {
+			case int:
+				return lv == rv, nil
+			case float64:
+				return float64(lv) == rv, nil
+			}
+
+		case float64:
+			switch rv := r.(type) {
+			case float64:
+				return lv == rv, nil
+			case int:
+				return lv == float64(rv), nil
+			}
+
+		case bool:
+			switch rv := r.(type) {
+			case bool:
+				return lv == rv, nil
+			}
+
+		case string:
+			switch rv := r.(type) {
+			case string:
+				return lv == rv, nil
+			}
+		}
+
+		return nil, &errOpInvalidTypes{o.op, l, r, nodeLine(o, env)}
+
+	case "!=":
+		switch lv := l.(type) {
+		case int:
+			switch rv := r.(type) {
+			case int:
+				return lv != rv, nil
+			case float64:
+				return float64(lv) != rv, nil
+			}
+
+		case float64:
+			switch rv := r.(type) {
+			case float64:
+				return lv != rv, nil
+			case int:
+				return lv != float64(rv), nil
+			}
+
+		case bool:
+			switch rv := r.(type) {
+			case bool:
+				return lv != rv, nil
+			}
+
+		case string:
+			switch rv := r.(type) {
+			case string:
+				return lv != rv, nil
+			}
+		}
+
+		return nil, &errOpInvalidTypes{o.op, l, r, nodeLine(o, env)}
+
 	case "+":
 		switch lv := l.(type) {
 		case int:

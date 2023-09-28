@@ -45,6 +45,18 @@ var parseTab = []parsetc{
 		top1var("a", nBinOp{"+", nIntLit{64512, 12}, nIntLit{226, 19}}),
 	),
 	// 15
+	pvalid(`var a= 1==2`,
+		top1var("a", nBinOp{"==", nIntLit{1, 8}, nIntLit{2, 11}}),
+	),
+	pvalid(`var a= 1!=2`,
+		top1var("a", nBinOp{"!=", nIntLit{1, 8}, nIntLit{2, 11}}),
+	),
+	pvalid(`var a= 1==2==false`, top1var("a",
+		nBinOp{"==",
+			nBinOp{"==", nIntLit{1, 8}, nIntLit{2, 11}},
+			nBoolLit{false, 18},
+		},
+	)),
 }
 
 func TestParse(t *testing.T) {
