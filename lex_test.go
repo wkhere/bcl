@@ -28,7 +28,7 @@ var lexTab = []struct {
 	items ii
 }{
 	{"", ii{teof(0)}},
-
+	// 1
 	{"@", ii{terrchar('@', 1)}},
 	{`"`, ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}}},
 	{"\"\n", ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 2}}},
@@ -39,7 +39,7 @@ var lexTab = []struct {
 	{`12.34`, ii{{tFLOAT, "12.34", nil, 5}, teof(5)}},
 	{`1234e10`, ii{{tFLOAT, "1234e10", nil, 7}, teof(7)}},
 	{`1234E10`, ii{{tFLOAT, "1234E10", nil, 7}, teof(7)}},
-
+	// 10
 	{`1234e+10`, ii{{tFLOAT, "1234e+10", nil, 8}, teof(8)}},
 	{`1234e-10`, ii{{tFLOAT, "1234e-10", nil, 8}, teof(8)}},
 	{`12.34e10`, ii{{tFLOAT, "12.34e10", nil, 8}, teof(8)}},
@@ -50,7 +50,7 @@ var lexTab = []struct {
 	{`0x10`, ii{{tINT, "0x10", nil, 4}, teof(4)}},
 	{`0X10`, ii{{tINT, "0X10", nil, 4}, teof(4)}},
 	{`0x10.0`, ii{{tINT, "0x10", nil, 4}, terrchar('.', 5)}},
-
+	// 20
 	{`>`, ii{{'>', ">", nil, 1}, teof(1)}},
 	{`>=`, ii{{tGE, ">=", nil, 2}, teof(2)}},
 	{`< 5`, ii{{'<', "<", nil, 1}, {tINT, "5", nil, 3}, teof(3)}},

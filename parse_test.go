@@ -22,12 +22,13 @@ func top1var(name ident, expr expr) nTop { return nTop{vars: vmap{name: expr}} }
 
 var parseTab = []parsetc{
 	pvalid(``, nTop{vars: vmap{}}),
-
+	// 1
 	perror(`@`, `line 1: syntax error: unknown char`),
 	perror(`!`, `line 1: syntax error: expected char '!' to start token "!="`),
 	perror(`foo `, `line 1: syntax error near "foo"`),
 	perror(`foo bar`, `line 1: syntax error near "bar"`),
 	pvalid(`var a = 1`, top1var("a", nIntLit{1, 9})),
+	// 5
 	pvalid(`var a = 1 + 2`,
 		top1var("a", nBinOp{"+", nIntLit{1, 9}, nIntLit{2, 13}}),
 	),
@@ -35,13 +36,15 @@ var parseTab = []parsetc{
 	perror(`a + 1`, `line 1: syntax error near "+"`),
 	perror(`var a + 1`, `line 1: syntax error near "+"`),
 	perror(`var a=1aaa`, `line 1: syntax error near "aaa"`),
-
+	// 10
+	pvalid(`var a=0x0`, top1var("a", nIntLit{0, 9})),
 	pvalid(`var a=0xfce2`, top1var("a", nIntLit{64738, 12})),
 	pvalid(`var a=0xFCE2`, top1var("a", nIntLit{64738, 12})),
 	pvalid(`var a=0XFCE2`, top1var("a", nIntLit{64738, 12})),
 	pvalid(`var a=0xFC00 + 0xE2`,
 		top1var("a", nBinOp{"+", nIntLit{64512, 12}, nIntLit{226, 19}}),
 	),
+	// 15
 }
 
 func TestParse(t *testing.T) {
