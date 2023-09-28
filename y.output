@@ -3,7 +3,7 @@ state 0
 	$accept: .all $end 
 	vars: .    (2)
 
-	.  reduce 2 (src line 54)
+	.  reduce 2 (src line 56)
 
 	all  goto 1
 	vars  goto 2
@@ -21,7 +21,7 @@ state 2
 	blocks: .    (4)
 
 	tVAR  shift 4
-	.  reduce 4 (src line 58)
+	.  reduce 4 (src line 60)
 
 	blocks  goto 3
 
@@ -45,13 +45,13 @@ state 4
 state 5
 	all:  vars blocks tEOF.    (1)
 
-	.  reduce 1 (src line 45)
+	.  reduce 1 (src line 47)
 
 
 state 6
 	blocks:  blocks block.    (5)
 
-	.  reduce 5 (src line 59)
+	.  reduce 5 (src line 61)
 
 
 state 7
@@ -97,7 +97,7 @@ state 11
 	block:  tIDENT tSTR '{'.fields '}' 
 	fields: .    (7)
 
-	.  reduce 7 (src line 71)
+	.  reduce 7 (src line 73)
 
 	fields  goto 24
 
@@ -112,37 +112,37 @@ state 12
 	'-'  shift 26
 	'*'  shift 27
 	'/'  shift 28
-	.  reduce 3 (src line 55)
+	.  reduce 3 (src line 57)
 
 
 state 13
 	expr:  tIDENT.    (9)
 
-	.  reduce 9 (src line 74)
+	.  reduce 9 (src line 76)
 
 
 state 14
 	expr:  tINT.    (10)
 
-	.  reduce 10 (src line 76)
+	.  reduce 10 (src line 78)
 
 
 state 15
 	expr:  tFLOAT.    (11)
 
-	.  reduce 11 (src line 77)
+	.  reduce 11 (src line 79)
 
 
 state 16
 	expr:  tSTR.    (12)
 
-	.  reduce 12 (src line 78)
+	.  reduce 12 (src line 80)
 
 
 state 17
 	expr:  bool_lit.    (13)
 
-	.  reduce 13 (src line 79)
+	.  reduce 13 (src line 81)
 
 
 state 18
@@ -220,13 +220,13 @@ state 21
 state 22
 	bool_lit:  tTRUE.    (22)
 
-	.  reduce 22 (src line 89)
+	.  reduce 22 (src line 91)
 
 
 state 23
 	bool_lit:  tFALSE.    (23)
 
-	.  reduce 23 (src line 91)
+	.  reduce 23 (src line 93)
 
 
 state 24
@@ -317,7 +317,7 @@ state 29
 	expr:  expr.'/' expr 
 	expr:  '+' expr.    (18)
 
-	.  reduce 18 (src line 84)
+	.  reduce 18 (src line 86)
 
 
 state 30
@@ -327,7 +327,7 @@ state 30
 	expr:  expr.'/' expr 
 	expr:  '-' expr.    (19)
 
-	.  reduce 19 (src line 85)
+	.  reduce 19 (src line 87)
 
 
 state 31
@@ -337,7 +337,7 @@ state 31
 	expr:  expr.'/' expr 
 	expr:  tNOT expr.    (20)
 
-	.  reduce 20 (src line 86)
+	.  reduce 20 (src line 88)
 
 
 state 32
@@ -358,7 +358,7 @@ state 32
 state 33
 	block:  tIDENT tSTR '{' fields '}'.    (6)
 
-	.  reduce 6 (src line 61)
+	.  reduce 6 (src line 63)
 
 
 state 34
@@ -377,7 +377,7 @@ state 35
 
 	'*'  shift 27
 	'/'  shift 28
-	.  reduce 14 (src line 80)
+	.  reduce 14 (src line 82)
 
 
 state 36
@@ -389,7 +389,7 @@ state 36
 
 	'*'  shift 27
 	'/'  shift 28
-	.  reduce 15 (src line 81)
+	.  reduce 15 (src line 83)
 
 
 state 37
@@ -399,7 +399,7 @@ state 37
 	expr:  expr '*' expr.    (16)
 	expr:  expr.'/' expr 
 
-	.  reduce 16 (src line 82)
+	.  reduce 16 (src line 84)
 
 
 state 38
@@ -409,13 +409,13 @@ state 38
 	expr:  expr.'/' expr 
 	expr:  expr '/' expr.    (17)
 
-	.  reduce 17 (src line 83)
+	.  reduce 17 (src line 85)
 
 
 state 39
 	expr:  '(' expr ')'.    (21)
 
-	.  reduce 21 (src line 87)
+	.  reduce 21 (src line 89)
 
 
 state 40
@@ -447,10 +447,10 @@ state 41
 	'-'  shift 26
 	'*'  shift 27
 	'/'  shift 28
-	.  reduce 8 (src line 72)
+	.  reduce 8 (src line 74)
 
 
-22 terminals, 8 nonterminals
+28 terminals, 8 nonterminals
 24 grammar rules, 42/16000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
 57 working sets used
@@ -459,6 +459,6 @@ memory: parser 25/240000
 127 shift entries, 1 exceptions
 16 goto entries
 9 entries saved by goto default
-Optimizer space used: output 51/240000
-51 table entries, 4 zero
-maximum spread: 22, maximum offset: 40
+Optimizer space used: output 57/240000
+57 table entries, 10 zero
+maximum spread: 28, maximum offset: 40

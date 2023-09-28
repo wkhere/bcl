@@ -154,8 +154,6 @@ func (l *lexer) acceptRunFunc(pred func(rune) bool) {
 
 // rune predicates
 
-const shortTokens = "={}+-*/()"
-
 // func isStrictSpace(r rune) bool {
 // 	return r == ' ' || r == '\t'
 // }
@@ -168,10 +166,6 @@ func isSpace(r rune) bool {
 	return unicode.IsSpace(r)
 }
 
-func isShortToken(r rune) bool {
-	return strings.ContainsRune(shortTokens, r)
-}
-
 func isDigit(r rune) bool {
 	return unicode.IsDigit(r)
 }
@@ -182,6 +176,10 @@ func isAlpha(r rune) bool {
 
 func isAlphaNum(r rune) bool {
 	return unicode.IsLetter(r) || unicode.IsDigit(r)
+}
+
+func isOneRuneToken(r rune) bool {
+	return strings.ContainsRune(oneRuneTokens, r)
 }
 
 // state finalizers
@@ -200,6 +198,20 @@ var keywords = map[string]itemType{
 	"not":   tNOT,
 }
 
+type twoRuneMatch struct {
+	r2  rune
+	typ itemType
+}
+
+var twoRuneTokens = map[rune]twoRuneMatch{
+	'=': {'=', tEQ},
+	'!': {'=', tNE},
+	'<': {'=', tLE},
+	'>': {'=', tGE},
+}
+
+const oneRuneTokens = "={}+-*/()<>"
+
 const (
 	digits      = "0123456789"
 	hexdigits   = digits + "abcdefABCDEF"
@@ -208,13 +220,18 @@ const (
 
 func lexStart(l *lexer) stateFn {
 
-	switch r := l.next(); {
+	r := l.next()
+	r2m, r2ok := twoRuneTokens[r]
+
+	switch {
 	case r == eof:
 		l.emit(tEOF)
 		// ^^is it needed as a terminator in the yparser?
 		// if not then l.ignore() it
 		return nil
-	case isShortToken(r):
+	case r2ok:
+		return lexTwoRunes(r, r2m)
+	case isOneRuneToken(r):
 		l.emit(itemType(r))
 		return lexStart
 	case isSpace(r):
@@ -229,6 +246,25 @@ func lexStart(l *lexer) stateFn {
 		return lexNumber
 	default:
 		return l.errorf("unknown char %#U", r)
+	}
+}
+
+func lexTwoRunes(r1 rune, match twoRuneMatch) stateFn {
+	return func(l *lexer) stateFn {
+		r2 := l.next()
+		if r2 == match.r2 {
+			l.emit(match.typ)
+			return lexStart
+		}
+		l.backup()
+		if isOneRuneToken(r1) {
+			l.emit(itemType(r1))
+			return lexStart
+		}
+		return l.errorf(
+			"expected char %q to start token %q",
+			r1, fmt.Sprintf("%c%c", r1, match.r2),
+		)
 	}
 }
 

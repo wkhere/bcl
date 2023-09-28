@@ -37,6 +37,8 @@ type strpos struct {
 %token tERR
 %token tEOF
 
+%left tEQ tNE
+%left '<' tLE '>' tGE
 %left  '+' '-'
 %left  '*' '/'
 %right tNOT
