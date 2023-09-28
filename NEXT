@@ -3,6 +3,10 @@
 
 + add line info from lex to eval errors
 
+more on errors:
+- return all errors (modulo parser sync)
+- when it's done, consider adding BCL to github.com/Boeing/config-file-validator
+
 - bin ops: 
 	== !=      # for int float str bool
     < > <= >=  # for int float str
