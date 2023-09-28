@@ -82,8 +82,6 @@ At the same time:
 
 * writing a recursive descent parser is a nice effort and BCL will have one at the right moment.
 
-I hope this explanation can halt unproductive discussions. 
-
 ### TODO
 
 * [x] get line info into eval errors
