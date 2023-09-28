@@ -19,7 +19,7 @@ but more basic:
   the output structure;
   no [strange limitations] of where variables can be defined
 * detection of variable reference cycles
-* _O(N)_ lexer and parser
+* _O(N)_ lexer, parser and evaluator
 * deserialization aka unmarshalling to static Go structs
 
 While being basic, BCL also has features reaching beyond HCL:
@@ -67,6 +67,22 @@ Output:
 ### Expressions, data conversions
 
 ..to be documented..
+
+### Note on the implementation
+
+I can see on Hacker News, Reddit etc, that using yacc can spring quite a heated discussion. So here is my take on (go)yacc:
+
+* I know yacc well enough
+* I know the theory behind LALR(1) parsers well enough
+* I like the fact that generating parser without grammar conflicts is a guarantee that its complexity is linear;
+  plus, I have totally zero problems with writing a grammar without conflicts
+* I find yacc useful especially at the experimenting phase, when grammar can change.
+
+At the same time:
+
+* writing a recursive descent parser is a nice effort and BCL will have one at the right moment.
+
+I hope this explacation can halt unproductive discussions. 
 
 ### TODO
 
