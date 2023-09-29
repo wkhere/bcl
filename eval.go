@@ -3,8 +3,6 @@ package bcl
 import (
 	"errors"
 	"fmt"
-	"strconv"
-	"strings"
 )
 
 type (
@@ -119,22 +117,16 @@ func (o nUnOp) eval(env *env) (any, error) {
 		return nil, err
 	}
 
+	t := func(x any) error {
+		return &errOpInvalidType{o.op, x, nodeLine(o, env)}
+	}
+
 	switch o.op {
 	case "-":
-		switch v := x.(type) {
-		case int:
-			return -v, nil
-		case float64:
-			return -v, nil
-		}
-		return nil, &errOpInvalidType{o.op, x, nodeLine(o, env)}
+		return evalUnMinus(x, t)
 
 	case "not":
-		switch v := x.(type) {
-		case bool:
-			return !v, nil
-		}
-		return nil, &errOpInvalidType{o.op, x, nodeLine(o, env)}
+		return evalNot(x, t)
 
 	default:
 		return nil, errUnknownOp{"unary " + o.op, nodeLine(o, env)}
@@ -151,182 +143,28 @@ func (o nBinOp) eval(env *env) (any, error) {
 		return nil, err
 	}
 
+	t := func(l, r any) error {
+		return &errOpInvalidTypes{o.op, l, r, nodeLine(o, env)}
+	}
+
 	switch o.op {
 	case "==":
-		switch lv := l.(type) {
-		case int:
-			switch rv := r.(type) {
-			case int:
-				return lv == rv, nil
-			case float64:
-				return float64(lv) == rv, nil
-			}
-
-		case float64:
-			switch rv := r.(type) {
-			case float64:
-				return lv == rv, nil
-			case int:
-				return lv == float64(rv), nil
-			}
-
-		case bool:
-			switch rv := r.(type) {
-			case bool:
-				return lv == rv, nil
-			}
-
-		case string:
-			switch rv := r.(type) {
-			case string:
-				return lv == rv, nil
-			}
-		}
-
-		return nil, &errOpInvalidTypes{o.op, l, r, nodeLine(o, env)}
+		return evalEQ(l, r, t)
 
 	case "!=":
-		switch lv := l.(type) {
-		case int:
-			switch rv := r.(type) {
-			case int:
-				return lv != rv, nil
-			case float64:
-				return float64(lv) != rv, nil
-			}
-
-		case float64:
-			switch rv := r.(type) {
-			case float64:
-				return lv != rv, nil
-			case int:
-				return lv != float64(rv), nil
-			}
-
-		case bool:
-			switch rv := r.(type) {
-			case bool:
-				return lv != rv, nil
-			}
-
-		case string:
-			switch rv := r.(type) {
-			case string:
-				return lv != rv, nil
-			}
-		}
-
-		return nil, &errOpInvalidTypes{o.op, l, r, nodeLine(o, env)}
+		return evalNE(l, r, t)
 
 	case "+":
-		switch lv := l.(type) {
-		case int:
-			switch rv := r.(type) {
-			case int:
-				return lv + rv, nil
-			case float64:
-				return float64(lv) + rv, nil
-			}
-
-		case float64:
-			switch rv := r.(type) {
-			case float64:
-				return lv + rv, nil
-			case int:
-				return lv + float64(rv), nil
-			}
-
-		case string:
-			switch rv := r.(type) {
-			case string:
-				return lv + rv, nil
-			case int:
-				return lv + strconv.Itoa(rv), nil
-			}
-		}
-
-		return nil, &errOpInvalidTypes{o.op, l, r, nodeLine(o, env)}
+		return evalPlus(l, r, t)
 
 	case "-":
-		switch lv := l.(type) {
-		case int:
-			switch rv := r.(type) {
-			case int:
-				return lv - rv, nil
-			case float64:
-				return float64(lv) - rv, nil
-			}
-
-		case float64:
-			switch rv := r.(type) {
-			case float64:
-				return lv - rv, nil
-			case int:
-				return lv - float64(rv), nil
-			}
-		}
-
-		return nil, &errOpInvalidTypes{o.op, l, r, nodeLine(o, env)}
+		return evalMinus(l, r, t)
 
 	case "*":
-		switch lv := l.(type) {
-		case int:
-			switch rv := r.(type) {
-			case int:
-				return lv * rv, nil
-			case float64:
-				return float64(lv) * rv, nil
-			}
-
-		case float64:
-			switch rv := r.(type) {
-			case float64:
-				return lv * rv, nil
-			case int:
-				return lv * float64(rv), nil
-			}
-
-		case string:
-			switch rv := r.(type) {
-			case int:
-				return strings.Repeat(lv, rv), nil
-			}
-		}
-
-		return nil, &errOpInvalidTypes{o.op, l, r, nodeLine(o, env)}
+		return evalMult(l, r, t)
 
 	case "/":
-		switch lv := l.(type) {
-		case int:
-			switch rv := r.(type) {
-			case int:
-				if rv == 0 {
-					return nil, fmt.Errorf("division by zero")
-				}
-				return lv / rv, nil
-			case float64:
-				if rv == 0.0 {
-					return nil, fmt.Errorf("division by zero")
-				}
-				return float64(lv) / rv, nil
-			}
-
-		case float64:
-			switch rv := r.(type) {
-			case float64:
-				if rv == 0.0 {
-					return nil, fmt.Errorf("division by zero")
-				}
-				return lv / rv, nil
-			case int:
-				if rv == 0 {
-					return nil, fmt.Errorf("division by zero")
-				}
-				return lv / float64(rv), nil
-			}
-		}
-
-		return nil, &errOpInvalidTypes{o.op, l, r, nodeLine(o, env)}
+		return evalDiv(l, r, t)
 
 	default:
 		return nil, errUnknownOp{"binary " + o.op, nodeLine(o, env)}
