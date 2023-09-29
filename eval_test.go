@@ -236,3 +236,14 @@ func TestEval(t *testing.T) {
 		}
 	}
 }
+
+func TestEvalInvalidStage(t *testing.T) {
+	env := env{}
+	env.stage = -1
+
+	_, err := nVarRef{"foo", 0}.eval(&env)
+
+	if !strings.Contains(err.Error(), "invalid eval stage") {
+		t.Errorf("unknown error: %s", err)
+	}
+}
