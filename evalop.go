@@ -1,7 +1,6 @@
 package bcl
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -177,12 +176,12 @@ func evalDiv(l, r any, typeErr func(any, any) error) (any, error) {
 		switch rv := r.(type) {
 		case int:
 			if rv == 0 {
-				return nil, fmt.Errorf("division by zero")
+				return nil, errDivisionByZero{}
 			}
 			return lv / rv, nil
 		case float64:
 			if rv == 0.0 {
-				return nil, fmt.Errorf("division by zero")
+				return nil, errDivisionByZero{}
 			}
 			return float64(lv) / rv, nil
 		}
@@ -191,12 +190,12 @@ func evalDiv(l, r any, typeErr func(any, any) error) (any, error) {
 		switch rv := r.(type) {
 		case float64:
 			if rv == 0.0 {
-				return nil, fmt.Errorf("division by zero")
+				return nil, errDivisionByZero{}
 			}
 			return lv / rv, nil
 		case int:
 			if rv == 0 {
-				return nil, fmt.Errorf("division by zero")
+				return nil, errDivisionByZero{}
 			}
 			return lv / float64(rv), nil
 		}

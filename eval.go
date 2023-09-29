@@ -164,7 +164,12 @@ func (o nBinOp) eval(env *env) (any, error) {
 		return evalMult(l, r, t)
 
 	case "/":
-		return evalDiv(l, r, t)
+		res, err := evalDiv(l, r, t)
+		if errdiv, ok := err.(errDivisionByZero); ok {
+			errdiv.line = nodeLine(o, env)
+			return res, errdiv
+		}
+		return res, err
 
 	default:
 		return nil, errUnknownOp{"binary " + o.op, nodeLine(o, env)}
@@ -200,6 +205,8 @@ type (
 		x, y any
 		line int
 	}
+
+	errDivisionByZero struct{ line int }
 )
 
 func (e errInvalidStage) Error() string {
@@ -227,4 +234,8 @@ func (e *errOpInvalidTypes) Error() string {
 		"line %d: op %q: invalid types: %T, %T",
 		e.line, e.op, e.x, e.y,
 	)
+}
+
+func (e errDivisionByZero) Error() string {
+	return fmt.Sprintf("line %d: division by zero", e.line)
 }
