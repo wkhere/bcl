@@ -37,6 +37,8 @@ type strpos struct {
 %token tERR
 %token tEOF
 
+%left tEQ tNE
+%left '<' tLE '>' tGE
 %left  '+' '-'
 %left  '*' '/'
 %right tNOT
@@ -77,6 +79,12 @@ expr:
     | tFLOAT                { $$.expr = nFloatLit{atof($1.t.s),  $1.t.pos} }
     | tSTR                  { $$.expr = nStrLit{unquote($1.t.s), $1.t.pos} }
     | bool_lit              { $$.expr = $1.expr }
+    | expr tEQ expr         { $$.expr = nBinOp{"==", $1.expr, $3.expr} }
+    | expr tNE expr         { $$.expr = nBinOp{"!=", $1.expr, $3.expr} }
+    | expr '<' expr         { $$.expr = nBinOp{"<",  $1.expr, $3.expr} }
+    | expr tLE expr         { $$.expr = nBinOp{"<=", $1.expr, $3.expr} }
+    | expr '>' expr         { $$.expr = nBinOp{">",  $1.expr, $3.expr} }
+    | expr tGE expr         { $$.expr = nBinOp{">=", $1.expr, $3.expr} }
     | expr '+' expr         { $$.expr = nBinOp{"+", $1.expr, $3.expr} }
     | expr '-' expr         { $$.expr = nBinOp{"-", $1.expr, $3.expr} }
     | expr '*' expr         { $$.expr = nBinOp{"*", $1.expr, $3.expr} }

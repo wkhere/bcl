@@ -31,7 +31,11 @@ const tTRUE = 57351
 const tFALSE = 57352
 const tERR = 57353
 const tEOF = 57354
-const tNOT = 57355
+const tEQ = 57355
+const tNE = 57356
+const tLE = 57357
+const tGE = 57358
+const tNOT = 57359
 
 var yyToknames = [...]string{
 	"$end",
@@ -51,6 +55,12 @@ var yyToknames = [...]string{
 	"tFALSE",
 	"tERR",
 	"tEOF",
+	"tEQ",
+	"tNE",
+	"'<'",
+	"tLE",
+	"'>'",
+	"tGE",
 	"'+'",
 	"'-'",
 	"'*'",
@@ -87,55 +97,60 @@ var yyExca = [...]int8{
 
 const yyPrivate = 57344
 
-const yyLast = 51
+const yyLast = 79
 
 var yyAct = [...]int8{
-	12, 39, 25, 26, 27, 28, 27, 28, 7, 25,
-	26, 27, 28, 5, 33, 4, 8, 11, 34, 29,
-	30, 31, 32, 40, 10, 9, 35, 36, 37, 38,
-	17, 24, 14, 15, 16, 6, 3, 21, 2, 1,
-	13, 41, 22, 23, 0, 0, 18, 19, 0, 0,
-	20,
+	12, 51, 31, 32, 33, 34, 33, 34, 4, 25,
+	26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+	36, 37, 38, 8, 52, 10, 41, 42, 43, 44,
+	45, 46, 47, 48, 49, 50, 14, 15, 16, 39,
+	7, 21, 11, 40, 13, 5, 22, 23, 9, 17,
+	24, 6, 3, 53, 2, 1, 18, 19, 0, 0,
+	20, 25, 26, 27, 28, 29, 30, 31, 32, 33,
+	34, 27, 28, 29, 30, 31, 32, 33, 34,
 }
 
 var yyPact = [...]int16{
-	-1000, -1000, 2, -4, 4, -1000, -1000, 19, 13, 10,
-	28, -1000, -16, -1000, -1000, -1000, -1000, -1000, 28, 28,
-	28, 28, -1000, -1000, 6, 28, 28, 28, 28, -1000,
-	-1000, -1000, -9, -1000, 12, -14, -14, -1000, -1000, -1000,
-	28, -16,
+	-1000, -1000, -5, 28, 11, -1000, -1000, 42, 14, 35,
+	32, -1000, 43, -1000, -1000, -1000, -1000, -1000, 32, 32,
+	32, 32, -1000, -1000, 31, 32, 32, 32, 32, 32,
+	32, 32, 32, 32, 32, -1000, -1000, -1000, -9, -1000,
+	13, 51, 51, -22, -22, -22, -22, -20, -20, -1000,
+	-1000, -1000, 32, 43,
 }
 
 var yyPgo = [...]int8{
-	0, 39, 38, 36, 0, 35, 31, 30,
+	0, 55, 54, 52, 0, 51, 50, 49,
 }
 
 var yyR1 = [...]int8{
 	0, 1, 2, 2, 3, 3, 5, 6, 6, 4,
 	4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-	4, 4, 7, 7,
+	4, 4, 4, 4, 4, 4, 4, 4, 7, 7,
 }
 
 var yyR2 = [...]int8{
 	0, 3, 0, 5, 0, 2, 5, 0, 4, 1,
-	1, 1, 1, 1, 3, 3, 3, 3, 2, 2,
-	2, 3, 1, 1,
+	1, 1, 1, 1, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 2, 2, 2, 3, 1, 1,
 }
 
 var yyChk = [...]int16{
 	-1000, -1, -2, -3, 13, 17, -5, 12, 12, 6,
-	11, 7, -4, 12, 4, 5, 6, -7, 18, 19,
-	22, 9, 14, 15, -6, 18, 19, 20, 21, -4,
-	-4, -4, -4, 8, 12, -4, -4, -4, -4, 10,
-	11, -4,
+	11, 7, -4, 12, 4, 5, 6, -7, 24, 25,
+	28, 9, 14, 15, -6, 18, 19, 20, 21, 22,
+	23, 24, 25, 26, 27, -4, -4, -4, -4, 8,
+	12, -4, -4, -4, -4, -4, -4, -4, -4, -4,
+	-4, 10, 11, -4,
 }
 
 var yyDef = [...]int8{
 	2, -2, 4, 0, 0, 1, 5, 0, 0, 0,
 	0, 7, 3, 9, 10, 11, 12, 13, 0, 0,
-	0, 0, 22, 23, 0, 0, 0, 0, 0, 18,
-	19, 20, 0, 6, 0, 14, 15, 16, 17, 21,
-	0, 8,
+	0, 0, 28, 29, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 24, 25, 26, 0, 6,
+	0, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+	23, 27, 0, 8,
 }
 
 var yyTok1 = [...]int8{
@@ -143,9 +158,9 @@ var yyTok1 = [...]int8{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	9, 10, 20, 18, 3, 19, 3, 21, 3, 3,
+	9, 10, 26, 24, 3, 25, 3, 27, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 11, 3, 3, 3, 3, 3, 3, 3, 3,
+	20, 11, 22, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -156,7 +171,7 @@ var yyTok1 = [...]int8{
 
 var yyTok2 = [...]int8{
 	2, 3, 4, 5, 6, 12, 13, 14, 15, 16,
-	17, 22,
+	17, 18, 19, 21, 23, 28,
 }
 
 var yyTok3 = [...]int8{
@@ -576,49 +591,79 @@ yydefault:
 	case 14:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = nBinOp{"+", yyDollar[1].expr, yyDollar[3].expr}
+			yyVAL.expr = nBinOp{"==", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 15:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = nBinOp{"-", yyDollar[1].expr, yyDollar[3].expr}
+			yyVAL.expr = nBinOp{"!=", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 16:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = nBinOp{"*", yyDollar[1].expr, yyDollar[3].expr}
+			yyVAL.expr = nBinOp{"<", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 17:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = nBinOp{"/", yyDollar[1].expr, yyDollar[3].expr}
+			yyVAL.expr = nBinOp{"<=", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 18:
-		yyDollar = yyS[yypt-2 : yypt+1]
+		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = yyDollar[2].expr
+			yyVAL.expr = nBinOp{">", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 19:
-		yyDollar = yyS[yypt-2 : yypt+1]
+		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = nUnOp{"-", yyDollar[2].expr}
+			yyVAL.expr = nBinOp{">=", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 20:
-		yyDollar = yyS[yypt-2 : yypt+1]
+		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = nUnOp{"not", yyDollar[2].expr}
+			yyVAL.expr = nBinOp{"+", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 21:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.expr = yyDollar[2].expr
+			yyVAL.expr = nBinOp{"-", yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 22:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		{
+			yyVAL.expr = nBinOp{"*", yyDollar[1].expr, yyDollar[3].expr}
+		}
+	case 23:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		{
+			yyVAL.expr = nBinOp{"/", yyDollar[1].expr, yyDollar[3].expr}
+		}
+	case 24:
+		yyDollar = yyS[yypt-2 : yypt+1]
+		{
+			yyVAL.expr = yyDollar[2].expr
+		}
+	case 25:
+		yyDollar = yyS[yypt-2 : yypt+1]
+		{
+			yyVAL.expr = nUnOp{"-", yyDollar[2].expr}
+		}
+	case 26:
+		yyDollar = yyS[yypt-2 : yypt+1]
+		{
+			yyVAL.expr = nUnOp{"not", yyDollar[2].expr}
+		}
+	case 27:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		{
+			yyVAL.expr = yyDollar[2].expr
+		}
+	case 28:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
 			yyVAL.expr = nBoolLit{true, yyDollar[1].t.pos}
 		}
-	case 23:
+	case 29:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
 			yyVAL.expr = nBoolLit{false, yyDollar[1].t.pos}
