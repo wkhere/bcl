@@ -6,8 +6,9 @@ var z1 = service1_local_base_port - service1_default_port
 var z2 = -1 - (---10/2-1) + z1
 var s  = "sth" + 1 + "-" + domain
 var cond  = true
-var cond2 = false
-var cond_big = not not not not cond
+var cond_z0 = z0 < 0 
+var cond_z1 = 10000 >= z1
+var cond_long = not not not not cond
 var pi = 3.14159265
 
 
@@ -15,7 +16,7 @@ tunnel "hostyhost-service1" {
 	local_port  = service1_local_base_port
 	remote_port = service1_default_port
 	host = "hosty." + domain
-	enabled = not cond2
+	enabled = not cond_long
 }
 
 service1 "another-service1" {
@@ -24,11 +25,14 @@ service1 "another-service1" {
 	remote_port = service1_default_port
 	enabled  = cond
 	prepared = true
-	started  = cond_big
+	started  = cond_long
+	z0neg = cond_z0
+	z1big = cond_z1
 	str = "a" * 4
 	u = 4+3*2
 	v = z0
 	x = z2 - z1
+	x_is5 = z2 - z1 == 5
 	y = 3 - ---8/4 - (+1-3/2)
 }
 
