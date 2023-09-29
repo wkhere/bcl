@@ -147,6 +147,68 @@ var evalTab = []evaltc{
 	evalid(`var x= (1==1)!=(2!=2)  blk "b" {x=x}`,
 		bb{{"blk", "b", emap{"x": true}}},
 	),
+	// 85
+	evalid(`var x= 1<2  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 1>2  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": false}}}),
+	evalid(`var x= 2>1  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 1<=1 blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 1<=2 blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	// 90
+	evalid(`var x= 1>=1 blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 2>=1 blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 1<2.0  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 1.0<2  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 2>1.0  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	// 95
+	evalid(`var x= 2.0>1  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 1.0<2.0  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 2.0>1.0  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 1<=1.0  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 1<=2.0  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	// 100
+	evalid(`var x= 1.0<=1  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 1.0<=2  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 1>=1.0  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 2>=1.0  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 1.0>=1  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	// 105
+	evalid(`var x= 2.0>=1  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 1.0<=1.0  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 1.0<=2.0  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 1.0>=1.0  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= 2.0>=1.0  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	// 110
+	evalid(`var x= "a"<"b"  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= "b">"a"  blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= "a"<="a" blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= "a"<="b" blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	evalid(`var x= "b">="b" blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	// 115
+	evalid(`var x= "b">="a" blk "b" {x=x}`, bb{{"blk", "b", emap{"x": true}}}),
+	eerror(`var x= false<true`, `invalid types: bool, bool`),
+	eerror(`var x= false>true`, `invalid types: bool, bool`),
+	eerror(`var x= false<=true`, `invalid types: bool, bool`),
+	eerror(`var x= false>=true`, `invalid types: bool, bool`),
+	// 120
+	eerror(`var x= true<1`, `invalid types: bool, int`),
+	eerror(`var x= true>1`, `invalid types: bool, int`),
+	eerror(`var x= true<=1`, `invalid types: bool, int`),
+	eerror(`var x= true>=1`, `invalid types: bool, int`),
+	eerror(`var x= 1<true`, `invalid types: int, bool`),
+	// 125
+	eerror(`var x= 1>true`, `invalid types: int, bool`),
+	eerror(`var x= 1<=true`, `invalid types: int, bool`),
+	eerror(`var x= 1>=true`, `invalid types: int, bool`),
+	eerror(`var x= 1<"a"`, `invalid types: int, string`),
+	eerror(`var x= 1>"a"`, `invalid types: int, string`),
+	// 130
+	eerror(`var x= 1<="a"`, `invalid types: int, string`),
+	eerror(`var x= 1>="a"`, `invalid types: int, string`),
+	eerror(`var x= "a"<1`, `invalid types: string, int`),
+	eerror(`var x= "a">1`, `invalid types: string, int`),
+	eerror(`var x= "a"<=1`, `invalid types: string, int`),
+	// 135
+	eerror(`var x= "a">=1`, `invalid types: string, int`),
 
 	eerrorAst(
 		nTop{vars: vmap{"a": nUnOp{"@", nIntLit{1, 0}}}},

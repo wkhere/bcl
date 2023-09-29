@@ -154,6 +154,18 @@ func (o nBinOp) eval(env *env) (any, error) {
 	case "!=":
 		return evalNE(l, r, t)
 
+	case "<":
+		return evalLT(l, r, t)
+
+	case "<=":
+		return evalLE(l, r, t)
+
+	case ">":
+		return evalGT(l, r, t)
+
+	case ">=":
+		return evalGE(l, r, t)
+
 	case "+":
 		return evalPlus(l, r, t)
 

@@ -81,6 +81,10 @@ expr:
     | bool_lit              { $$.expr = $1.expr }
     | expr tEQ expr         { $$.expr = nBinOp{"==", $1.expr, $3.expr} }
     | expr tNE expr         { $$.expr = nBinOp{"!=", $1.expr, $3.expr} }
+    | expr '<' expr         { $$.expr = nBinOp{"<",  $1.expr, $3.expr} }
+    | expr tLE expr         { $$.expr = nBinOp{"<=", $1.expr, $3.expr} }
+    | expr '>' expr         { $$.expr = nBinOp{">",  $1.expr, $3.expr} }
+    | expr tGE expr         { $$.expr = nBinOp{">=", $1.expr, $3.expr} }
     | expr '+' expr         { $$.expr = nBinOp{"+", $1.expr, $3.expr} }
     | expr '-' expr         { $$.expr = nBinOp{"-", $1.expr, $3.expr} }
     | expr '*' expr         { $$.expr = nBinOp{"*", $1.expr, $3.expr} }
