@@ -21,6 +21,13 @@ more on errors:
 - compatibility with HCL-style resources, which look like:
   resource "type" "name" .... { }
 
+- fix: when a field is defined more than once, only the last clause
+  is evaluated; should evaluate all then overwrite with the last one
+  (1. current behavior unintuitive, 2. prep for side-effect exprs like ++i)
+
+- consider fields to be resolvable like vars in the scope of the current block;
+  then they would act like local vars
+
 - nested structs/dicts; design carefully
 
 - ability to use reference to other block's field, possibly nested
