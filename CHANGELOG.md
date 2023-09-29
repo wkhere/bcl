@@ -1,4 +1,6 @@
-### v0.6.2-dev
+### v0.6.2
+* comparison operators
+* improved tests & docs
 
 ### v0.6.1
 * get line info into eval errors

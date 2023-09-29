@@ -89,7 +89,9 @@ At the same time:
   * [x] floats
   * [ ] lists
   * [ ] nested blocks?
-* [ ] more operators
+* [x] more operators
+  * [x] comparison
+  * [ ] boolean algebra
 * [ ] string interpolation
 * [ ] `getenv()` builtin
 * [ ] unmarshaling options
