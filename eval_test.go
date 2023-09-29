@@ -20,8 +20,8 @@ type bb = []Block
 func evalid(in string, bb []Block) evaltc { return evaltc{in, nil, bb, ""} }
 func eerror(in string, e string) evaltc   { return evaltc{in, nil, bb{}, e} }
 
-func evalidRaw(in nTop, bb []Block) evaltc { return evaltc{"", &in, bb, ""} }
-func eerrorRaw(in nTop, e string) evaltc   { return evaltc{"", &in, bb{}, e} }
+func evalidAst(in nTop, bb []Block) evaltc { return evaltc{"", &in, bb, ""} }
+func eerrorAst(in nTop, e string) evaltc   { return evaltc{"", &in, bb{}, e} }
 
 var evalTab = []evaltc{
 	evalid(``, bb{}),
@@ -86,11 +86,11 @@ var evalTab = []evaltc{
 	eerror(`var x=1/0.0  `, `division by zero`),
 	eerror(`var x=1.0/0.0`, `division by zero`),
 	// 50
-	eerrorRaw(
+	eerrorAst(
 		nTop{vars: vmap{"a": nUnOp{"@", nIntLit{1, 0}}}},
 		`unknown op "unary @"`,
 	),
-	eerrorRaw(
+	eerrorAst(
 		nTop{vars: vmap{"a": nBinOp{"@", nIntLit{1, 0}, nIntLit{2, 0}}}},
 		`unknown op "binary @"`,
 	),
