@@ -188,6 +188,53 @@ func (o nBinOp) eval(env *env) (any, error) {
 	}
 }
 
+func (o nSCOp) eval(env *env) (any, error) {
+	l, err := o.a.eval(env)
+	if err != nil {
+		return nil, err
+	}
+
+	switch o.op {
+	case "or", "and":
+	default:
+		return nil, errUnknownOp{"short circuit " + o.op, nodeLine(o, env)}
+	}
+
+	lv, ok := l.(bool)
+	if !ok {
+		return nil, &errOpInvalidTypeDetailed{
+			op:     o.op,
+			detail: "of 1st operand",
+			x:      l,
+			line:   nodeLine(o, env),
+		}
+	}
+
+	switch {
+	case o.op == "and" && !lv:
+		return false, nil
+
+	case o.op == "or" && lv:
+		return true, nil
+	}
+
+	r, err := o.b.eval(env)
+	if err != nil {
+		return nil, err
+	}
+	rv, ok := r.(bool)
+	if !ok {
+		return nil, &errOpInvalidTypeDetailed{
+			op:     o.op,
+			detail: "of 2nd operand",
+			x:      r,
+			line:   nodeLine(o, env),
+		}
+	}
+
+	return rv, nil
+}
+
 func nodeLine(n node, env *env) int {
 	return env.lc.lineAt(n.getpos())
 }
@@ -199,19 +246,30 @@ type (
 		ident
 		line int
 	}
+
 	errCycle struct {
 		ident
 		line int
 	}
+
 	errUnknownOp struct {
 		op
 		line int
 	}
+
 	errOpInvalidType struct {
 		op   op
 		x    any
 		line int
 	}
+
+	errOpInvalidTypeDetailed struct {
+		op     op
+		detail string
+		x      any
+		line   int
+	}
+
 	errOpInvalidTypes struct {
 		op   op
 		x, y any
@@ -239,6 +297,13 @@ func (e errUnknownOp) Error() string {
 
 func (e *errOpInvalidType) Error() string {
 	return fmt.Sprintf("line %d: op %q: invalid type: %T", e.line, e.op, e.x)
+}
+
+func (e *errOpInvalidTypeDetailed) Error() string {
+	return fmt.Sprintf(
+		"line %d: op %q: invalid type %s: %T",
+		e.line, e.op, e.detail, e.x,
+	)
 }
 
 func (e *errOpInvalidTypes) Error() string {

@@ -7,10 +7,10 @@ more on errors:
 - return all errors (modulo parser sync)
 - when it's done, consider adding BCL to github.com/Boeing/config-file-validator
 
-- bin ops: 
-	== !=      # for int float str bool
++ bin ops: 
+	== !=        # for int float str bool
     < > <= >=  # for int float str
- 	and or 	   # for bool, short-circuit
+ 	and or 	     # for bool, short-circuit
 
 - builtin functions:
 	- getenv(key)

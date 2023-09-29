@@ -91,7 +91,7 @@ At the same time:
   * [ ] nested blocks?
 * [x] more operators
   * [x] comparison
-  * [ ] boolean algebra
+  * [x] boolean algebra
 * [ ] string interpolation
 * [ ] `getenv()` builtin
 * [ ] unmarshaling options

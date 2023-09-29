@@ -193,6 +193,34 @@ var evalTab = []evaltc{
 	eerror(`var x= "a"<=1`, `invalid types: string, int`),
 	// 135
 	eerror(`var x= "a">=1`, `invalid types: string, int`),
+	eerror(`var x= "a"<1.0`, `invalid types: string, float`),
+	eerror(`var x= "a">1.0`, `invalid types: string, float`),
+	eerror(`var x= 1.0<"a"`, `invalid types: float64, string`),
+	eerror(`var x= 1.0>"a"`, `invalid types: float64, string`),
+	// 140
+	evalid(`var x= true or true    blk "b" {x=x}`, xtrue),
+	evalid(`var x= true or false   blk "b" {x=x}`, xtrue),
+	evalid(`var x= false or true   blk "b" {x=x}`, xtrue),
+	evalid(`var x= false or false  blk "b" {x=x}`, xfalse),
+	evalid(`var x= false or false or true  blk "b" {x=x}`, xtrue),
+	// 145
+	evalid(`var x= true and true   blk "b" {x=x}`, xtrue),
+	evalid(`var x= true and false  blk "b" {x=x}`, xfalse),
+	evalid(`var x= false and true  blk "b" {x=x}`, xfalse),
+	evalid(`var x= false and false blk "b" {x=x}`, xfalse),
+	evalid(`var x= true and true and false  blk "b" {x=x}`, xfalse),
+	// 150
+	evalid(`var x= 1==1 or 1==2 and 1==3  blk "b" {x=x}`, xtrue),
+	evalid(`var x= (1==1 or 1==2) and 1==3  blk "b" {x=x}`, xfalse),
+	evalid(`var x= not false and true  blk "b" {x=x}`, xtrue),
+	evalid(`var x= not false or true   blk "b" {x=x}`, xtrue),
+	evalid(`var x= not (false or true) blk "b" {x=x}`, xfalse),
+	// 155
+	eerror(`var x= 1 or false`, `invalid type of 1st operand: int`),
+	eerror(`var x= false or 1`, `invalid type of 2nd operand: int`),
+	eerror(`var x= 1 or false or 1`, `invalid type of 1st operand: int`),
+	eerror(`var x= false or (false or 1)`, `invalid type of 2nd operand: int`),
+	eerror(`var x= 1<"a" or false`, `invalid types: int, string`),
 
 	eerrorAst(
 		nTop{vars: vmap{"a": nUnOp{"@", nIntLit{1, 0}}}},
@@ -201,6 +229,10 @@ var evalTab = []evaltc{
 	eerrorAst(
 		nTop{vars: vmap{"a": nBinOp{"@", nIntLit{1, 0}, nIntLit{2, 0}}}},
 		`unknown op "binary @"`,
+	),
+	eerrorAst(
+		nTop{vars: vmap{"a": nSCOp{"@", nIntLit{1, 0}, nIntLit{2, 0}}}},
+		`unknown op "short circuit @"`,
 	),
 }
 

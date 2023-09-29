@@ -59,6 +59,8 @@ var lexTab = []struct {
 		{tERR, "", fmt.Errorf(`expected char '!' to start token "!="`), 1},
 	}},
 	{`{`, ii{{'{', "{", nil, 1}, teof(1)}},
+	{`or`, ii{{tOR, "or", nil, 2}, teof(2)}},
+	{`and`, ii{{tAND, "and", nil, 3}, teof(3)}},
 }
 
 func TestLexer(t *testing.T) {

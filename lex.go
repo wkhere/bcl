@@ -196,6 +196,8 @@ var keywords = map[string]itemType{
 	"true":  tTRUE,
 	"false": tFALSE,
 	"not":   tNOT,
+	"and":   tAND,
+	"or":    tOR,
 }
 
 type twoRuneMatch struct {

@@ -46,6 +46,11 @@ type (
 		a, b expr
 	}
 
+	nSCOp struct { // SC = Short Circuit
+		op   op
+		a, b expr
+	}
+
 	nBlock struct {
 		typ    ident
 		name   ident
@@ -62,4 +67,5 @@ type (
 
 func (p pos) getpos() int    { return int(p) }
 func (o nUnOp) getpos() int  { return o.a.getpos() }
+func (o nSCOp) getpos() int  { return o.a.getpos() }
 func (o nBinOp) getpos() int { return o.a.getpos() }

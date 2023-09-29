@@ -3,7 +3,7 @@ state 0
 	$accept: .all $end 
 	vars: .    (2)
 
-	.  reduce 2 (src line 56)
+	.  reduce 2 (src line 58)
 
 	all  goto 1
 	vars  goto 2
@@ -21,7 +21,7 @@ state 2
 	blocks: .    (4)
 
 	tVAR  shift 4
-	.  reduce 4 (src line 60)
+	.  reduce 4 (src line 62)
 
 	blocks  goto 3
 
@@ -45,13 +45,13 @@ state 4
 state 5
 	all:  vars blocks tEOF.    (1)
 
-	.  reduce 1 (src line 47)
+	.  reduce 1 (src line 49)
 
 
 state 6
 	blocks:  blocks block.    (5)
 
-	.  reduce 5 (src line 61)
+	.  reduce 5 (src line 63)
 
 
 state 7
@@ -97,12 +97,14 @@ state 11
 	block:  tIDENT tSTR '{'.fields '}' 
 	fields: .    (7)
 
-	.  reduce 7 (src line 73)
+	.  reduce 7 (src line 75)
 
 	fields  goto 24
 
 state 12
 	vars:  vars tVAR tIDENT '=' expr.    (3)
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
 	expr:  expr.tEQ expr 
 	expr:  expr.tNE expr 
 	expr:  expr.'<' expr 
@@ -114,47 +116,49 @@ state 12
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
-	tEQ  shift 25
-	tNE  shift 26
-	'<'  shift 27
-	tLE  shift 28
-	'>'  shift 29
-	tGE  shift 30
-	'+'  shift 31
-	'-'  shift 32
-	'*'  shift 33
-	'/'  shift 34
-	.  reduce 3 (src line 57)
+	tOR  shift 25
+	tAND  shift 26
+	tEQ  shift 27
+	tNE  shift 28
+	'<'  shift 29
+	tLE  shift 30
+	'>'  shift 31
+	tGE  shift 32
+	'+'  shift 33
+	'-'  shift 34
+	'*'  shift 35
+	'/'  shift 36
+	.  reduce 3 (src line 59)
 
 
 state 13
 	expr:  tIDENT.    (9)
 
-	.  reduce 9 (src line 76)
+	.  reduce 9 (src line 78)
 
 
 state 14
 	expr:  tINT.    (10)
 
-	.  reduce 10 (src line 78)
+	.  reduce 10 (src line 80)
 
 
 state 15
 	expr:  tFLOAT.    (11)
 
-	.  reduce 11 (src line 79)
+	.  reduce 11 (src line 81)
 
 
 state 16
 	expr:  tSTR.    (12)
 
-	.  reduce 12 (src line 80)
+	.  reduce 12 (src line 82)
 
 
 state 17
 	expr:  bool_lit.    (13)
 
-	.  reduce 13 (src line 81)
+	.  reduce 13 (src line 83)
 
 
 state 18
@@ -172,7 +176,7 @@ state 18
 	tNOT  shift 20
 	.  error
 
-	expr  goto 35
+	expr  goto 37
 	bool_lit  goto 17
 
 state 19
@@ -190,7 +194,7 @@ state 19
 	tNOT  shift 20
 	.  error
 
-	expr  goto 36
+	expr  goto 38
 	bool_lit  goto 17
 
 state 20
@@ -208,7 +212,7 @@ state 20
 	tNOT  shift 20
 	.  error
 
-	expr  goto 37
+	expr  goto 39
 	bool_lit  goto 17
 
 state 21
@@ -226,68 +230,32 @@ state 21
 	tNOT  shift 20
 	.  error
 
-	expr  goto 38
+	expr  goto 40
 	bool_lit  goto 17
 
 state 22
-	bool_lit:  tTRUE.    (28)
+	bool_lit:  tTRUE.    (30)
 
-	.  reduce 28 (src line 97)
+	.  reduce 30 (src line 101)
 
 
 state 23
-	bool_lit:  tFALSE.    (29)
+	bool_lit:  tFALSE.    (31)
 
-	.  reduce 29 (src line 99)
+	.  reduce 31 (src line 103)
 
 
 state 24
 	block:  tIDENT tSTR '{' fields.'}' 
 	fields:  fields.tIDENT '=' expr 
 
-	'}'  shift 39
-	tIDENT  shift 40
+	'}'  shift 41
+	tIDENT  shift 42
 	.  error
 
 
 state 25
-	expr:  expr tEQ.expr 
-
-	tINT  shift 14
-	tFLOAT  shift 15
-	tSTR  shift 16
-	'('  shift 21
-	tIDENT  shift 13
-	tTRUE  shift 22
-	tFALSE  shift 23
-	'+'  shift 18
-	'-'  shift 19
-	tNOT  shift 20
-	.  error
-
-	expr  goto 41
-	bool_lit  goto 17
-
-state 26
-	expr:  expr tNE.expr 
-
-	tINT  shift 14
-	tFLOAT  shift 15
-	tSTR  shift 16
-	'('  shift 21
-	tIDENT  shift 13
-	tTRUE  shift 22
-	tFALSE  shift 23
-	'+'  shift 18
-	'-'  shift 19
-	tNOT  shift 20
-	.  error
-
-	expr  goto 42
-	bool_lit  goto 17
-
-state 27
-	expr:  expr '<'.expr 
+	expr:  expr tOR.expr 
 
 	tINT  shift 14
 	tFLOAT  shift 15
@@ -304,8 +272,8 @@ state 27
 	expr  goto 43
 	bool_lit  goto 17
 
-state 28
-	expr:  expr tLE.expr 
+state 26
+	expr:  expr tAND.expr 
 
 	tINT  shift 14
 	tFLOAT  shift 15
@@ -322,8 +290,8 @@ state 28
 	expr  goto 44
 	bool_lit  goto 17
 
-state 29
-	expr:  expr '>'.expr 
+state 27
+	expr:  expr tEQ.expr 
 
 	tINT  shift 14
 	tFLOAT  shift 15
@@ -340,8 +308,8 @@ state 29
 	expr  goto 45
 	bool_lit  goto 17
 
-state 30
-	expr:  expr tGE.expr 
+state 28
+	expr:  expr tNE.expr 
 
 	tINT  shift 14
 	tFLOAT  shift 15
@@ -358,8 +326,8 @@ state 30
 	expr  goto 46
 	bool_lit  goto 17
 
-state 31
-	expr:  expr '+'.expr 
+state 29
+	expr:  expr '<'.expr 
 
 	tINT  shift 14
 	tFLOAT  shift 15
@@ -376,8 +344,8 @@ state 31
 	expr  goto 47
 	bool_lit  goto 17
 
-state 32
-	expr:  expr '-'.expr 
+state 30
+	expr:  expr tLE.expr 
 
 	tINT  shift 14
 	tFLOAT  shift 15
@@ -394,8 +362,8 @@ state 32
 	expr  goto 48
 	bool_lit  goto 17
 
-state 33
-	expr:  expr '*'.expr 
+state 31
+	expr:  expr '>'.expr 
 
 	tINT  shift 14
 	tFLOAT  shift 15
@@ -412,8 +380,8 @@ state 33
 	expr  goto 49
 	bool_lit  goto 17
 
-state 34
-	expr:  expr '/'.expr 
+state 32
+	expr:  expr tGE.expr 
 
 	tINT  shift 14
 	tFLOAT  shift 15
@@ -430,298 +398,44 @@ state 34
 	expr  goto 50
 	bool_lit  goto 17
 
+state 33
+	expr:  expr '+'.expr 
+
+	tINT  shift 14
+	tFLOAT  shift 15
+	tSTR  shift 16
+	'('  shift 21
+	tIDENT  shift 13
+	tTRUE  shift 22
+	tFALSE  shift 23
+	'+'  shift 18
+	'-'  shift 19
+	tNOT  shift 20
+	.  error
+
+	expr  goto 51
+	bool_lit  goto 17
+
+state 34
+	expr:  expr '-'.expr 
+
+	tINT  shift 14
+	tFLOAT  shift 15
+	tSTR  shift 16
+	'('  shift 21
+	tIDENT  shift 13
+	tTRUE  shift 22
+	tFALSE  shift 23
+	'+'  shift 18
+	'-'  shift 19
+	tNOT  shift 20
+	.  error
+
+	expr  goto 52
+	bool_lit  goto 17
+
 state 35
-	expr:  expr.tEQ expr 
-	expr:  expr.tNE expr 
-	expr:  expr.'<' expr 
-	expr:  expr.tLE expr 
-	expr:  expr.'>' expr 
-	expr:  expr.tGE expr 
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-	expr:  '+' expr.    (24)
-
-	.  reduce 24 (src line 92)
-
-
-state 36
-	expr:  expr.tEQ expr 
-	expr:  expr.tNE expr 
-	expr:  expr.'<' expr 
-	expr:  expr.tLE expr 
-	expr:  expr.'>' expr 
-	expr:  expr.tGE expr 
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-	expr:  '-' expr.    (25)
-
-	.  reduce 25 (src line 93)
-
-
-state 37
-	expr:  expr.tEQ expr 
-	expr:  expr.tNE expr 
-	expr:  expr.'<' expr 
-	expr:  expr.tLE expr 
-	expr:  expr.'>' expr 
-	expr:  expr.tGE expr 
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-	expr:  tNOT expr.    (26)
-
-	.  reduce 26 (src line 94)
-
-
-state 38
-	expr:  expr.tEQ expr 
-	expr:  expr.tNE expr 
-	expr:  expr.'<' expr 
-	expr:  expr.tLE expr 
-	expr:  expr.'>' expr 
-	expr:  expr.tGE expr 
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-	expr:  '(' expr.')' 
-
-	')'  shift 51
-	tEQ  shift 25
-	tNE  shift 26
-	'<'  shift 27
-	tLE  shift 28
-	'>'  shift 29
-	tGE  shift 30
-	'+'  shift 31
-	'-'  shift 32
-	'*'  shift 33
-	'/'  shift 34
-	.  error
-
-
-state 39
-	block:  tIDENT tSTR '{' fields '}'.    (6)
-
-	.  reduce 6 (src line 63)
-
-
-state 40
-	fields:  fields tIDENT.'=' expr 
-
-	'='  shift 52
-	.  error
-
-
-state 41
-	expr:  expr.tEQ expr 
-	expr:  expr tEQ expr.    (14)
-	expr:  expr.tNE expr 
-	expr:  expr.'<' expr 
-	expr:  expr.tLE expr 
-	expr:  expr.'>' expr 
-	expr:  expr.tGE expr 
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-
-	'<'  shift 27
-	tLE  shift 28
-	'>'  shift 29
-	tGE  shift 30
-	'+'  shift 31
-	'-'  shift 32
-	'*'  shift 33
-	'/'  shift 34
-	.  reduce 14 (src line 82)
-
-
-state 42
-	expr:  expr.tEQ expr 
-	expr:  expr.tNE expr 
-	expr:  expr tNE expr.    (15)
-	expr:  expr.'<' expr 
-	expr:  expr.tLE expr 
-	expr:  expr.'>' expr 
-	expr:  expr.tGE expr 
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-
-	'<'  shift 27
-	tLE  shift 28
-	'>'  shift 29
-	tGE  shift 30
-	'+'  shift 31
-	'-'  shift 32
-	'*'  shift 33
-	'/'  shift 34
-	.  reduce 15 (src line 83)
-
-
-state 43
-	expr:  expr.tEQ expr 
-	expr:  expr.tNE expr 
-	expr:  expr.'<' expr 
-	expr:  expr '<' expr.    (16)
-	expr:  expr.tLE expr 
-	expr:  expr.'>' expr 
-	expr:  expr.tGE expr 
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-
-	'+'  shift 31
-	'-'  shift 32
-	'*'  shift 33
-	'/'  shift 34
-	.  reduce 16 (src line 84)
-
-
-state 44
-	expr:  expr.tEQ expr 
-	expr:  expr.tNE expr 
-	expr:  expr.'<' expr 
-	expr:  expr.tLE expr 
-	expr:  expr tLE expr.    (17)
-	expr:  expr.'>' expr 
-	expr:  expr.tGE expr 
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-
-	'+'  shift 31
-	'-'  shift 32
-	'*'  shift 33
-	'/'  shift 34
-	.  reduce 17 (src line 85)
-
-
-state 45
-	expr:  expr.tEQ expr 
-	expr:  expr.tNE expr 
-	expr:  expr.'<' expr 
-	expr:  expr.tLE expr 
-	expr:  expr.'>' expr 
-	expr:  expr '>' expr.    (18)
-	expr:  expr.tGE expr 
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-
-	'+'  shift 31
-	'-'  shift 32
-	'*'  shift 33
-	'/'  shift 34
-	.  reduce 18 (src line 86)
-
-
-state 46
-	expr:  expr.tEQ expr 
-	expr:  expr.tNE expr 
-	expr:  expr.'<' expr 
-	expr:  expr.tLE expr 
-	expr:  expr.'>' expr 
-	expr:  expr.tGE expr 
-	expr:  expr tGE expr.    (19)
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-
-	'+'  shift 31
-	'-'  shift 32
-	'*'  shift 33
-	'/'  shift 34
-	.  reduce 19 (src line 87)
-
-
-state 47
-	expr:  expr.tEQ expr 
-	expr:  expr.tNE expr 
-	expr:  expr.'<' expr 
-	expr:  expr.tLE expr 
-	expr:  expr.'>' expr 
-	expr:  expr.tGE expr 
-	expr:  expr.'+' expr 
-	expr:  expr '+' expr.    (20)
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-
-	'*'  shift 33
-	'/'  shift 34
-	.  reduce 20 (src line 88)
-
-
-state 48
-	expr:  expr.tEQ expr 
-	expr:  expr.tNE expr 
-	expr:  expr.'<' expr 
-	expr:  expr.tLE expr 
-	expr:  expr.'>' expr 
-	expr:  expr.tGE expr 
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr '-' expr.    (21)
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-
-	'*'  shift 33
-	'/'  shift 34
-	.  reduce 21 (src line 89)
-
-
-state 49
-	expr:  expr.tEQ expr 
-	expr:  expr.tNE expr 
-	expr:  expr.'<' expr 
-	expr:  expr.tLE expr 
-	expr:  expr.'>' expr 
-	expr:  expr.tGE expr 
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr '*' expr.    (22)
-	expr:  expr.'/' expr 
-
-	.  reduce 22 (src line 90)
-
-
-state 50
-	expr:  expr.tEQ expr 
-	expr:  expr.tNE expr 
-	expr:  expr.'<' expr 
-	expr:  expr.tLE expr 
-	expr:  expr.'>' expr 
-	expr:  expr.tGE expr 
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-	expr:  expr '/' expr.    (23)
-
-	.  reduce 23 (src line 91)
-
-
-state 51
-	expr:  '(' expr ')'.    (27)
-
-	.  reduce 27 (src line 95)
-
-
-state 52
-	fields:  fields tIDENT '='.expr 
+	expr:  expr '*'.expr 
 
 	tINT  shift 14
 	tFLOAT  shift 15
@@ -738,8 +452,126 @@ state 52
 	expr  goto 53
 	bool_lit  goto 17
 
-state 53
-	fields:  fields tIDENT '=' expr.    (8)
+state 36
+	expr:  expr '/'.expr 
+
+	tINT  shift 14
+	tFLOAT  shift 15
+	tSTR  shift 16
+	'('  shift 21
+	tIDENT  shift 13
+	tTRUE  shift 22
+	tFALSE  shift 23
+	'+'  shift 18
+	'-'  shift 19
+	tNOT  shift 20
+	.  error
+
+	expr  goto 54
+	bool_lit  goto 17
+
+state 37
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
+	expr:  expr.tEQ expr 
+	expr:  expr.tNE expr 
+	expr:  expr.'<' expr 
+	expr:  expr.tLE expr 
+	expr:  expr.'>' expr 
+	expr:  expr.tGE expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  '+' expr.    (26)
+
+	.  reduce 26 (src line 96)
+
+
+state 38
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
+	expr:  expr.tEQ expr 
+	expr:  expr.tNE expr 
+	expr:  expr.'<' expr 
+	expr:  expr.tLE expr 
+	expr:  expr.'>' expr 
+	expr:  expr.tGE expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  '-' expr.    (27)
+
+	.  reduce 27 (src line 97)
+
+
+state 39
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
+	expr:  expr.tEQ expr 
+	expr:  expr.tNE expr 
+	expr:  expr.'<' expr 
+	expr:  expr.tLE expr 
+	expr:  expr.'>' expr 
+	expr:  expr.tGE expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  tNOT expr.    (28)
+
+	.  reduce 28 (src line 98)
+
+
+state 40
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
+	expr:  expr.tEQ expr 
+	expr:  expr.tNE expr 
+	expr:  expr.'<' expr 
+	expr:  expr.tLE expr 
+	expr:  expr.'>' expr 
+	expr:  expr.tGE expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  '(' expr.')' 
+
+	')'  shift 55
+	tOR  shift 25
+	tAND  shift 26
+	tEQ  shift 27
+	tNE  shift 28
+	'<'  shift 29
+	tLE  shift 30
+	'>'  shift 31
+	tGE  shift 32
+	'+'  shift 33
+	'-'  shift 34
+	'*'  shift 35
+	'/'  shift 36
+	.  error
+
+
+state 41
+	block:  tIDENT tSTR '{' fields '}'.    (6)
+
+	.  reduce 6 (src line 65)
+
+
+state 42
+	fields:  fields tIDENT.'=' expr 
+
+	'='  shift 56
+	.  error
+
+
+state 43
+	expr:  expr.tOR expr 
+	expr:  expr tOR expr.    (14)
+	expr:  expr.tAND expr 
 	expr:  expr.tEQ expr 
 	expr:  expr.tNE expr 
 	expr:  expr.'<' expr 
@@ -751,28 +583,327 @@ state 53
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
-	tEQ  shift 25
-	tNE  shift 26
-	'<'  shift 27
-	tLE  shift 28
-	'>'  shift 29
-	tGE  shift 30
-	'+'  shift 31
-	'-'  shift 32
-	'*'  shift 33
-	'/'  shift 34
-	.  reduce 8 (src line 74)
+	tAND  shift 26
+	tEQ  shift 27
+	tNE  shift 28
+	'<'  shift 29
+	tLE  shift 30
+	'>'  shift 31
+	tGE  shift 32
+	'+'  shift 33
+	'-'  shift 34
+	'*'  shift 35
+	'/'  shift 36
+	.  reduce 14 (src line 84)
 
 
-28 terminals, 8 nonterminals
-30 grammar rules, 54/16000 states
+state 44
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
+	expr:  expr tAND expr.    (15)
+	expr:  expr.tEQ expr 
+	expr:  expr.tNE expr 
+	expr:  expr.'<' expr 
+	expr:  expr.tLE expr 
+	expr:  expr.'>' expr 
+	expr:  expr.tGE expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+
+	tEQ  shift 27
+	tNE  shift 28
+	'<'  shift 29
+	tLE  shift 30
+	'>'  shift 31
+	tGE  shift 32
+	'+'  shift 33
+	'-'  shift 34
+	'*'  shift 35
+	'/'  shift 36
+	.  reduce 15 (src line 85)
+
+
+state 45
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
+	expr:  expr.tEQ expr 
+	expr:  expr tEQ expr.    (16)
+	expr:  expr.tNE expr 
+	expr:  expr.'<' expr 
+	expr:  expr.tLE expr 
+	expr:  expr.'>' expr 
+	expr:  expr.tGE expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+
+	'<'  shift 29
+	tLE  shift 30
+	'>'  shift 31
+	tGE  shift 32
+	'+'  shift 33
+	'-'  shift 34
+	'*'  shift 35
+	'/'  shift 36
+	.  reduce 16 (src line 86)
+
+
+state 46
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
+	expr:  expr.tEQ expr 
+	expr:  expr.tNE expr 
+	expr:  expr tNE expr.    (17)
+	expr:  expr.'<' expr 
+	expr:  expr.tLE expr 
+	expr:  expr.'>' expr 
+	expr:  expr.tGE expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+
+	'<'  shift 29
+	tLE  shift 30
+	'>'  shift 31
+	tGE  shift 32
+	'+'  shift 33
+	'-'  shift 34
+	'*'  shift 35
+	'/'  shift 36
+	.  reduce 17 (src line 87)
+
+
+state 47
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
+	expr:  expr.tEQ expr 
+	expr:  expr.tNE expr 
+	expr:  expr.'<' expr 
+	expr:  expr '<' expr.    (18)
+	expr:  expr.tLE expr 
+	expr:  expr.'>' expr 
+	expr:  expr.tGE expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+
+	'+'  shift 33
+	'-'  shift 34
+	'*'  shift 35
+	'/'  shift 36
+	.  reduce 18 (src line 88)
+
+
+state 48
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
+	expr:  expr.tEQ expr 
+	expr:  expr.tNE expr 
+	expr:  expr.'<' expr 
+	expr:  expr.tLE expr 
+	expr:  expr tLE expr.    (19)
+	expr:  expr.'>' expr 
+	expr:  expr.tGE expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+
+	'+'  shift 33
+	'-'  shift 34
+	'*'  shift 35
+	'/'  shift 36
+	.  reduce 19 (src line 89)
+
+
+state 49
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
+	expr:  expr.tEQ expr 
+	expr:  expr.tNE expr 
+	expr:  expr.'<' expr 
+	expr:  expr.tLE expr 
+	expr:  expr.'>' expr 
+	expr:  expr '>' expr.    (20)
+	expr:  expr.tGE expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+
+	'+'  shift 33
+	'-'  shift 34
+	'*'  shift 35
+	'/'  shift 36
+	.  reduce 20 (src line 90)
+
+
+state 50
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
+	expr:  expr.tEQ expr 
+	expr:  expr.tNE expr 
+	expr:  expr.'<' expr 
+	expr:  expr.tLE expr 
+	expr:  expr.'>' expr 
+	expr:  expr.tGE expr 
+	expr:  expr tGE expr.    (21)
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+
+	'+'  shift 33
+	'-'  shift 34
+	'*'  shift 35
+	'/'  shift 36
+	.  reduce 21 (src line 91)
+
+
+state 51
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
+	expr:  expr.tEQ expr 
+	expr:  expr.tNE expr 
+	expr:  expr.'<' expr 
+	expr:  expr.tLE expr 
+	expr:  expr.'>' expr 
+	expr:  expr.tGE expr 
+	expr:  expr.'+' expr 
+	expr:  expr '+' expr.    (22)
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+
+	'*'  shift 35
+	'/'  shift 36
+	.  reduce 22 (src line 92)
+
+
+state 52
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
+	expr:  expr.tEQ expr 
+	expr:  expr.tNE expr 
+	expr:  expr.'<' expr 
+	expr:  expr.tLE expr 
+	expr:  expr.'>' expr 
+	expr:  expr.tGE expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr '-' expr.    (23)
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+
+	'*'  shift 35
+	'/'  shift 36
+	.  reduce 23 (src line 93)
+
+
+state 53
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
+	expr:  expr.tEQ expr 
+	expr:  expr.tNE expr 
+	expr:  expr.'<' expr 
+	expr:  expr.tLE expr 
+	expr:  expr.'>' expr 
+	expr:  expr.tGE expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr '*' expr.    (24)
+	expr:  expr.'/' expr 
+
+	.  reduce 24 (src line 94)
+
+
+state 54
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
+	expr:  expr.tEQ expr 
+	expr:  expr.tNE expr 
+	expr:  expr.'<' expr 
+	expr:  expr.tLE expr 
+	expr:  expr.'>' expr 
+	expr:  expr.tGE expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr '/' expr.    (25)
+
+	.  reduce 25 (src line 95)
+
+
+state 55
+	expr:  '(' expr ')'.    (29)
+
+	.  reduce 29 (src line 99)
+
+
+state 56
+	fields:  fields tIDENT '='.expr 
+
+	tINT  shift 14
+	tFLOAT  shift 15
+	tSTR  shift 16
+	'('  shift 21
+	tIDENT  shift 13
+	tTRUE  shift 22
+	tFALSE  shift 23
+	'+'  shift 18
+	'-'  shift 19
+	tNOT  shift 20
+	.  error
+
+	expr  goto 57
+	bool_lit  goto 17
+
+state 57
+	fields:  fields tIDENT '=' expr.    (8)
+	expr:  expr.tOR expr 
+	expr:  expr.tAND expr 
+	expr:  expr.tEQ expr 
+	expr:  expr.tNE expr 
+	expr:  expr.'<' expr 
+	expr:  expr.tLE expr 
+	expr:  expr.'>' expr 
+	expr:  expr.tGE expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+
+	tOR  shift 25
+	tAND  shift 26
+	tEQ  shift 27
+	tNE  shift 28
+	'<'  shift 29
+	tLE  shift 30
+	'>'  shift 31
+	tGE  shift 32
+	'+'  shift 33
+	'-'  shift 34
+	'*'  shift 35
+	'/'  shift 36
+	.  reduce 8 (src line 76)
+
+
+30 terminals, 8 nonterminals
+32 grammar rules, 58/16000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
 57 working sets used
-memory: parser 37/240000
-36 extra closures
-237 shift entries, 1 exceptions
-22 goto entries
-15 entries saved by goto default
-Optimizer space used: output 79/240000
-79 table entries, 2 zero
-maximum spread: 28, maximum offset: 52
+memory: parser 41/240000
+40 extra closures
+284 shift entries, 1 exceptions
+24 goto entries
+17 entries saved by goto default
+Optimizer space used: output 105/240000
+105 table entries, 1 zero
+maximum spread: 30, maximum offset: 56

@@ -1,4 +1,5 @@
 ### v0.6.3-dev
+* bool algebra with and, or, not
 
 ### v0.6.2
 * comparison operators
