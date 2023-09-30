@@ -1,3 +1,5 @@
+### v0.6.4-dev
+
 ### v0.6.3
 * bool algebra with and, or, not
 * improved tests
