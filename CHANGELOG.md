@@ -1,5 +1,9 @@
-### v0.6.3-dev
+### v0.6.3
 * bool algebra with and, or, not
+* improved tests
+
+Note: it's great to have _both_ changelog and version tag annotations,
+the latter were missing since v0.6.0, now I am filling them again.
 
 ### v0.6.2
 * comparison operators
@@ -18,8 +22,6 @@
   this fixes wrong reporting of line numbers for some parse errors
 * cmd/bcl: read a file as well as stdin
 * introduce this changelog
-  (future version tags will not have annotations, description of changes
-   should go here)
 
 ### v0.5.1
 * improved tests & docs
