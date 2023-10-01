@@ -68,19 +68,19 @@ Output:
 
 ..to be documented..
 
-### Note on the implementation
+### Note on the parser
 
-I can see on Hacker News, Reddit etc, that using yacc can spring quite a heated discussion. So here is my take on (go)yacc:
+I am using goyacc at the early stage and I find it very useful especially when
+the grammar is still being changed to some extent. The often-discussed issues
+with yacc, like resolving conflicts, are non-existent in my case - it seems
+pretty trivial to get it right for a sensible grammar. The error reporting is
+just fine with some minimal hacks, though I don't plan at this moment to do
+a serious parser sync to avoid a cascade of errors
+- in this early implementation just the first error is reported.
 
-* I know yacc well enough
-* I know the theory behind LALR(1) parsers well enough
-* I like the fact that generating parser without grammar conflicts is a guarantee that its complexity is linear;
-  plus, I have totally zero problems writing a grammar without conflicts
-* I find yacc useful especially at the experimenting phase, when grammar can change.
+Though it may see inconvenient, BCL will have top-down parser
+and a small intermediate VM. It is exciting prospect to code it.
 
-At the same time:
-
-* writing a recursive descent parser is a nice effort and BCL will have one at the right moment.
 
 ### TODO
 
