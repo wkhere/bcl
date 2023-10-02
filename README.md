@@ -76,7 +76,7 @@ with yacc, like resolving conflicts, are non-existent in my case - it seems
 pretty trivial to get it right for a sensible grammar. The error reporting is
 just fine with some minimal hacks, though I don't plan at this moment to do
 a serious parser sync to avoid a cascade of errors
-- in this early implementation just the first error is reported.
+-- in this early implementation just the first error is reported.
 
 Though it may see inconvenient, BCL will have top-down parser
 and a small intermediate VM. It is exciting prospect to code it.
