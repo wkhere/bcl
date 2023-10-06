@@ -98,7 +98,7 @@ func copyBlock(v reflect.Value, block *Block) error {
 }
 
 func unsnakeMatcher(snake string) func(string) bool {
-	u := strings.ReplaceAll(snake, "_", "")
+	u := unsnakeReplacer.Replace(snake)
 	return func(s string) bool {
 		return strings.EqualFold(s, u)
 	}
@@ -107,6 +107,8 @@ func unsnakeMatcher(snake string) func(string) bool {
 func unsnakeEq(orig, snake string) bool {
 	return unsnakeMatcher(snake)(orig)
 }
+
+var unsnakeReplacer = strings.NewReplacer("_", "")
 
 type TypeErr string
 type StructErr string
