@@ -14,13 +14,14 @@ generated: y.go
 test: generated
 	go test ./...
 
-bench: generated
-	 go test -bench=. -count=$(cnt) -benchmem .
+sel=.
 cnt=5
+
+bench: generated
+	 go test -bench=$(sel) -count=$(cnt) -benchmem .
 
 cov:
 	go test -coverprofile=cov -run=$(sel) .
 	go tool cover -html=cov -o cov.html
-sel=.
 
 .PHONY: default generated test bench cov clean
