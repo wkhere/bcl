@@ -1,4 +1,5 @@
 ### v0.6.4-dev
+* fix docs
 
 ### v0.6.3
 * bool algebra with and, or, not

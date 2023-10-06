@@ -1,16 +1,5 @@
 package bcl
 
-// Unmarshal interprets the BCL input, and stores the result in dest,
-// which should be a slice of structs.
-// See [AppendBlocks] for a struct format.
-func Unmarshal(input []byte, dest any) error {
-	res, err := Interpret(input)
-	if err != nil {
-		return err
-	}
-	return CopyBlocks(dest, res)
-}
-
 // Block is a dynamic result of running BCL [Interpret].
 // It can be put into a static structure via [CopyBlocks].
 type Block struct {
@@ -56,4 +45,15 @@ func Interpret(input []byte) ([]Block, error) {
 // If the slice pointed by dest contained any elements, they are overwritten.
 func CopyBlocks(dest any, blocks []Block) error {
 	return copyBlocks(dest, blocks)
+}
+
+// Unmarshal interprets the BCL input, and stores the result in dest,
+// which should be a slice of structs.
+// See [CopyBlocks] for a struct format.
+func Unmarshal(input []byte, dest any) error {
+	res, err := Interpret(input)
+	if err != nil {
+		return err
+	}
+	return CopyBlocks(dest, res)
 }
