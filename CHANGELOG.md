@@ -1,4 +1,5 @@
-### v0.6.6-dev
+### v0.6.6
+* yeah, the day of fixin the docs
 
 ### v0.6.5
 * fix docs again
