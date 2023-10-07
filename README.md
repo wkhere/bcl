@@ -78,8 +78,8 @@ just fine with some minimal hacks, though I don't plan at this moment to do
 a serious parser sync to avoid a cascade of errors
 -- in this early implementation just the first error is reported.
 
-Though it may see inconvenient, BCL will have top-down parser
-and a small intermediate VM. It is exciting prospect to code it.
+The second implementation with a top-down parser and a small intermediate VM
+will not have such limitation and is coming. It is quite exciting to code it.
 
 
 ### TODO
