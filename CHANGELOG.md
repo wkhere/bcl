@@ -1,4 +1,5 @@
-### v0.6.5-dev
+### v0.6.5
+* fix docs again
 
 ### v0.6.4
 * fix docs
