@@ -82,23 +82,4 @@ The second implementation with a top-down parser and a small intermediate VM
 will not have such limitation and is coming. It is quite exciting to code it.
 
 
-### TODO
-
-* [x] get line info into eval errors
-* [ ] more data types
-  * [x] floats
-  * [ ] lists
-  * [ ] nested blocks?
-* [x] more operators
-  * [x] comparison
-  * [x] boolean algebra
-* [ ] string interpolation
-* [ ] `getenv()` builtin
-* [ ] unmarshaling options
-  * [ ] allow fields to be missing in the target struct
-  * [ ] allow struct type to be named differently than block type
-        (at runtime, without struct tags)
-* [ ] port to more programming languages
-
-
 [strange limitations]: https://stackoverflow.com/a/73745980/229154

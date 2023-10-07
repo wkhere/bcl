@@ -28,7 +28,19 @@ more on errors:
 - consider fields to be resolvable like vars in the scope of the current block;
   then they would act like local vars
 
-- nested structs/dicts; design carefully
+- lists - in two variants: with the same type and varying types
+  - as lists can be nested, there is a need to encode variaty of such types
+
+- nested blocks; design carefully
 
 - ability to use reference to other block's field, possibly nested
+
+- unmarshaling options:
+  - allow fields to be missing in the target struct
+  - allow struct type to be named differently than block type
+    (at runtime, without struct tags)
+
+- vm impl
+
+- when the language and vm is stable, port to Python, Ruby, Zig, ...
 
