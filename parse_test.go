@@ -26,14 +26,14 @@ var parseTab = []parsetc{
 	perror(`@`, `line 1: syntax error: unknown char`),
 	perror(`!`, `line 1: syntax error: expected char '!' to start token "!="`),
 	perror(`foo `, `line 1: syntax error near "foo"`),
-	perror(`foo bar`, `line 1: syntax error near "bar"`),
+	perror(`foo bar`, `line 1: syntax error near "foo"`),
 	pvalid(`var a = 1`, top1var("a", nIntLit{1, 9})),
 	// 5
 	pvalid(`var a = 1 + 2`,
 		top1var("a", nBinOp{"+", nIntLit{1, 9}, nIntLit{2, 13}}),
 	),
 	perror(`+ 1`, `line 1: syntax error near "+"`),
-	perror(`a + 1`, `line 1: syntax error near "+"`),
+	perror(`a + 1`, `line 1: syntax error near "a"`),
 	perror(`var a + 1`, `line 1: syntax error near "+"`),
 	perror(`var a=1aaa`, `line 1: syntax error near "aaa"`),
 	// 10

@@ -1,4 +1,5 @@
-### v0.6.7-dev
+### v0.7.0
+* language change: `def` keyword for blocks 
 
 ### v0.6.6
 * yeah, the day of fixin the docs

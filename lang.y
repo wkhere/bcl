@@ -32,6 +32,7 @@ type strpos struct {
 %token '='
 %token tIDENT
 %token tVAR
+%token tDEF
 %token tTRUE
 %token tFALSE
 %token tERR
@@ -63,11 +64,11 @@ blocks: /* empty */         { $$.top.blocks = nil }
     | blocks block          { $$.top.blocks = append($$.top.blocks, $2.blk) }
 
 block:
-    tIDENT tSTR '{' fields '}' {
+    tDEF tIDENT tSTR '{' fields '}' {
                                 $$.blk = nBlock{
-                                    typ:    ident($1.t.s),
-                                    name:   ident(unquote($2.t.s)),
-                                    fields: $4.blk.fields,
+                                    typ:    ident($2.t.s),
+                                    name:   ident(unquote($3.t.s)),
+                                    fields: $5.blk.fields,
                                     pos:    $1.t.pos,
                                 }
                             }

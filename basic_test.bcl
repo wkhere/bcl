@@ -12,14 +12,14 @@ var cond_long = not not not not cond
 var pi = 3.14159265
 
 
-tunnel "hostyhost-service1" {
+def tunnel "hostyhost-service1" {
 	local_port  = service1_local_base_port
 	remote_port = service1_default_port
 	host = "hosty." + domain
 	enabled = not cond_long
 }
 
-service1 "another-service1" {
+def service1 "another-service1" {
 	host = "yet" + "." + "another.com"
 	local_port  = service1_local_base_port + 1
 	remote_port = service1_default_port
@@ -36,6 +36,6 @@ service1 "another-service1" {
 	y = 3 - ---8/4 - (+1-3/2)
 }
 
-just_a_test "test" {
+def just_a_test "test" {
 	almost_pi = pi
 }

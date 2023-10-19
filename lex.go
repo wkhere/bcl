@@ -193,6 +193,7 @@ func (l *lexer) errorf(format string, args ...any) stateFn {
 
 var keywords = map[string]itemType{
 	"var":   tVAR,
+	"def":   tDEF,
 	"true":  tTRUE,
 	"false": tFALSE,
 	"not":   tNOT,

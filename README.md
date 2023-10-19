@@ -13,8 +13,8 @@ but more basic:
 
 * no dollar-referenced variables; variable name can be used in an expression
   as it is
-* block starts with just a resource type, then comes a name, then the fields 
-  inside the brackets; no need for an artificial `resource` keyword
+* block starts with `def` keyword; seems to be more general
+  compared to Terraform's `resource` keyword
 * dead-simple API: variables get evaluated automatically and fill the fields of
   the output structure;
   no [strange limitations] of where variables can be defined
@@ -36,7 +36,7 @@ var domain = "acme.com"
 var default_port    = 8400
 var local_port_base = default_port + 1000
 
-tunnel "myservice-prod" {
+def tunnel "myservice-prod" {
 	host = "prod" + "." + domain
 	local_port  = local_port_base + 1
 	remote_port = default_port
