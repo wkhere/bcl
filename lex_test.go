@@ -61,6 +61,11 @@ var lexTab = []struct {
 	{`{`, ii{{'{', "{", nil, 1}, teof(1)}},
 	{`or`, ii{{tOR, "or", nil, 2}, teof(2)}},
 	{`and`, ii{{tAND, "and", nil, 3}, teof(3)}},
+	{"#a", ii{teof(2)}},
+	{"#a\n", ii{teof(3)}},
+	// 30
+	{"#", ii{teof(1)}},
+	{"#\n", ii{teof(2)}},
 }
 
 func TestLexer(t *testing.T) {

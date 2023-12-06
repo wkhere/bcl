@@ -278,7 +278,6 @@ func lexSpace(l *lexer) stateFn {
 }
 
 func lexLineComment(l *lexer) stateFn {
-	l.pos++
 	for {
 		r := l.next()
 		switch {
