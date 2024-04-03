@@ -1,4 +1,5 @@
-### v0.7,2-dev
+### v0.7.3
+* fix exp dependency
 
 ### v0.7.1
 * fix lexing a line with a single comment char
