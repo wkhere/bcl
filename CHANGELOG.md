@@ -1,3 +1,6 @@
+### v0.8.0
+* switch to vm-based parser
+
 ### v0.7.3
 * fix exp dependency
 

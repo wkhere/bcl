@@ -5,53 +5,43 @@ package bcl
 import (
 	"fmt"
 	"strings"
-	"unicode"
 	"unicode/utf8"
 )
 
 // API
 
-type itemType int // yacc tokens
-
-type item struct {
-	typ itemType
-	val string
-	err error // either val or err is set
-	pos int
-}
-
 // newLexer creates new nexer and runs its loop.
 func newLexer(input string) *lexer {
 	l := &lexer{
-		input: input,
-		items: make(chan item, itemsBufSize),
+		input:  input,
+		tokens: make(chan token, tokensBufSize),
 	}
 	go l.run()
 	return l
 }
 
-// The parser calls nextItem to get the actual item.
-func (l *lexer) nextItem() item {
-	item := <-l.items
-	l.prevItem = l.lastItem
-	l.lastItem = item
-	return item
+// The parser calls nextToken to get the actual token.
+func (l *lexer) nextToken() token {
+	token := <-l.tokens
+	l.prevToken = l.lastToken
+	l.lastToken = token
+	return token
 }
 
 // engine
 
-const itemsBufSize = 10
+const tokensBufSize = 10
 
 type lexer struct {
 	input      string
 	start, pos int
 	width      int
-	items      chan item
+	tokens     chan token
 
 	// interface with parser:
-	prevItem item
-	lastItem item
-	err      error
+	prevToken token
+	lastToken token
+	err       error
 }
 
 type stateFn func(*lexer) stateFn
@@ -60,11 +50,11 @@ func (l *lexer) run() {
 	for state := lexStart; state != nil; {
 		state = state(l)
 	}
-	close(l.items)
+	close(l.tokens)
 }
 
-func (l *lexer) emit(t itemType) {
-	l.items <- item{
+func (l *lexer) emit(t tokenType) {
+	l.tokens <- token{
 		typ: t,
 		val: string(l.input[l.start:l.pos]),
 		pos: l.pos,
@@ -73,7 +63,7 @@ func (l *lexer) emit(t itemType) {
 }
 
 func (l *lexer) emitError(format string, args ...any) {
-	l.items <- item{
+	l.tokens <- token{
 		typ: tERR,
 		err: fmt.Errorf(format, args...),
 		pos: l.pos,
@@ -163,23 +153,23 @@ func isEol(r rune) bool {
 }
 
 func isSpace(r rune) bool {
-	return unicode.IsSpace(r)
+	switch r {
+	case ' ', '\t', '\v', '\f', '\n', '\r', 0x85, 0xA0:
+		return true
+	}
+	return false
 }
 
 func isDigit(r rune) bool {
-	return unicode.IsDigit(r)
+	return r >= '0' && r <= '9'
 }
 
 func isAlpha(r rune) bool {
-	return unicode.IsLetter(r)
+	return r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z'
 }
 
 func isAlphaNum(r rune) bool {
-	return unicode.IsLetter(r) || unicode.IsDigit(r)
-}
-
-func isOneRuneToken(r rune) bool {
-	return strings.ContainsRune(oneRuneTokens, r)
+	return isAlpha(r) || isDigit(r)
 }
 
 // state finalizers
@@ -191,11 +181,14 @@ func (l *lexer) errorf(format string, args ...any) stateFn {
 
 // state functions and related data
 
-var keywords = map[string]itemType{
+var keywords = map[string]tokenType{
 	"var":   tVAR,
 	"def":   tDEF,
+	"eval":  tEVAL,
+	"print": tPRINT,
 	"true":  tTRUE,
 	"false": tFALSE,
+	"nil":   tNIL,
 	"not":   tNOT,
 	"and":   tAND,
 	"or":    tOR,
@@ -203,17 +196,32 @@ var keywords = map[string]itemType{
 
 type twoRuneMatch struct {
 	r2  rune
-	typ itemType
+	typ tokenType
 }
 
 var twoRuneTokens = map[rune]twoRuneMatch{
-	'=': {'=', tEQ},
-	'!': {'=', tNE},
+	'=': {'=', tEE},
+	'!': {'=', tBE},
 	'<': {'=', tLE},
 	'>': {'=', tGE},
 }
 
-const oneRuneTokens = "={}+-*/()<>"
+var oneRuneTokens = map[rune]tokenType{
+	'=': tEQ,
+	'{': tLCURLY,
+	'}': tRCURLY,
+	'(': tLPAREN,
+	')': tRPAREN,
+	//'[': tLBRACKET,
+	//']': tRBRACKET,
+	'<': tLT,
+	'>': tGT,
+	'+': tPLUS,
+	'-': tMINUS,
+	'*': tSTAR,
+	'/': tSLASH,
+	';': tSEMICOLON,
+}
 
 const (
 	digits      = "0123456789"
@@ -225,17 +233,16 @@ func lexStart(l *lexer) stateFn {
 
 	r := l.next()
 	r2m, r2ok := twoRuneTokens[r]
+	r1t, r1ok := oneRuneTokens[r]
 
 	switch {
 	case r == eof:
 		l.emit(tEOF)
-		// ^^is it needed as a terminator in the yparser?
-		// if not then l.ignore() it
 		return nil
 	case r2ok:
 		return lexTwoRunes(r, r2m)
-	case isOneRuneToken(r):
-		l.emit(itemType(r))
+	case r1ok:
+		l.emit(r1t)
 		return lexStart
 	case isSpace(r):
 		return lexSpace
@@ -244,7 +251,7 @@ func lexStart(l *lexer) stateFn {
 	case r == '"':
 		return lexQuote
 	case isAlpha(r) || r == '_':
-		return lexIdentifier
+		return lexKeywordOrIdent
 	case isDigit(r):
 		return lexNumber
 	default:
@@ -260,8 +267,8 @@ func lexTwoRunes(r1 rune, match twoRuneMatch) stateFn {
 			return lexStart
 		}
 		l.backup()
-		if isOneRuneToken(r1) {
-			l.emit(itemType(r1))
+		if r1t, ok := oneRuneTokens[r1]; ok {
+			l.emit(r1t)
 			return lexStart
 		}
 		return l.errorf(
@@ -289,7 +296,7 @@ func lexLineComment(l *lexer) stateFn {
 	}
 }
 
-func lexIdentifier(l *lexer) stateFn {
+func lexKeywordOrIdent(l *lexer) stateFn {
 loop:
 	for {
 		switch r := l.next(); {

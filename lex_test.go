@@ -6,9 +6,9 @@ import (
 	"testing"
 )
 
-type istream <-chan item
+type tstream <-chan token
 
-func (s istream) collect() (a []item) {
+func (s tstream) collect() (a []token) {
 	for x := range s {
 		a = append(a, x)
 	}
@@ -16,64 +16,71 @@ func (s istream) collect() (a []item) {
 }
 
 // shorter syntax in tab literals:
-type ii = []item
+type tt = []token
 
-func teof(pos int) item { return item{tEOF, "", nil, pos} }
-func terrchar(c rune, line int) item {
-	return item{tERR, "", fmt.Errorf("unknown char %#U", c), line}
+func teof(pos int) token { return token{tEOF, "", nil, pos} }
+func terrchar(c rune, line int) token {
+	return token{tERR, "", fmt.Errorf("unknown char %#U", c), line}
 }
 
 var lexTab = []struct {
-	input string
-	items ii
+	i      int
+	input  string
+	tokens tt
 }{
-	{"", ii{teof(0)}},
-	// 1
-	{"@", ii{terrchar('@', 1)}},
-	{`"`, ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}}},
-	{"\"\n", ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 2}}},
-	{"\"\n", ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 2}}},
-	{`"\`, ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 2}}},
-	{`"\a`, ii{{tERR, "", fmt.Errorf("unterminated quoted string"), 3}}},
-	{`1234`, ii{{tINT, "1234", nil, 4}, teof(4)}},
-	{`12.34`, ii{{tFLOAT, "12.34", nil, 5}, teof(5)}},
-	{`1234e10`, ii{{tFLOAT, "1234e10", nil, 7}, teof(7)}},
-	{`1234E10`, ii{{tFLOAT, "1234E10", nil, 7}, teof(7)}},
-	// 10
-	{`1234e+10`, ii{{tFLOAT, "1234e+10", nil, 8}, teof(8)}},
-	{`1234e-10`, ii{{tFLOAT, "1234e-10", nil, 8}, teof(8)}},
-	{`12.34e10`, ii{{tFLOAT, "12.34e10", nil, 8}, teof(8)}},
-	{`12.34e+10`, ii{{tFLOAT, "12.34e+10", nil, 9}, teof(9)}},
-	{`12.34e-10`, ii{{tFLOAT, "12.34e-10", nil, 9}, teof(9)}},
-	{`12.`, ii{{tERR, "", fmt.Errorf("need more digits after a dot"), 3}}},
-	{`12e`, ii{{tERR, "", fmt.Errorf("need more digits for an exponent"), 3}}},
-	{`0x10`, ii{{tINT, "0x10", nil, 4}, teof(4)}},
-	{`0X10`, ii{{tINT, "0X10", nil, 4}, teof(4)}},
-	{`0x10.0`, ii{{tINT, "0x10", nil, 4}, terrchar('.', 5)}},
-	// 20
-	{`>`, ii{{'>', ">", nil, 1}, teof(1)}},
-	{`>=`, ii{{tGE, ">=", nil, 2}, teof(2)}},
-	{`< 5`, ii{{'<', "<", nil, 1}, {tINT, "5", nil, 3}, teof(3)}},
-	{`<= 5`, ii{{tLE, "<=", nil, 2}, {tINT, "5", nil, 4}, teof(4)}},
-	{`!<`, ii{
+	{0, "", tt{teof(0)}},
+
+	{1, "@", tt{terrchar('@', 1)}},
+	{2, `"`, tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}}},
+	{3, "\"\n", tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 2}}},
+	{4, "\"\n", tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 2}}},
+	{5, `"\`, tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 2}}},
+	{6, `"\a`, tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 3}}},
+
+	{7, `1234`, tt{{tINT, "1234", nil, 4}, teof(4)}},
+	{8, `12.34`, tt{{tFLOAT, "12.34", nil, 5}, teof(5)}},
+	{9, `1234e10`, tt{{tFLOAT, "1234e10", nil, 7}, teof(7)}},
+	{10, `1234E10`, tt{{tFLOAT, "1234E10", nil, 7}, teof(7)}},
+	{11, `1234e+10`, tt{{tFLOAT, "1234e+10", nil, 8}, teof(8)}},
+	{12, `1234e-10`, tt{{tFLOAT, "1234e-10", nil, 8}, teof(8)}},
+	{13, `12.34e10`, tt{{tFLOAT, "12.34e10", nil, 8}, teof(8)}},
+	{14, `12.34e+10`, tt{{tFLOAT, "12.34e+10", nil, 9}, teof(9)}},
+	{15, `12.34e-10`, tt{{tFLOAT, "12.34e-10", nil, 9}, teof(9)}},
+	{16, `12.`, tt{{tERR, "", fmt.Errorf("need more digits after a dot"), 3}}},
+	{17, `12e`, tt{{tERR, "", fmt.Errorf("need more digits for an exponent"), 3}}},
+
+	{18, `0x10`, tt{{tINT, "0x10", nil, 4}, teof(4)}},
+	{19, `0X10`, tt{{tINT, "0X10", nil, 4}, teof(4)}},
+	{20, `0x10.0`, tt{{tINT, "0x10", nil, 4}, terrchar('.', 5)}},
+
+	{21, `>`, tt{{tGT, ">", nil, 1}, teof(1)}},
+	{22, `>=`, tt{{tGE, ">=", nil, 2}, teof(2)}},
+	{23, `< 5`, tt{{tLT, "<", nil, 1}, {tINT, "5", nil, 3}, teof(3)}},
+	{24, `<= 5`, tt{{tLE, "<=", nil, 2}, {tINT, "5", nil, 4}, teof(4)}},
+	{25, `!<`, tt{
 		{tERR, "", fmt.Errorf(`expected char '!' to start token "!="`), 1},
 	}},
-	{`{`, ii{{'{', "{", nil, 1}, teof(1)}},
-	{`or`, ii{{tOR, "or", nil, 2}, teof(2)}},
-	{`and`, ii{{tAND, "and", nil, 3}, teof(3)}},
-	{"#a", ii{teof(2)}},
-	{"#a\n", ii{teof(3)}},
-	// 30
-	{"#", ii{teof(1)}},
-	{"#\n", ii{teof(2)}},
+
+	{26, `{}`, tt{{tLCURLY, "{", nil, 1}, {tRCURLY, "}", nil, 2}, teof(2)}},
+	{27, `()`, tt{{tLPAREN, "(", nil, 1}, {tRPAREN, ")", nil, 2}, teof(2)}},
+	//{28, `[]`, tt{{tLBRACKET, "[", nil, 1}, {tRBRACKET, "]", nil, 2}, teof(2)}},
+
+	{29, `or`, tt{{tOR, "or", nil, 2}, teof(2)}},
+	{30, `and`, tt{{tAND, "and", nil, 3}, teof(3)}},
+	{31, `"foo"`, tt{{tSTR, `"foo"`, nil, 5}, teof(5)}},
+
+	{32, "#a", tt{teof(2)}},
+	{33, "#a\n", tt{teof(3)}},
+	{34, "#", tt{teof(1)}},
+	{35, "#\n", tt{teof(2)}},
 }
 
 func TestLexer(t *testing.T) {
-	for i, tc := range lexTab {
+	for _, tc := range lexTab {
 		l := newLexer(tc.input)
-		items := istream(l.items).collect()
-		if !reflect.DeepEqual(items, tc.items) {
-			t.Errorf("tc#%d mismatch:\nhave %v\nwant %v", i, items, tc.items)
+		res := tstream(l.tokens).collect()
+		if !reflect.DeepEqual(res, tc.tokens) {
+			t.Errorf("tc#%d mismatch:\nhave %v\nwant %v", tc.i, res, tc.tokens)
 		}
 	}
 }

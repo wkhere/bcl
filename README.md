@@ -18,9 +18,10 @@ but more basic:
 * dead-simple API: variables get evaluated automatically and fill the fields of
   the output structure;
   no [strange limitations] of where variables can be defined
-* detection of variable reference cycles
-* _O(N)_ lexer, parser and evaluator
-* deserialization aka unmarshalling to static Go structs
+* variables with lexical scope
+* nested definitions
+* _O(N)_ lexer, parser and VM executor
+* deserialization aka unmarshalling to static Go structs (possibly nested)
 
 While being basic, BCL also has features reaching beyond HCL:
 
@@ -70,16 +71,8 @@ Output:
 
 ### Note on the parser
 
-I am using goyacc at the early stage and I find it very useful especially when
-the grammar is still being changed to some extent. The often-discussed issues
-with yacc, like resolving conflicts, are non-existent in my case - it seems
-pretty trivial to get it right for a sensible grammar. The error reporting is
-just fine with some minimal hacks, though I don't plan at this moment to do
-a serious parser sync to avoid a cascade of errors
--- in this early implementation just the first error is reported.
-
-The second implementation with a top-down parser and a small intermediate VM
-will not have such limitation and is coming. It is quite exciting to code it.
+Versions up to v0.7.x used goyacc, from v0.8.0 there is a top-down Pratt parser
+with bytecode VM.
 
 
 [strange limitations]: https://stackoverflow.com/a/73745980/229154

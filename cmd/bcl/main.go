@@ -8,32 +8,6 @@ import (
 	"github.com/wkhere/bcl"
 )
 
-type parsedArgs struct {
-	file string
-	help func()
-}
-
-func parseArgs(args []string) (a parsedArgs, _ error) {
-	const usage = "usage: bcl [FILE|-]"
-	switch {
-	case len(args) == 0:
-		a.file = "-"
-
-	case args[0] == "-h":
-		a.help = func() {
-			fmt.Println(usage)
-		}
-		return a, nil
-
-	case len(args) == 1:
-		a.file = args[0]
-
-	default:
-		return a, fmt.Errorf(usage)
-	}
-	return a, nil
-}
-
 func readBuffer(file string) ([]byte, error) {
 	if file == "-" {
 		return io.ReadAll(os.Stdin)
@@ -41,17 +15,24 @@ func readBuffer(file string) ([]byte, error) {
 	return os.ReadFile(file)
 }
 
-func run(a *parsedArgs) error {
+func run(a *parsedArgs) (err error) {
+
 	buf, err := readBuffer(a.file)
 	if err != nil {
 		return err
 	}
 
-	res, err := bcl.Interpret(buf)
+	res, err := bcl.Interpret(
+		buf,
+		bcl.OptDisasm(a.disasm),
+		bcl.OptTrace(a.trace),
+	)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v\n", res)
+	if !a.mute {
+		fmt.Printf("%+v\n", res)
+	}
 	return nil
 }
 
@@ -69,7 +50,6 @@ func main() {
 	if err != nil {
 		die(1, err)
 	}
-
 }
 
 func die(exitcode int, err error) {

@@ -1,0 +1,20 @@
+Toplevel:
+- vars are defined with `var`
+- vars are local, it is simply the toplevel scope, accessible from everywhere
+- no forward declarations
+
+Block:
+- vars are defined with `var`
+- vars are local
+- vars referenced are searched in the current scope, then in the outer scopes
+  up to the toplevel
+- no forward declarations
+- to change value of the outer scope var, one needs to use `eval`
+- assignments without `eval` are treated like block fields' updates (todo)
+- all such assignments produce block fields, regardless wheter they would be
+  used by a target struct
+
+
+Practically all of the above features are different from yacc-bcl, where vars
+were global, with an exception that in-block assignments are setting block
+fields, which was the same in yacc-bcl.

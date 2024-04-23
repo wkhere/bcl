@@ -2,3 +2,4 @@
 *.bcl
 /cov
 /cov.html
+/tr[0-9]

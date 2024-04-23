@@ -19,7 +19,7 @@ func copyBlocks(dest any, blocks []Block) error {
 
 	newSlice := reflect.MakeSlice(destSlice.Type(), len(blocks), len(blocks))
 	for i, block := range blocks {
-		err := copyBlock(newSlice.Index(i), &block)
+		err := copyBlock(newSlice.Index(i), block)
 		if err != nil {
 			return err
 		}
@@ -29,7 +29,7 @@ func copyBlocks(dest any, blocks []Block) error {
 	return nil
 }
 
-func copyBlock(v reflect.Value, block *Block) error {
+func copyBlock(v reflect.Value, block Block) error {
 	t := v.Type()
 	if st, bt := t.Name(), block.Type; st != "" && !unsnakeEq(st, bt) {
 		return StructErr(
@@ -56,6 +56,7 @@ func copyBlock(v reflect.Value, block *Block) error {
 			}
 		}
 		if !ok {
+			name, _, _ := strings.Cut(name, ".")
 			f, ok = t.FieldByNameFunc(unsnakeMatcher(name))
 		}
 		if !ok {
@@ -69,7 +70,13 @@ func copyBlock(v reflect.Value, block *Block) error {
 			)
 		}
 
+		namei := f.Index[0]
 		vx := reflect.ValueOf(x)
+
+		if vx.Type().AssignableTo(blockType) {
+			return copyBlock(v.Field(namei), x.(Block))
+		}
+
 		if st, bt := f.Type, vx.Type(); st != bt {
 			return StructErr(
 				fmt.Sprintf(
@@ -79,12 +86,13 @@ func copyBlock(v reflect.Value, block *Block) error {
 				),
 			)
 		}
-		namei := f.Index[0]
+
 		v.Field(namei).Set(vx)
 		return nil
 	}
 
 	err := setField("Name", block.Name)
+	// todo: ignore missing Name in struct
 	if err != nil {
 		return err
 	}
@@ -113,3 +121,10 @@ type StructErr string
 
 func (e TypeErr) Error() string   { return string(e) }
 func (e StructErr) Error() string { return string(e) }
+
+var blockType reflect.Type
+
+func init() {
+	var b Block
+	blockType = reflect.TypeOf(b)
+}

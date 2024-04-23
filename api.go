@@ -8,14 +8,24 @@ type Block struct {
 }
 
 // Interpret parses and evaluates the BCL input, creating Blocks.
-func Interpret(input []byte) ([]Block, error) {
+func Interpret(input []byte, opts ...Option) ([]Block, error) {
 	inputStr := string(input)
-	top, err := parse(inputStr)
+
+	cf := makeConfig(opts)
+
+	prog, err := parse(inputStr, cf)
 	if err != nil {
 		return nil, err
-
 	}
-	return eval(&top, lineCalc(inputStr))
+
+	return interpretProg(prog, cf)
+
+}
+
+func interpretProg(prog *prog, cf config) ([]Block, error) {
+	vm := &vm{trace: cf.trace}
+	err := vm.execute(prog)
+	return vm.result, err
 }
 
 // CopyBlocks copies the blocks to the dest,

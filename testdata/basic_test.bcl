@@ -1,8 +1,8 @@
 var service1_default_port    = 8400
 var service1_local_base_port = 9400
 var domain = "foo.org"
-var z0 = -z1 + +0      # forward decl
 var z1 = service1_local_base_port - service1_default_port
+var z0 = -z1 + +0
 var z2 = -1 - (---10/2-1) + z1
 var s  = "sth" + 1 + "-" + domain
 var cond  = true
@@ -37,5 +37,9 @@ def service1 "another-service1" {
 }
 
 def just_a_test "test" {
-	almost_pi = pi
+	field1 = pi
+
+	def inner "inner-thing" {
+		field2 = "pi=" + field1
+	}
 }
