@@ -146,10 +146,7 @@ func (vm *vm) run() error {
 
 		case opNEG:
 			if !isNumber(peek(0)) {
-				return vm.runtimeError(
-					"NEG: invalid type: %s, expected number",
-					vtype(peek(0)),
-				)
+				return vm.runtimeError("NEG: invalid type: %s, expected number", vtype(peek(0)))
 			}
 			set(unopNumeric(instr, peek(0)))
 
