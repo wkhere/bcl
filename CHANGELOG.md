@@ -1,3 +1,5 @@
+### v0.8.2-dev
+
 ### v0.8.1
 * allow unmarshaling to struct without name field if BCL block didn't have name
 * parser: fix handling missing var refs at the toplevel
