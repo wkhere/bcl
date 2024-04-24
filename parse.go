@@ -521,8 +521,12 @@ func (p *parser) resolveIdent(name string, canAssign bool) {
 	if idx >= 0 {
 		setOp, getOp = opSETLOCAL, opGETLOCAL
 	} else {
-		// instead of "undefined variable" compile error, there can be field
-		// used at runtime, or "ident not resolved" runtime error
+		if p.scope.depth == 0 {
+			p.error("undefined variable")
+			return
+		}
+		// when in block, there can be field used at runtime,
+		// or "ident not resolved" runtime error
 		idx = p.identConst(name)
 		if idx < 0 {
 			return
