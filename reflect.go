@@ -92,10 +92,15 @@ func copyBlock(v reflect.Value, block Block) error {
 	}
 
 	err := setField("Name", block.Name)
-	// todo: ignore missing Name in struct
 	if err != nil {
+		// todo: do better than string search for filtering the error
+		if se, ok := err.(StructErr); block.Name == "" && ok &&
+			strings.Contains(string(se), " not found ") {
+			goto fields
+		}
 		return err
 	}
+fields:
 	for fkey, fval := range block.Fields {
 		err = setField(fkey, fval)
 		if err != nil {
