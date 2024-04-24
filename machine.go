@@ -230,6 +230,9 @@ func (vm *vm) run() error {
 			blockSet(name, pop())
 
 		case opRET:
+			if vm.tos != 0 {
+				return fmt.Errorf("non-empty stack on prog end; tos=%d", vm.tos)
+			}
 			return nil
 
 		case opNOP:
