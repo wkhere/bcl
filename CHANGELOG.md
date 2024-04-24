@@ -7,6 +7,7 @@
 
 ### v0.8.0
 * switch to vm-based parser
+* variables behavior changed a bit (global -> local, can shadow outer scope)
 
 ### v0.7.3
 * fix exp dependency
