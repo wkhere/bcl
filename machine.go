@@ -204,9 +204,7 @@ func (vm *vm) run() error {
 					k      = child.key(vm)
 				)
 				if _, ok := parent.Fields[k]; ok {
-					return vm.runtimeError(
-						"fatal: child %s duplicate at parent", k,
-					)
+					return vm.runtimeError("child %s duplicate at parent", k)
 				}
 				parent.Fields[k] = *child
 
@@ -219,9 +217,7 @@ func (vm *vm) run() error {
 			name := readConst().(string)
 			v, ok := blockGet(name)
 			if !ok {
-				return vm.runtimeError(
-					"identifier %q not resolved as var or field", name,
-				)
+				return vm.runtimeError("identifier %q not resolved as var or field", name)
 			}
 			push(v)
 
@@ -231,7 +227,7 @@ func (vm *vm) run() error {
 
 		case opRET:
 			if vm.tos != 0 {
-				return fmt.Errorf("fatal: non-empty stack on prog end; tos=%d", vm.tos)
+				return fmt.Errorf("internal error: non-empty stack on prog end; tos=%d", vm.tos)
 			}
 			return nil
 
