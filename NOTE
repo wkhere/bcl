@@ -1,3 +1,5 @@
+Some comments on vars, fields and scopes.
+
 Toplevel:
 - vars are defined with `var`
 - vars are local, it is simply the toplevel scope, accessible from everywhere
@@ -9,12 +11,18 @@ Block:
 - vars referenced are searched in the current scope, then in the outer scopes
   up to the toplevel
 - no forward declarations
-- to change value of the outer scope var, one needs to use `eval`
-- assignments without `eval` are treated like block fields' updates (todo)
-- all such assignments produce block fields, regardless wheter they would be
-  used by a target struct
+- assignments to non-var identifiers are updates of block fields 
+
+Last point requires some deeper digging. It might be that what looks like
+block field update will be actually an inner var update. It will be better
+to provide some syntax to make it clear.
+
+Similar with print vs eval: now the var update can happen inside print, not only
+eval; it can actually happen anywhere expr is expected, because assignments are
+also expressions. This might be surprising for some users, while others can
+possibly embrace it. So, restricting when assignment can happen is to be thought
+about carefully.
 
 
-Practically all of the above features are different from yacc-bcl, where vars
-were global, with an exception that in-block assignments are setting block
-fields, which was the same in yacc-bcl.
+Note the differences from yacc-based bcl, where vars were global and it was
+possible to have forward declarations, with some special detection of cycles.

@@ -1,5 +1,6 @@
 ### v0.8.2-dev
 * return error for non-empty stack on prog end
+* more docs
 
 ### v0.8.1
 * allow unmarshaling to struct without name field if BCL block didn't have name
