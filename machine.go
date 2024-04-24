@@ -231,7 +231,7 @@ func (vm *vm) run() error {
 
 		case opRET:
 			if vm.tos != 0 {
-				return fmt.Errorf("non-empty stack on prog end; tos=%d", vm.tos)
+				return fmt.Errorf("fatal: non-empty stack on prog end; tos=%d", vm.tos)
 			}
 			return nil
 
