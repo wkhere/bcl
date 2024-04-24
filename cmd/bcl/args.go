@@ -56,10 +56,10 @@ func parseArgs(args []string) (a parsedArgs, _ error) {
 		case len(arg) > 1 && arg[0] == '-':
 			return a, fmt.Errorf("unknown flag: %s\n%s", arg, usage)
 
-		case len(args) > 1:
-			return a, fmt.Errorf("too many file args\n%s", usage)
-
 		default:
+			if a.file != "" {
+				return a, fmt.Errorf("too many file args\n%s", usage)
+			}
 			a.file = arg
 			continue
 		}
