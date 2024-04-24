@@ -41,7 +41,10 @@ def tunnel "myservice-prod" {
 	local_port  = local_port_base + 1
 	remote_port = default_port
 	enabled = true
-	max_latency = 8.5 # [ms]
+
+	def extras {
+		max_latency = 8.5 # [ms]
+	}
 }
 ```
 Go:
