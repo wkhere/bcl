@@ -20,7 +20,7 @@ but more basic:
   no [strange limitations] of where variables can be defined
 * variables with lexical scope
 * nested definitions
-* _O(N)_ lexer, parser and VM executor
+* one-pass lexer, parser and VM executor
 * deserialization aka unmarshalling to static Go structs (possibly nested)
 
 While being basic, BCL also has features reaching beyond HCL:
