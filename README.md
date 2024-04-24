@@ -26,9 +26,8 @@ but more basic:
 While being basic, BCL also has features reaching beyond HCL:
 
 * rich expressions operating on strings, int & float numbers, and booleans
-* while variables are defined within the file, the outside world is accessible
-  via environment variables, or via running a command and catching its output
-  (both features planned)
+* planned: make the outside world accessible via environment variables, or via
+  running a command and catching its output
 
 ### Example:
 BCL:
