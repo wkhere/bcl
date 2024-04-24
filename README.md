@@ -47,22 +47,29 @@ def tunnel "myservice-prod" {
 Go:
 ```Go
 type Tunnel struct {
-	Name                  string
-	Host                  string
-	LocalPort, RemotePort int
-	Enabled               bool
-	MaxLatency            float64
+	Name       string
+	Host       string
+	LocalPort  int
+	RemotePort int
+	Enabled    bool
+	Extras     struct {
+		MaxLatency float64
+	}
 }
 var config []Tunnel
 
 err := bcl.Unmarshal(fileContent, &config)
 // handle err
-fmt.Printf("%+v\n", config)
-
+fmt.Println(strings.ReplaceAll(fmt.Sprintf("%+v", config), " ", "\n  "))
 ```
 Output:
 ```
-[{Name:myservice-prod Host:prod.acme.com LocalPort:9401 RemotePort:8400 Enabled:true MaxLatency:8.5}]
+[{Name:myservice-prod
+  Host:prod.acme.com
+  LocalPort:9401
+  RemotePort:8400
+  Enabled:true
+  Extras:{MaxLatency:8.5}}]
 ```
 ### Expressions, data conversions
 
