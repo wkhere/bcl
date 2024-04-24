@@ -74,6 +74,36 @@ Output:
   Enabled:true
   Extras:{MaxLatency:8.5}}]
 ```
+### Syntax
+
+BCL has statements and expressions.
+
+A basic statement is `def block_type [block_name] {...}` to define a block,
+where one can use `field = value` expressions. Such block will be available
+as a [Block] with a map of fields after running [Interpret], and can be
+further put into a static Go struct via [CopyBlocks] or [Unmarshal].
+Blocks can be nested.
+
+Both toplevel scope and a block can have variables created with 
+the `var x = expr` statement, or just `var x` which leaves it uninitialized.
+Variables do not count when produding result Block structures, but they are
+taking part of the state flow.
+
+Variables have lexical scope. Any block has access to the varables declared
+at the toplevel and also nested block have access to their parent's variables.
+There are no forward declarations.
+
+Variables are mutable and can be mutated with the `eval x = expr` statement.
+This statement solely exists to allow evaluation of expressions in the context
+expecting stamenents, that is at the toplevel. Please note that inside the block
+the raw statements are allowed, for example `field = value` is actually
+an assignment expression. So, when in block, it's good to remember whether 
+we are operating on fields or variables. This may be made more explicit in the future.
+
+The last stament in the clan is `print expr` which is useful for debugging.
+
+More on expressions below.
+
 ### Expressions, data conversions
 
 There are three basic types: numbers (int and float), strings and booleans.
