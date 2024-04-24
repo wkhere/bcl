@@ -1,10 +1,10 @@
-+ make yacc tokens unexported
++ make tokens unexported
 + handle division by zero
 
 + add line info from lex to eval errors
 
 more on errors:
-- return all errors (modulo parser sync)
++ return all errors (modulo parser sync)
 - when it's done, consider adding BCL to github.com/Boeing/config-file-validator
 
 + bin ops: 
@@ -18,29 +18,32 @@ more on errors:
   - simple type conversion
   - consider replacing cmd & type conversions with sigils
 
-- compatibility with HCL-style resources, which look like:
-  resource "type" "name" .... { }
-
-- fix: when a field is defined more than once, only the last clause
++ fix: when a field is defined more than once, only the last clause
   is evaluated; should evaluate all then overwrite with the last one
   (1. current behavior unintuitive, 2. prep for side-effect exprs like ++i)
+= not occuring in the vm version
 
-- consider fields to be resolvable like vars in the scope of the current block;
++ consider fields to be resolvable like vars in the scope of the current block;
   then they would act like local vars
+= done in the vm version
 
 - lists - in two variants: with the same type and varying types
   - as lists can be nested, there is a need to encode variaty of such types
 
-- nested blocks; design carefully
++ nested blocks; design carefully
+= done in the vm version
 
-- ability to use reference to other block's field, possibly nested
+~ ability to use reference to other block's field, possibly nested
+= partly done in the vm version in the way that in the nested block expr can
+  refer to the field in any of the parend blocks; what remains to be done is:
+  - ability to use paths to all blocks/fields across the whole file 
 
 - unmarshaling options:
   - allow fields to be missing in the target struct
   - allow struct type to be named differently than block type
     (at runtime, without struct tags)
 
-- vm impl
++ vm impl
 
 - when the language and vm is stable, port to Python, Ruby, Zig, ...
 
