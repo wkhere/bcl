@@ -11,8 +11,9 @@ type parsedArgs struct {
 	help func()
 }
 
+const usage = "usage: bcl [-d|--disasm] [-t|--trace] [--mute-result] [FILE|-]"
+
 func parseArgs(args []string) (a parsedArgs, _ error) {
-	const usage = "usage: bcl [-d|--disasm] [-t|--trace] [FILE|-]"
 
 	for ; len(args) > 0; args = args[1:] {
 		switch arg := args[0]; {
