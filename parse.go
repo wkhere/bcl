@@ -8,7 +8,8 @@ func parse(input string, cf config) (*prog, error) {
 		prog:    newProg("input"),
 		lineFmt: newLineCalc(input).format,
 
-		identRefs: make(map[string]int, 8), // now used only for block types
+		identRefs: make(map[string]int, 8),
+		// identRefs are for reusing block types & fields and selected consts
 
 		scope: new(scopeCompiler),
 	}
