@@ -78,10 +78,11 @@ Output:
 
 BCL has statements and expressions.
 
-A basic statement is `def block_type [block_name] {...}` to define a block,
-where one can use `field = value` expressions. Such block will be available
-as a [Block] with a map of fields after running [Interpret], and can be
-further put into a static Go struct via [CopyBlocks] or [Unmarshal].
+A basic statement is `def block_type [block_name] {...}` to define a block with
+`field = value` expressions inside.
+Such block after running [Interpret] will be available as 
+a [Block] with a map of fields,
+and can be further put into a static Go struct via [CopyBlocks] or [Unmarshal].
 Blocks can be nested.
 
 Both toplevel scope and a block can have variables created with 
@@ -150,3 +151,7 @@ with bytecode VM.
 
 
 [strange limitations]: https://stackoverflow.com/a/73745980/229154
+[Block]: https://pkg.go.dev/github.com/wkhere/bcl#Block
+[Interpret]:  https://pkg.go.dev/github.com/wkhere/bcl#Interpret
+[CopyBlocks]: https://pkg.go.dev/github.com/wkhere/bcl#CopyBlocks
+[Unmarshal]:  https://pkg.go.dev/github.com/wkhere/bcl#Unmarshal
