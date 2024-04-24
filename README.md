@@ -76,7 +76,42 @@ Output:
 ```
 ### Expressions, data conversions
 
-..to be documented..
+There are three basic types: numbers (int and float), strings and booleans.
+
+Values in expressions know their types, although they are not enforced
+in the language; certain operations can cause runtime error.
+
+Number arithmetics use int or float operations depending on the values
+involved; if any of the operands is float, then the int part is transparently
+converted to float. Complex numbers are not supported atm.
+
+Strings can be concatenated with the plus `+`. 
+If the right side of such plus is a number, it will be transparently
+coverted to string. However, the number plus string is an error.
+
+Another string operator borrowed from numbers is asterisk `*`, this time
+the left side must be a string and right side just an int; the result is
+repeating the string given times.
+
+Equality comparisons `==`, `!=` are allowed between all types, including mixing them.
+Obviously values of different non-number types are not equal.
+
+Order comparisons `<`, `>`, , `<=`, `>=` are allowed between numbers and between strings,
+but not between mixed types.
+
+There are boolean operators `and`, `or`, `not` behaving like in Python and Ruby:
+they are short-cirtuit and retain the type of an operand 
+(`1==1 and 42` will return 42). Non-boolean types can be a boolean operand;
+for this, there is a definition what is considered "falsey": `false`,
+empty string, and `nil`. This may at resemble Python, but note that the zero number
+is not considered falsey -- a behavior that may change in the future.
+
+Boolean constants are `true` and `false`.
+Another constant is `nil`, whose meaning is that
+a declared but uninitialized variable (`var a`) has this value.
+You can test equality to nil and it can be a part of a boolean expression,
+acting as false.
+
 
 ### Note on the parser
 
