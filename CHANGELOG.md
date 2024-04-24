@@ -1,4 +1,4 @@
-### v0.8.2-dev
+### v0.8.2
 * return error for non-empty stack on prog end
 * fix stack handling for in-block exprs
 * more docs
