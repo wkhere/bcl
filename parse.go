@@ -103,6 +103,7 @@ func stmt(p *parser) {
 		blockStmt(p)
 	} else if p.scope.depth > 0 {
 		expr(p)
+		p.emitOp(opPOP)
 	} else {
 		p.errorAtCurrent("expected statement")
 	}

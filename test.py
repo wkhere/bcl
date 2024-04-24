@@ -42,6 +42,12 @@ tests = [
     [30, 'def b1{var a=5; def b2 {var a=a+1; print TYPE+a} print TYPE+a}', 'b26\nb15'],
     [31, 'def b1{var a=5; def b2 {eval a=a+1; print TYPE+a} print TYPE+a}','b26\nb16'],
     [32, 'def b1{ print TYPE; def b2{print TYPE} }; def b3{print TYPE}', 'b1\nb2\nb3'],
+    [33, 'var a; var b; eval a=1+(b=2); print a', '3'],
+    [34, 'var a; var b; print a=1+(b=2)',         '3'],
+    [35, 'def x {42}', ''],
+    [36, 'def x {var x=42; x+1; print x}', '42'],
+    [37, 'def x {a=1+(b=2); print a}', '3'],
+    [38, 'def x {print a=1+(b=2)}',    '3'],
 ]
 
 def perr(*args):

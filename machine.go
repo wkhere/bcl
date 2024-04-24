@@ -227,7 +227,7 @@ func (vm *vm) run() error {
 
 		case opSETFIELD:
 			name := readConst().(string)
-			blockSet(name, pop())
+			blockSet(name, peek(0))
 
 		case opRET:
 			if vm.tos != 0 {
