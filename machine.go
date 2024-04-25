@@ -93,24 +93,31 @@ func (vm *vm) run() error {
 		switch instr := opcode(readByte()); instr {
 
 		case opCONST:
+			// ( -- x )
 			push(readConst())
 
 		case opZERO:
+			// ( -- 0 )
 			push(0)
 
 		case opONE:
+			// ( -- 1 )
 			push(1)
 
 		case opTRUE:
+			// ( -- true )
 			push(true)
 
 		case opFALSE:
+			// ( -- false )
 			push(false)
 
 		case opNIL:
+			// ( -- nil )
 			push(nil)
 
 		case opEQ, opLT, opGT, opADD, opSUB, opMUL, opDIV:
+			// ( a b -- c )
 			switch {
 			case isNumber(peek(1)) && isNumber(peek(0)):
 				b, a := pop(), pop()
@@ -145,44 +152,55 @@ func (vm *vm) run() error {
 			}
 
 		case opNEG:
+			// ( a  -- b )
 			if !isNumber(peek(0)) {
 				return vm.runtimeError("NEG: invalid type: %s, expected number", vtype(peek(0)))
 			}
 			set(unopNumeric(instr, peek(0)))
 
 		case opNOT:
+			// ( a -- b )
 			set(isFalsey(peek(0)))
 
 		case opJUMP:
+			// ( -- )
 			vm.pc += readU16()
 
 		case opLOOP:
+			// ( -- )
 			vm.pc -= readU16()
 
 		case opJFALSE:
+			// ( a -- a )
 			jump := readU16()
 			if isFalsey(peek(0)) {
 				vm.pc += jump
 			}
 
 		case opPOP:
+			// ( a -- )
 			vm.tos--
 
 		case opPOPN:
+			// ( a1 ..aN -- )
 			vm.tos -= int(readByte())
 
 		case opPRINT:
+			// ( a -- )
 			fmt.Println(pop())
 
 		case opGETLOCAL:
+			// ( -- x )
 			slot := readByte()
 			push(vm.stack[slot])
 
 		case opSETLOCAL:
+			// (x -- x)
 			slot := readByte()
 			vm.stack[slot] = peek(0)
 
 		case opDEFBLOCK:
+			// ( -- )
 			blk := Block{
 				Type:   readConst().(string),
 				Name:   readConst().(string),
@@ -192,6 +210,7 @@ func (vm *vm) run() error {
 			vm.blockTos++
 
 		case opENDBLOCK:
+			// ( -- )
 			vm.blockTos--
 			i := vm.blockTos
 			if i > 0 {
@@ -211,6 +230,7 @@ func (vm *vm) run() error {
 			}
 
 		case opGETFIELD:
+			// ( -- x )
 			name := readConst().(string)
 			v, ok := blockGet(name)
 			if !ok {
@@ -219,16 +239,19 @@ func (vm *vm) run() error {
 			push(v)
 
 		case opSETFIELD:
+			// (x -- x)
 			name := readConst().(string)
 			blockSet(name, peek(0))
 
 		case opRET:
+			// ( -- )
 			if vm.tos != 0 {
 				return fmt.Errorf("internal error: non-empty stack on prog end; tos=%d", vm.tos)
 			}
 			return nil
 
 		case opNOP:
+			// ( -- )
 		}
 	}
 }
