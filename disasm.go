@@ -77,7 +77,7 @@ func blockInstr(o opcode, p *prog, offset int) int {
 	typeIdx, n1 := uvarintFromBytes(p.code[offset+1:])
 	nameIdx, n2 := uvarintFromBytes(p.code[offset+1+n1:])
 	fmt.Printf(
-		"%-10s %4d '%v'  %4d '%v'\n",
+		"%-10s %4d '%v'\t%4d '%v'\n",
 		o, typeIdx, p.constants[typeIdx], nameIdx, p.constants[nameIdx],
 	)
 	return offset + 1 + n1 + n2
