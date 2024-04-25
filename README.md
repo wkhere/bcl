@@ -148,6 +148,8 @@ acting as false.
 
 Versions up to v0.7.x used goyacc, from v0.8.0 there is a top-down Pratt parser
 with bytecode VM.
+When using the latter it is actually recommended to upgrade to at least v0.8.2,
+it has an important fix of the parsing logic.
 
 
 [strange limitations]: https://stackoverflow.com/a/73745980/229154
