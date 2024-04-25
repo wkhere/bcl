@@ -5,6 +5,7 @@ type Option func(*config)
 type config struct {
 	disasm bool
 	trace  bool
+	stats  bool
 }
 
 func makeConfig(oo []Option) (cf config) {
@@ -20,4 +21,8 @@ func OptDisasm(x bool) Option {
 
 func OptTrace(x bool) Option {
 	return func(cf *config) { cf.trace = x }
+}
+
+func OptStats(x bool) Option {
+	return func(cf *config) { cf.stats = x }
 }

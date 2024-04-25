@@ -2,7 +2,7 @@ package bcl
 
 import "strconv"
 
-func parse(input string, cf config) (*prog, error) {
+func parse(input string, cf config) (*prog, parseStats, error) {
 	p := &parser{
 		lexer:   newLexer(input),
 		prog:    newProg("input"),
@@ -23,15 +23,17 @@ func parse(input string, cf config) (*prog, error) {
 	}
 
 	if p.hadError {
-		return p.prog, errCombined{"parse"}
+		p.finishStats()
+		return p.prog, p.stats, errCombined{"parse"}
 	}
 	p.end()
+	p.finishStats()
 
 	if cf.disasm {
 		p.prog.disasm()
 	}
 
-	return p.prog, nil
+	return p.prog, p.stats, nil
 }
 
 type parser struct {
@@ -46,6 +48,8 @@ type parser struct {
 	identRefs map[string]int // map ident names to const indices
 
 	scope *scopeCompiler
+
+	stats parseStats
 }
 
 type scopeCompiler struct {
@@ -59,6 +63,20 @@ const localsMaxSize = stackSize
 type local struct {
 	name  string
 	depth int
+}
+
+type parseStats struct {
+	tokens     int
+	localMax   int
+	depthMax   int
+	constants  int
+	opsCreated int
+	codeBytes  int
+}
+
+func (p *parser) finishStats() {
+	p.stats.constants = len(p.prog.constants)
+	p.stats.codeBytes = p.prog.count()
 }
 
 func decl(p *parser) {
@@ -368,6 +386,7 @@ func (p *parser) advance() {
 		if !ok {
 			return
 		}
+		p.stats.tokens++
 		if p.current.typ != tERR {
 			break
 		}
@@ -438,6 +457,7 @@ func (p *parser) end() {
 
 func (p *parser) beginScope() {
 	p.scope.depth++
+	p.stats.depthMax = max(p.stats.depthMax, p.scope.depth)
 }
 
 func (p *parser) endScope() {
@@ -489,6 +509,7 @@ func (p *parser) addLocal(name string) {
 	local.name = name
 	local.depth = -1
 	p.scope.localCount++
+	p.stats.localMax = max(p.stats.localMax, p.scope.localCount)
 }
 
 func (p *parser) markInitialized() {
@@ -561,27 +582,23 @@ func (p *parser) emitBytes(bb ...byte) {
 func (p *parser) emitOp(op opcode) {
 	prog := p.currentProg()
 	prog.write(byte(op), p.prev.pos)
+	p.stats.opsCreated++
 }
 
 func (p *parser) emitOps(oo ...opcode) {
-	prog := p.currentProg()
 	for _, o := range oo {
-		prog.write(byte(o), p.prev.pos)
+		p.emitOp(o)
 	}
 }
 
 func (p *parser) emitOpWithArg(op opcode, b byte) {
-	prog := p.currentProg()
-	prog.write(byte(op), p.prev.pos)
-	prog.write(b, p.prev.pos)
+	p.emitOp(op)
+	p.emitByte(b)
 }
 
 func (p *parser) emitOpWithArgs(op opcode, bb ...byte) {
-	prog := p.currentProg()
-	prog.write(byte(op), p.prev.pos)
-	for _, b := range bb {
-		prog.write(b, p.prev.pos)
-	}
+	p.emitOp(op)
+	p.emitBytes(bb...)
 }
 
 func (p *parser) emitOpWithUvarints(op opcode, xx ...int) {

@@ -7,11 +7,12 @@ type parsedArgs struct {
 	disasm bool
 	trace  bool
 	mute   bool
+	stats  bool
 
 	help func()
 }
 
-const usage = "usage: bcl [-d|--disasm] [-t|--trace] [--mute-result] [FILE|-]"
+const usage = "usage: bcl [-d|--disasm] [-t|--trace] [--mute-result] [--stats] [FILE|-]"
 
 func parseArgs(args []string) (a parsedArgs, _ error) {
 
@@ -31,6 +32,10 @@ func parseArgs(args []string) (a parsedArgs, _ error) {
 
 		case arg == "--mute-result":
 			a.mute = true
+			continue
+
+		case arg == "--stats":
+			a.stats = true
 			continue
 
 		case arg == "--":

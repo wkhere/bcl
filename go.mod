@@ -1,6 +1,6 @@
 module github.com/wkhere/bcl
 
-go 1.18
+go 1.21
 
 require github.com/mohae/uvarint v0.0.0-20160208145430-c3f9e62bf2b0
 

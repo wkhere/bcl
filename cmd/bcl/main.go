@@ -26,12 +26,13 @@ func run(a *parsedArgs) (err error) {
 		buf,
 		bcl.OptDisasm(a.disasm),
 		bcl.OptTrace(a.trace),
+		bcl.OptStats(a.stats),
 	)
 	if err != nil {
 		return err
 	}
 	if !a.mute {
-		fmt.Printf("%+v\n", res)
+		fmt.Printf("result: %+v\n", res)
 	}
 	return nil
 }

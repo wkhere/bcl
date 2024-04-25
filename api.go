@@ -9,23 +9,23 @@ type Block struct {
 
 // Interpret parses and evaluates the BCL input, creating Blocks.
 func Interpret(input []byte, opts ...Option) ([]Block, error) {
+	cf := makeConfig(opts)
 	inputStr := string(input)
 
-	cf := makeConfig(opts)
-
-	prog, err := parse(inputStr, cf)
+	prog, pstats, err := parse(inputStr, cf)
+	if cf.stats {
+		printPStats(pstats)
+	}
 	if err != nil {
 		return nil, err
 	}
 
-	return interpretProg(prog, cf)
+	result, xstats, err := execute(prog, cf)
+	if cf.stats {
+		printXStats(xstats)
+	}
+	return result, err
 
-}
-
-func interpretProg(prog *prog, cf config) ([]Block, error) {
-	vm := &vm{trace: cf.trace}
-	err := vm.execute(prog)
-	return vm.result, err
 }
 
 // CopyBlocks copies the blocks to the dest,

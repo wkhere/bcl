@@ -6,10 +6,16 @@ import (
 	"strings"
 )
 
-const (
-	stackSize      = 1024
-	blockStackSize = 16
-)
+func execute(p *prog, cf config) ([]Block, execStats, error) {
+	vm := &vm{trace: cf.trace}
+	vm.prog = p
+	vm.pc = 0
+
+	err := vm.run()
+
+	vm.stats.pcFinal = vm.pc
+	return vm.result, vm.stats, err
+}
 
 type vm struct {
 	prog  *prog
@@ -24,12 +30,20 @@ type vm struct {
 	blockNextID int
 
 	result []Block
+
+	stats execStats
 }
 
-func (vm *vm) execute(p *prog) error {
-	vm.prog = p
-	vm.pc = 0
-	return vm.run()
+const (
+	stackSize      = 1024
+	blockStackSize = 16
+)
+
+type execStats struct {
+	tosMax      int
+	blockTosMax int
+	opsRead     int
+	pcFinal     int
 }
 
 func (vm *vm) run() error {
@@ -38,6 +52,11 @@ func (vm *vm) run() error {
 		b = vm.prog.code[vm.pc]
 		vm.pc++
 		return b
+	}
+	readOp := func() (o opcode) {
+		o = opcode(readByte())
+		vm.stats.opsRead++
+		return o
 	}
 	readU16 := func() int {
 		x := u16FromBytes(vm.prog.code[vm.pc : vm.pc+2])
@@ -56,6 +75,7 @@ func (vm *vm) run() error {
 	push := func(v value) {
 		vm.stack[vm.tos] = v
 		vm.tos++
+		vm.stats.tosMax = max(vm.stats.tosMax, vm.tos)
 	}
 	pop := func() value {
 		vm.tos--
@@ -94,7 +114,7 @@ func (vm *vm) run() error {
 			vm.prog.disasmInstr(vm.pc)
 		}
 
-		switch instr := opcode(readByte()); instr {
+		switch instr := readOp(); instr {
 
 		case opCONST:
 			// ( -- x )
@@ -212,6 +232,7 @@ func (vm *vm) run() error {
 			}
 			vm.blockStack[vm.blockTos] = blk
 			vm.blockTos++
+			vm.stats.blockTosMax = max(vm.stats.blockTosMax, vm.blockTos)
 
 		case opENDBLOCK:
 			// ( -- )
