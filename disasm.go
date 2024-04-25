@@ -34,7 +34,7 @@ func (p *prog) disasmInstr(offset int) int {
 		return constInstr(instr, p, offset)
 
 	case opGETLOCAL, opSETLOCAL, opPOPN:
-		return byteargInstr(instr, p, offset)
+		return varbyteargInstr(instr, p, offset)
 
 	case opDEFBLOCK:
 		return blockInstr(instr, p, offset)
@@ -61,26 +61,26 @@ func byteargInstr(o opcode, p *prog, offset int) int {
 	return offset + 2
 }
 
-func twobyteargInstr(o opcode, p *prog, offset int) int {
-	arg := u16FromBytes(p.code[offset+1 : offset+3])
+func varbyteargInstr(o opcode, p *prog, offset int) int {
+	arg, n := uvarintFromBytes(p.code[offset+1:])
 	fmt.Printf("%-10s %4d\n", o, arg)
-	return offset + 3
+	return offset + 1 + n
 }
 
 func constInstr(o opcode, p *prog, offset int) int {
-	constIdx := p.code[offset+1]
-	fmt.Printf("%-10s %4d '%v'\n", o, constIdx, p.constants[constIdx])
-	return offset + 2
+	idx, n := uvarintFromBytes(p.code[offset+1:])
+	fmt.Printf("%-10s %4d '%v'\n", o, idx, p.constants[idx])
+	return offset + 1 + n
 }
 
 func blockInstr(o opcode, p *prog, offset int) int {
-	typeIdx := p.code[offset+1]
-	nameIdx := p.code[offset+2]
+	typeIdx, n1 := uvarintFromBytes(p.code[offset+1:])
+	nameIdx, n2 := uvarintFromBytes(p.code[offset+1+n1:])
 	fmt.Printf(
 		"%-10s %4d '%v'  %4d '%v'\n",
 		o, typeIdx, p.constants[typeIdx], nameIdx, p.constants[nameIdx],
 	)
-	return offset + 3
+	return offset + 1 + n1 + n2
 }
 
 func jumpInstr(o opcode, sign int, p *prog, offset int) int {

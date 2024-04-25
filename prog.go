@@ -26,16 +26,9 @@ func (p *prog) write(b byte, pos int) {
 	p.positions = append(p.positions, pos)
 }
 
-func (p *prog) addConst(v value) (int, error) {
-	if len(p.constants) == 255 {
-		return -1, errConstOverflow{}
-	}
+func (p *prog) addConst(v value) (idx int) {
 	p.constants = append(p.constants, v)
-	return len(p.constants) - 1, nil
+	return len(p.constants) - 1
 }
 
 func (p *prog) count() int { return len(p.code) }
-
-type errConstOverflow struct{}
-
-func (errConstOverflow) Error() string { return "const overflow" }

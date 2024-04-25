@@ -44,9 +44,13 @@ func (vm *vm) run() error {
 		vm.pc += 2
 		return int(x)
 	}
-
+	readUvarint := func() int {
+		x, n := uvarintFromBytes(vm.prog.code[vm.pc:])
+		vm.pc += n
+		return int(x)
+	}
 	readConst := func() value {
-		return vm.prog.constants[readByte()]
+		return vm.prog.constants[readUvarint()]
 	}
 
 	push := func(v value) {
@@ -183,7 +187,7 @@ func (vm *vm) run() error {
 
 		case opPOPN:
 			// ( a1 ..aN -- )
-			vm.tos -= int(readByte())
+			vm.tos -= int(readUvarint())
 
 		case opPRINT:
 			// ( a -- )
@@ -191,12 +195,12 @@ func (vm *vm) run() error {
 
 		case opGETLOCAL:
 			// ( -- x )
-			slot := readByte()
+			slot := readUvarint()
 			push(vm.stack[slot])
 
 		case opSETLOCAL:
 			// (x -- x)
-			slot := readByte()
+			slot := readUvarint()
 			vm.stack[slot] = peek(0)
 
 		case opDEFBLOCK:

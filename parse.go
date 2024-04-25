@@ -54,11 +54,7 @@ type scopeCompiler struct {
 	depth      int
 }
 
-// localsMaxSize limit is bound by 1B index in the bytecode,
-// similar to const indices.
-// The solution is to allow 2-byte indices in the bytecode, possibly with
-// extra opcodes.
-const localsMaxSize = 256
+const localsMaxSize = stackSize
 
 type local struct {
 	name  string
@@ -124,11 +120,8 @@ func blockStmt(p *parser) {
 
 	p.consume(tLCURLY, "expected '{'")
 
-	ok := p.defBlock(p.identConst(blockType), p.makeConst(blockName))
-	if ok {
-		defer p.endBlock()
-	}
-	// actually what to do if block couldn't be allocated??
+	p.defBlock(p.identConst(blockType), p.makeConst(blockName))
+	defer p.endBlock()
 
 	p.beginScope()
 	defer p.endScope()
@@ -461,7 +454,7 @@ func (p *parser) popN(count int) {
 	case 1:
 		p.emitOp(opPOP)
 	default:
-		p.emitOpWithArg(opPOPN, byte(count))
+		p.emitOpWithUvarints(opPOPN, count)
 	}
 }
 
@@ -502,13 +495,8 @@ func (p *parser) defVar() {
 	p.markInitialized()
 }
 
-func (p *parser) defBlock(typeIdx, nameIdx int) bool {
-	if typeIdx < 0 || nameIdx < 0 {
-		return false
-	}
-	// todo: handle const indices longer than 1B
-	p.emitOpWithArgs(opDEFBLOCK, byte(typeIdx), byte(nameIdx))
-	return true
+func (p *parser) defBlock(typeIdx, nameIdx int) {
+	p.emitOpWithUvarints(opDEFBLOCK, typeIdx, nameIdx)
 }
 
 func (p *parser) endBlock() {
@@ -530,18 +518,14 @@ func (p *parser) resolveIdent(name string, canAssign bool) {
 		// when in block, there can be field used at runtime,
 		// or "ident not resolved" runtime error
 		idx = p.identConst(name)
-		if idx < 0 {
-			return
-		}
 		setOp, getOp = opSETFIELD, opGETFIELD
 	}
 
-	// todo: handle var indices longer than 1B
 	if canAssign && p.match(tEQ) {
 		expr(p)
-		p.emitOpWithArg(setOp, byte(idx))
+		p.emitOpWithUvarints(setOp, idx)
 	} else {
-		p.emitOpWithArg(getOp, byte(idx))
+		p.emitOpWithUvarints(getOp, idx)
 	}
 }
 
@@ -575,6 +559,13 @@ func (p *parser) emitOp(op opcode) {
 	prog.write(byte(op), p.prev.pos)
 }
 
+func (p *parser) emitOps(oo ...opcode) {
+	prog := p.currentProg()
+	for _, o := range oo {
+		prog.write(byte(o), p.prev.pos)
+	}
+}
+
 func (p *parser) emitOpWithArg(op opcode, b byte) {
 	prog := p.currentProg()
 	prog.write(byte(op), p.prev.pos)
@@ -589,25 +580,24 @@ func (p *parser) emitOpWithArgs(op opcode, bb ...byte) {
 	}
 }
 
-func (p *parser) emitOps(oo ...opcode) {
-	prog := p.currentProg()
-	for _, o := range oo {
-		prog.write(byte(o), p.prev.pos)
+func (p *parser) emitOpWithUvarints(op opcode, xx ...int) {
+	p.emitOp(op)
+	for _, x := range xx {
+		var b [8]byte
+		n := uvarintToBytes(b[:], uint64(x))
+		p.emitBytes(b[:n]...)
 	}
 }
 
 func (p *parser) emitConst(v value) {
-	c := p.makeConst(v)
-	if c < 0 {
-		return
-	}
-	// todo: handle const indices longer than 1B
-	p.emitOpWithArgs(opCONST, byte(c))
+	idx := p.makeConst(v)
+	p.emitOpWithUvarints(opCONST, idx)
 }
 
 func (p *parser) emitJump(op opcode) int {
 	p.emitOp(op)
 	p.emitBytes(0xff, 0xff)
+	// note: can't use varuint for jumps, no way to know its size before patch
 	return p.currentProg().count() - 2
 }
 
@@ -647,15 +637,11 @@ func (p *parser) makeConst(v value) int {
 		cache = true
 	}
 
-	constIdx, err := p.currentProg().addConst(v)
-	if err != nil {
-		p.error(err.Error())
-		return -1
-	}
+	idx := p.currentProg().addConst(v)
 	if cache {
-		p.identRefs[v.(string)] = constIdx
+		p.identRefs[v.(string)] = idx
 	}
-	return constIdx
+	return idx
 }
 
 func (p *parser) currentProg() *prog {
