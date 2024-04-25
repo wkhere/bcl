@@ -1,6 +1,6 @@
 default: test
 
-generated = tokentype_string.go opcode_string.go
+generated = tokentype_string.go opcode_string.go apigen_test.go
 
 bcl: stringer $(generated) *.go go.mod cmd/bcl/*.go
 	go build ./cmd/bcl
@@ -11,12 +11,14 @@ tokentype_string.go: token.go
 opcode_string.go: opcode.go
 	go generate
 
+apigen_test.go: test.py gen_test.go
+	go generate
+
 clean:
 	rm -f bcl
 
 test: bcl test.py
 	go test .
-	./test.py
 
 bench: bcl
 	go test -bench=. -count=$(cnt) -benchmem .
