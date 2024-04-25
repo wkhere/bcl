@@ -3,7 +3,22 @@
 package bcl
 
 func Example_i0() {
+	Interpret([]byte(``))
+	// Output:
+}
+
+func Example_i0_1() {
 	Interpret([]byte(`eval "expr that is discarded"`))
+	// Output:
+}
+
+func Example_i0_2() {
+	Interpret([]byte(`eval nil`))
+	// Output:
+}
+
+func Example_i0_3() {
+	Interpret([]byte(`eval "anything"`))
 	// Output:
 }
 
@@ -43,6 +58,48 @@ func Example_i6() {
 	// 27
 }
 
+func Example_i6_1() {
+	Interpret([]byte(`print 123.0/2-50+2*8`))
+	// Output:
+	// 27.5
+}
+
+func Example_i6_2() {
+	Interpret([]byte(`print 123/2.0-50+2*8`))
+	// Output:
+	// 27.5
+}
+
+func Example_i6_3() {
+	Interpret([]byte(`print 123.0/2.0-50+2*8`))
+	// Output:
+	// 27.5
+}
+
+func Example_i6_4() {
+	Interpret([]byte(`print 123/2-50+2.0*8`))
+	// Output:
+	// 27
+}
+
+func Example_i6_5() {
+	Interpret([]byte(`print 123/2-50+2*8.0`))
+	// Output:
+	// 27
+}
+
+func Example_i6_6() {
+	Interpret([]byte(`print 123/2-50+2.0*8.0`))
+	// Output:
+	// 27
+}
+
+func Example_i6_7() {
+	Interpret([]byte(`print 123/2-50.0+2*8`))
+	// Output:
+	// 27
+}
+
 func Example_i7() {
 	Interpret([]byte(`print 1-2`))
 	// Output:
@@ -67,166 +124,298 @@ func Example_i10() {
 	// 2
 }
 
+func Example_i10_1() {
+	Interpret([]byte(`print 1.0+ +1`))
+	// Output:
+	// 2
+}
+
+func Example_i10_2() {
+	Interpret([]byte(`print 1+ +1.0`))
+	// Output:
+	// 2
+}
+
+func Example_i10_3() {
+	Interpret([]byte(`print 1.0+ +1.0`))
+	// Output:
+	// 2
+}
+
 func Example_i11() {
 	Interpret([]byte(`print ---10`))
 	// Output:
 	// -10
 }
 
+func Example_i11_1() {
+	Interpret([]byte(`print ---10.0`))
+	// Output:
+	// -10
+}
+
 func Example_i12() {
-	Interpret([]byte(`print not 1>3`))
+	Interpret([]byte(`print 1==1`))
+	// Output:
+	// true
+}
+
+func Example_i12_1() {
+	Interpret([]byte(`print 1.0==1`))
+	// Output:
+	// true
+}
+
+func Example_i12_2() {
+	Interpret([]byte(`print 1==1.0`))
+	// Output:
+	// true
+}
+
+func Example_i12_3() {
+	Interpret([]byte(`print 1.0==1.0`))
 	// Output:
 	// true
 }
 
 func Example_i13() {
+	Interpret([]byte(`print not 1>3`))
+	// Output:
+	// true
+}
+
+func Example_i13_1() {
+	Interpret([]byte(`print not 1.0>3`))
+	// Output:
+	// true
+}
+
+func Example_i13_2() {
+	Interpret([]byte(`print not 1>3.0`))
+	// Output:
+	// true
+}
+
+func Example_i13_3() {
+	Interpret([]byte(`print not 1.0>3.0`))
+	// Output:
+	// true
+}
+
+func Example_i13_4() {
+	Interpret([]byte(`print not 3<=1`))
+	// Output:
+	// true
+}
+
+func Example_i14() {
 	Interpret([]byte(`print 1<2 and 0 or "whatever"`))
 	// Output:
 	// 0
 }
 
-func Example_i14() {
+func Example_i14_1() {
+	Interpret([]byte(`print 1.0<2 and 0 or "whatever"`))
+	// Output:
+	// 0
+}
+
+func Example_i14_2() {
+	Interpret([]byte(`print 1<2.0 and 0 or "whatever"`))
+	// Output:
+	// 0
+}
+
+func Example_i14_3() {
+	Interpret([]byte(`print 1.0<2.0 and 0 or "whatever"`))
+	// Output:
+	// 0
+}
+
+func Example_i15() {
 	Interpret([]byte(`print 1>2 or true and 42`))
 	// Output:
 	// 42
 }
 
-func Example_i15() {
+func Example_i16() {
 	Interpret([]byte(`print 1<10/5 and 127*-1+154`))
 	// Output:
 	// 27
 }
 
-func Example_i16() {
+func Example_i17() {
 	Interpret([]byte(`print "q"*2`))
 	// Output:
 	// qq
 }
 
-func Example_i17() {
+func Example_i18() {
 	Interpret([]byte(`print "q"+"x"`))
 	// Output:
 	// qx
 }
 
-func Example_i18() {
+func Example_i19() {
 	Interpret([]byte(`print "q"+3`))
 	// Output:
 	// q3
 }
 
-func Example_i19() {
+func Example_i20() {
 	Interpret([]byte(`print "q"+3.14`))
 	// Output:
 	// q3.14
 }
 
-func Example_i20() {
+func Example_i21() {
+	Interpret([]byte(`print "q"=="q"`))
+	// Output:
+	// true
+}
+
+func Example_i22() {
+	Interpret([]byte(`print "q"!="p"`))
+	// Output:
+	// true
+}
+
+func Example_i23() {
+	Interpret([]byte(`print "p"<"q"`))
+	// Output:
+	// true
+}
+
+func Example_i24() {
+	Interpret([]byte(`print "q">"p"`))
+	// Output:
+	// true
+}
+
+func Example_i25() {
+	Interpret([]byte(`print not (false or true)`))
+	// Output:
+	// false
+}
+
+func Example_i25_1() {
+	Interpret([]byte(`print not (false and true)`))
+	// Output:
+	// true
+}
+
+func Example_i25_2() {
+	Interpret([]byte(`print "" or 42`))
+	// Output:
+	// 42
+}
+
+func Example_i26() {
 	Interpret([]byte(`var a=100; var b=a-90; print -b`))
 	// Output:
 	// -10
 }
 
-func Example_i21() {
+func Example_i27() {
 	Interpret([]byte(`var a=1; var b=2; print a+b`))
 	// Output:
 	// 3
 }
 
-func Example_i22() {
+func Example_i28() {
 	Interpret([]byte(`var a=1; eval a=a+1; print a`))
 	// Output:
 	// 2
 }
 
-func Example_i23() {
+func Example_i29() {
 	Interpret([]byte(`var a=1; print a=a+1`))
 	// Output:
 	// 2
 }
 
-func Example_i24() {
+func Example_i30() {
 	Interpret([]byte(`def blk {print TYPE}`))
 	// Output:
 	// blk
 }
 
-func Example_i25() {
+func Example_i31() {
 	Interpret([]byte(`def blk "foo" {print TYPE+"."+NAME}`))
 	// Output:
 	// blk.foo
 }
 
-func Example_i26() {
+func Example_i32() {
 	Interpret([]byte(`var a=1; def blk {print TYPE}`))
 	// Output:
 	// blk
 }
 
-func Example_i27() {
+func Example_i33() {
 	Interpret([]byte(`print 1; def blk {print TYPE}`))
 	// Output:
 	// 1
 	// blk
 }
 
-func Example_i28() {
+func Example_i34() {
 	Interpret([]byte(`var a=1; def blk {print TYPE+a}`))
 	// Output:
 	// blk1
 }
 
-func Example_i29() {
+func Example_i35() {
 	Interpret([]byte(`def blk {var a=1; print TYPE+a}`))
 	// Output:
 	// blk1
 }
 
-func Example_i30() {
+func Example_i36() {
 	Interpret([]byte(`var x=1; def blk {var a=1+x; print TYPE+a}`))
 	// Output:
 	// blk2
 }
 
-func Example_i31() {
+func Example_i37() {
 	Interpret([]byte(`def blk {var a=1; var b=2; print TYPE+(a+b)}`))
 	// Output:
 	// blk3
 }
 
-func Example_i32() {
+func Example_i38() {
 	Interpret([]byte(`var x=5; def blk {var a=1; var b=2; print TYPE+(a+b+x)}`))
 	// Output:
 	// blk8
 }
 
-func Example_i33() {
+func Example_i39() {
 	Interpret([]byte(`def b1{var x=1; def b2 {var a=2; print TYPE+(a+x)}}`))
 	// Output:
 	// b23
 }
 
-func Example_i34() {
+func Example_i40() {
 	Interpret([]byte(`var a=5; def blk {var a=a+1; print TYPE+a}`))
 	// Output:
 	// blk6
 }
 
-func Example_i35() {
+func Example_i41() {
 	Interpret([]byte(`def b1{var a=5; def b2 {var a=a+1; print TYPE+a} print TYPE+a}`))
 	// Output:
 	// b26
 	// b15
 }
 
-func Example_i36() {
+func Example_i42() {
 	Interpret([]byte(`def b1{var a=5; def b2 {eval a=a+1; print TYPE+a} print TYPE+a}`))
 	// Output:
 	// b26
 	// b16
 }
 
-func Example_i37() {
+func Example_i43() {
 	Interpret([]byte(`def b1{ print TYPE; def b2{print TYPE} }; def b3{print TYPE}`))
 	// Output:
 	// b1
@@ -234,37 +423,77 @@ func Example_i37() {
 	// b3
 }
 
-func Example_i38() {
+func Example_i44() {
 	Interpret([]byte(`var a; var b; eval a=1+(b=2); print a`))
 	// Output:
 	// 3
 }
 
-func Example_i39() {
+func Example_i45() {
 	Interpret([]byte(`var a; var b; print a=1+(b=2)`))
 	// Output:
 	// 3
 }
 
-func Example_i40() {
+func Example_i46() {
 	Interpret([]byte(`def x {42}`))
 	// Output:
 }
 
-func Example_i41() {
+func Example_i47() {
 	Interpret([]byte(`def x {var x=42; x+1; print x}`))
 	// Output:
 	// 42
 }
 
-func Example_i42() {
+func Example_i48() {
 	Interpret([]byte(`def x {a=1+(b=2); print a}`))
 	// Output:
 	// 3
 }
 
-func Example_i43() {
+func Example_i49() {
 	Interpret([]byte(`def x {print a=1+(b=2)}`))
 	// Output:
 	// 3
+}
+
+func Example_i50() {
+	Interpret([]byte(`def x {print (a=1)+(b=2)}`))
+	// Output:
+	// 3
+}
+
+func Example_i51() {
+	Interpret([]byte(``), OptDisasm(true))
+	// Output:
+	// == input ==
+	// 0000    1:1  RET
+}
+
+func Example_i52() {
+	Interpret([]byte(`eval nil`), OptDisasm(true))
+	// Output:
+	// == input ==
+	// 0000    1:9  NIL
+	// 0001      |  POP
+	// 0002      |  RET
+}
+
+func Example_i53() {
+	Interpret([]byte(`eval 42`), OptDisasm(true))
+	// Output:
+	// == input ==
+	// 0000    1:8  CONST         0 '42'
+	// 0002      |  POP
+	// 0003      |  RET
+}
+
+func Example_i54() {
+	Interpret([]byte(`def b {}`), OptDisasm(true))
+	// Output:
+	// == input ==
+	// 0000    1:8  DEFBLOCK      0 'b'	   1 ''
+	// 0003    1:9  ENDBLOCK
+	// 0004      |  RET
 }
