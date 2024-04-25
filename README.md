@@ -151,6 +151,64 @@ with bytecode VM.
 When using the latter it is actually recommended to upgrade to at least v0.8.2,
 it has an important fix of the parsing logic.
 
+### Cool stuff
+
+Internals can be peeked in many ways, here is bytecode disassembly,
+execution trace with stack content, plus some stats:
+```
+ ./bcl --disasm --stats --trace <<<'var x=1; def block{eval x=x+1; field=x}'
+== input ==
+0000    1:8  ONE
+0001   1:20  DEFBLOCK      0 'block'	   1 ''
+0004   1:28  GETLOCAL      0
+0006   1:30  ONE
+0007      |  ADD
+0008      |  SETLOCAL      0
+0010      |  POP
+0011   1:39  GETLOCAL      0
+0013      |  SETFIELD      2 'field'
+0015      |  POP
+0016   1:40  ENDBLOCK
+0017    2:1  POP
+0018      |  RET
+pstats.tokens:        20
+pstats.localMax:       1
+pstats.depthMax:       1
+pstats.constants:      3
+pstats.opsCreated:    13
+pstats.codeBytes:     19
+      #0     
+0000    1:8  ONE
+      #1     [ 1 ]
+0001   1:20  DEFBLOCK      0 'block'	   1 ''
+      #1     [ 1 ]
+0004   1:28  GETLOCAL      0
+      #2     [ 1 ][ 1 ]
+0006   1:30  ONE
+      #3     [ 1 ][ 1 ][ 1 ]
+0007      |  ADD
+      #2     [ 1 ][ 2 ]
+0008      |  SETLOCAL      0
+      #2     [ 2 ][ 2 ]
+0010      |  POP
+      #1     [ 2 ]
+0011   1:39  GETLOCAL      0
+      #2     [ 2 ][ 2 ]
+0013      |  SETFIELD      2 'field'
+      #2     [ 2 ][ 2 ]
+0015      |  POP
+      #1     [ 2 ]
+0016   1:40  ENDBLOCK
+      #1     [ 2 ]
+0017    2:1  POP
+      #0     
+0018      |  RET
+xstats.tosMax:         3
+xstats.blockTosMax:    1
+xstats.opsRead:       13
+xstats.pcFinal:       19
+```
+
 
 [strange limitations]: https://stackoverflow.com/a/73745980/229154
 [Block]: https://pkg.go.dev/github.com/wkhere/bcl#Block
