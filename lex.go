@@ -21,11 +21,9 @@ func newLexer(input string) *lexer {
 }
 
 // The parser calls nextToken to get the actual token.
-func (l *lexer) nextToken() token {
-	token := <-l.tokens
-	l.prevToken = l.lastToken
-	l.lastToken = token
-	return token
+func (l *lexer) nextToken() (_ token, ok bool) {
+	token, ok := <-l.tokens
+	return token, ok
 }
 
 // engine
@@ -37,11 +35,6 @@ type lexer struct {
 	start, pos int
 	width      int
 	tokens     chan token
-
-	// interface with parser:
-	prevToken token
-	lastToken token
-	err       error
 }
 
 type stateFn func(*lexer) stateFn

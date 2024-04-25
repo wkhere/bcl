@@ -363,7 +363,11 @@ func (p *parser) advance() {
 	p.prev = p.current
 
 	for {
-		p.current = p.lexer.nextToken()
+		var ok bool
+		p.current, ok = p.lexer.nextToken()
+		if !ok {
+			return
+		}
 		if p.current.typ != tERR {
 			break
 		}
