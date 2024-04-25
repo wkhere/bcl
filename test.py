@@ -54,7 +54,7 @@ def perr(*args):
     print(*args, file=stderr)
 
 def run_tests():
-    cmd = './bcl --mute-result'
+    cmd = './bcl'
 
     had_err = False
     for i, prog, exp in tests:

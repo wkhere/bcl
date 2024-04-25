@@ -31,7 +31,7 @@ func run(a *parsedArgs) (err error) {
 	if err != nil {
 		return err
 	}
-	if !a.mute {
+	if a.result {
 		fmt.Printf("result: %+v\n", res)
 	}
 	return nil

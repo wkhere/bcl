@@ -6,13 +6,13 @@ type parsedArgs struct {
 	file   string
 	disasm bool
 	trace  bool
-	mute   bool
+	result bool
 	stats  bool
 
 	help func()
 }
 
-const usage = "usage: bcl [-d|--disasm] [-t|--trace] [--mute-result] [--stats] [FILE|-]"
+const usage = "usage: bcl [-d|--disasm] [-t|--trace] [-r|--result] [-s|--stats] [FILE|-]"
 
 func parseArgs(args []string) (a parsedArgs, _ error) {
 
@@ -22,19 +22,19 @@ func parseArgs(args []string) (a parsedArgs, _ error) {
 			a.help = func() { fmt.Println(usage) }
 			return a, nil
 
-		case arg == "-d" || arg == "--disasm":
+		case arg == "-d", arg == "--disasm":
 			a.disasm = true
 			continue
 
-		case arg == "-t" || arg == "--trace":
+		case arg == "-t", arg == "--trace":
 			a.trace = true
 			continue
 
-		case arg == "--mute-result":
-			a.mute = true
+		case arg == "-r", arg == "--result":
+			a.result = true
 			continue
 
-		case arg == "--stats":
+		case arg == "-s", arg == "--stats":
 			a.stats = true
 			continue
 
