@@ -1,4 +1,6 @@
-### v0.8.4-dev
+### v0.8.4
+* generate api example tests from test.py
+* more coverage
 
 ### v0.8.3
 * use variable-length ints in the bytecode where it's possible
