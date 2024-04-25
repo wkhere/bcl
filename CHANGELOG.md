@@ -1,4 +1,11 @@
-### v0.8.3-dev
+### v0.8.3
+* use variable-length ints in the bytecode where it's possible
+* parse & execution stats, avail. via cmd/bcl -s,--stats flag
+* cmd/bcl -r,--result flag; can intermix flags and file arg
+* disasm & trace improvements
+* lexer: cleanup unused fields, return closed channel info
+* improvements of error messages, makefile & docs
+* Forth-like stack comments in the vm code as the extra doc
 
 ### v0.8.2
 * return error for non-empty stack on prog end
