@@ -18,7 +18,7 @@ clean:
 	rm -f bcl
 
 test: bcl test.py
-	go test .
+	go test -cover .
 
 bench: bcl
 	go test -bench=. -count=$(cnt) -benchmem .
