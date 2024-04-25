@@ -45,5 +45,7 @@ more on errors:
 
 + vm impl
 
+- reflection: allow filling toplevel structs of different types
+
 - when the language and vm is stable, port to Python, Ruby, Zig, ...
 
