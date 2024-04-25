@@ -1,3 +1,5 @@
+### v0.8.4-dev
+
 ### v0.8.3
 * use variable-length ints in the bytecode where it's possible
 * parse & execution stats, avail. via cmd/bcl -s,--stats flag
