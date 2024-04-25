@@ -60,7 +60,7 @@ const (
 
 func (t token) String() string {
 	if t.typ == tERR {
-		return fmt.Sprintf("{%s %q %d", t.typ, t.err, t.pos)
+		return fmt.Sprintf("{%s %q %d}", t.typ, t.err, t.pos)
 	}
 	return fmt.Sprintf("{%s %q %d}", t.typ, t.val, t.pos)
 }

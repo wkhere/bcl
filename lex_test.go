@@ -84,3 +84,24 @@ func TestLexer(t *testing.T) {
 		}
 	}
 }
+
+func ExampleLexer() {
+	runExample("0")
+	runExample("1")
+	runExample("-3.14")
+	runExample("@")
+	// Output:
+	// {tINT "0" 1}{tEOF "" 1}
+	// {tINT "1" 1}{tEOF "" 1}
+	// {tMINUS "-" 1}{tFLOAT "3.14" 5}{tEOF "" 5}
+	// {tERR "unknown char U+0040 '@'" 1}
+}
+
+func runExample(s string) {
+	l := newLexer(s)
+	for r := range l.tokens {
+		fmt.Print(r)
+	}
+	fmt.Println()
+
+}
