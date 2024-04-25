@@ -594,16 +594,18 @@ func (p *parser) emitConst(v value) {
 	p.emitOpWithUvarints(opCONST, idx)
 }
 
+const jumpByteLength = 2
+
 func (p *parser) emitJump(op opcode) int {
 	p.emitOp(op)
 	p.emitBytes(0xff, 0xff)
 	// note: can't use varuint for jumps, no way to know its size before patch
-	return p.currentProg().count() - 2
+	return p.currentProg().count() - jumpByteLength
 }
 
 func (p *parser) patchJump(offset int) {
 	prog := p.currentProg()
-	jump := prog.count() - offset - 2
+	jump := prog.count() - offset - jumpByteLength
 
 	if jump > 65535 {
 		p.error("jump too long")
@@ -614,7 +616,7 @@ func (p *parser) patchJump(offset int) {
 		return
 	}
 
-	u16ToBytes(prog.code[offset:offset+2], uint16(jump))
+	u16ToBytes(prog.code[offset:], uint16(jump))
 }
 
 func (p *parser) identConst(name string) int {

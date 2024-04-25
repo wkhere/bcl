@@ -84,7 +84,7 @@ func blockInstr(o opcode, p *prog, offset int) int {
 }
 
 func jumpInstr(o opcode, sign int, p *prog, offset int) int {
-	jump := u16FromBytes(p.code[offset+1 : offset+3])
-	fmt.Printf("%-10s -> %04d\n", o, offset+3+sign*int(jump))
-	return offset + 3
+	jump := u16FromBytes(p.code[offset+1:])
+	fmt.Printf("%-10s -> %04d\n", o, offset+1+jumpByteLength+sign*int(jump))
+	return offset + 1 + jumpByteLength
 }
