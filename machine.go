@@ -278,7 +278,7 @@ func (b *Block) key(vm *vm) string {
 }
 
 func printStack(vv []value) {
-	fmt.Print("             ")
+	fmt.Printf("      #%-4d  ", len(vv))
 	for _, v := range vv {
 		fmt.Printf("[ %v ]", v)
 	}
