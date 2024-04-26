@@ -2,7 +2,7 @@ default: test
 
 generated = tokentype_string.go opcode_string.go apigen_test.go
 
-bcl: stringer $(generated) *.go go.mod cmd/bcl/*.go
+bcl: stringer $(generated) go.mod go.sum *.go cmd/bcl/*.go
 	go build ./cmd/bcl
 
 tokentype_string.go: token.go
