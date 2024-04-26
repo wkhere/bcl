@@ -40,7 +40,7 @@ func Interpret(input []byte, opts ...Option) ([]Block, error) {
 // The mentioned name correspondence is similar to handling json:
 // as BCL is expected to use snake case, and Go struct - capitalized camel case,
 // the snake underscores are simply removed and then the strings are compared,
-// case-insentitive.
+// case-insensitive.
 //
 // The name corresponcence can be also set explicitly,
 // by typing a tag keyed `bcl` at the struct field:
