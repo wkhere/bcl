@@ -3,16 +3,16 @@
 package bcl
 
 import (
-    "bytes"
-    "strings"
-    "testing"
+	"bytes"
+	"strings"
+	"testing"
 )
 
 func TestInterpretFromPy(t *testing.T) {
-    var tab = []struct {
-        name, input, output string
-        disasm              bool
-    }{
+	var tab = []struct {
+		name, input, output string
+		disasm              bool
+	}{
 		{`0`, ``, "", false},
 		{`0.1`, `eval "expr that is discarded"`, "", false},
 		{`0.2`, `eval nil`, "", false},
@@ -94,19 +94,19 @@ func TestInterpretFromPy(t *testing.T) {
 		{`52`, `eval nil`, "== input ==\n0000    1:9  NIL\n0001      |  POP\n0002      |  RET", true},
 		{`53`, `eval 42`, "== input ==\n0000    1:8  CONST         0 '42'\n0002      |  POP\n0003      |  RET", true},
 		{`54`, `def b {}`, "== input ==\n0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n0003    1:9  ENDBLOCK\n0004      |  RET", true},
- }
+	}
 
-    for _, tc := range tab {
-        tc := tc
-        t.Run(tc.name, func(t *testing.T) {
-            b := new(bytes.Buffer)
+	for _, tc := range tab {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			b := new(bytes.Buffer)
 			Interpret([]byte(tc.input), OptOutput(b), OptDisasm(tc.disasm))
 
-            s := b.String()
-            s = strings.TrimRight(s, "\n")
-            if s != tc.output {
-                t.Errorf("mismatch:\nhave: %s\nwant: %s", s, tc.output)
-            }
-        })
-    }
+			s := b.String()
+			s = strings.TrimRight(s, "\n")
+			if s != tc.output {
+				t.Errorf("mismatch:\nhave: %s\nwant: %s", s, tc.output)
+			}
+		})
+	}
 }
