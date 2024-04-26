@@ -12,7 +12,7 @@ opcode_string.go: opcode.go
 	go generate
 
 apigen_test.go: test.py basic_test.go
-	go generate && go fmt
+	go generate && go fmt apigen_test.go
 
 clean:
 	rm -f bcl
