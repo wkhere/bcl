@@ -1,3 +1,5 @@
+### v0.8.7-dev
+
 ### v0.8.6
 * fix indentation of generated tests
 
