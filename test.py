@@ -100,12 +100,14 @@ def perr(*args):
     print(*args, file=stderr)
 
 def run_tests():
-    cmd = './bcl'
+    cmd = './bcl'.split()
 
     had_err = False
-    for i, prog, exp in tests:
+    for i, prog, exp, *opt in tests:
         try:
-            res = subprocess.check_output(cmd.split(), input=prog, text=True)
+            if 'disasm' in opt: cmd.append('--disasm')
+
+            res = subprocess.check_output(cmd, input=prog, text=True)
             res = res.strip()
             if res != exp:
                 had_err = True
