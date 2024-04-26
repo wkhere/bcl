@@ -1,3 +1,6 @@
+### v0.8.6
+* fix indentation of generated tests
+
 ### v0.8.5
 * generate api tests from test.py, fix
 
