@@ -6,6 +6,8 @@ import (
 	_ "embed"
 )
 
+//go:generate ./test.py generate
+
 //go:embed testdata/basic_test.bcl
 var basicInput []byte
 

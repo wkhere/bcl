@@ -11,7 +11,7 @@ tokentype_string.go: token.go
 opcode_string.go: opcode.go
 	go generate
 
-apigen_test.go: test.py gen_test.go
+apigen_test.go: test.py basic_test.go
 	go generate && go fmt
 
 clean:
