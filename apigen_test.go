@@ -2,498 +2,111 @@
 
 package bcl
 
-func Example_i0() {
-	Interpret([]byte(``))
-	// Output:
-}
-
-func Example_i0_1() {
-	Interpret([]byte(`eval "expr that is discarded"`))
-	// Output:
-}
-
-func Example_i0_2() {
-	Interpret([]byte(`eval nil`))
-	// Output:
-}
-
-func Example_i0_3() {
-	Interpret([]byte(`eval "anything"`))
-	// Output:
-}
-
-func Example_i1() {
-	Interpret([]byte(`var a; print not a`))
-	// Output:
-	// true
-}
-
-func Example_i2() {
-	Interpret([]byte(`var a; print a==nil`))
-	// Output:
-	// true
-}
-
-func Example_i3() {
-	Interpret([]byte(`var a=1; eval a=nil; print a==nil`))
-	// Output:
-	// true
-}
-
-func Example_i4() {
-	Interpret([]byte(`print 1+1`))
-	// Output:
-	// 2
-}
-
-func Example_i5() {
-	Interpret([]byte(`print 1+2.14`))
-	// Output:
-	// 3.14
-}
-
-func Example_i6() {
-	Interpret([]byte(`print 123/2-50+2*8`))
-	// Output:
-	// 27
-}
-
-func Example_i6_1() {
-	Interpret([]byte(`print 123.0/2-50+2*8`))
-	// Output:
-	// 27.5
-}
-
-func Example_i6_2() {
-	Interpret([]byte(`print 123/2.0-50+2*8`))
-	// Output:
-	// 27.5
-}
-
-func Example_i6_3() {
-	Interpret([]byte(`print 123.0/2.0-50+2*8`))
-	// Output:
-	// 27.5
-}
-
-func Example_i6_4() {
-	Interpret([]byte(`print 123/2-50+2.0*8`))
-	// Output:
-	// 27
-}
-
-func Example_i6_5() {
-	Interpret([]byte(`print 123/2-50+2*8.0`))
-	// Output:
-	// 27
-}
-
-func Example_i6_6() {
-	Interpret([]byte(`print 123/2-50+2.0*8.0`))
-	// Output:
-	// 27
-}
-
-func Example_i6_7() {
-	Interpret([]byte(`print 123/2-50.0+2*8`))
-	// Output:
-	// 27
-}
-
-func Example_i7() {
-	Interpret([]byte(`print 1-2`))
-	// Output:
-	// -1
-}
-
-func Example_i8() {
-	Interpret([]byte(`print 1--2`))
-	// Output:
-	// 3
-}
-
-func Example_i9() {
-	Interpret([]byte(`print 1- +1`))
-	// Output:
-	// 0
-}
-
-func Example_i10() {
-	Interpret([]byte(`print 1+ +1`))
-	// Output:
-	// 2
-}
-
-func Example_i10_1() {
-	Interpret([]byte(`print 1.0+ +1`))
-	// Output:
-	// 2
-}
-
-func Example_i10_2() {
-	Interpret([]byte(`print 1+ +1.0`))
-	// Output:
-	// 2
-}
-
-func Example_i10_3() {
-	Interpret([]byte(`print 1.0+ +1.0`))
-	// Output:
-	// 2
-}
-
-func Example_i11() {
-	Interpret([]byte(`print ---10`))
-	// Output:
-	// -10
-}
-
-func Example_i11_1() {
-	Interpret([]byte(`print ---10.0`))
-	// Output:
-	// -10
-}
-
-func Example_i12() {
-	Interpret([]byte(`print 1==1`))
-	// Output:
-	// true
-}
-
-func Example_i12_1() {
-	Interpret([]byte(`print 1.0==1`))
-	// Output:
-	// true
-}
-
-func Example_i12_2() {
-	Interpret([]byte(`print 1==1.0`))
-	// Output:
-	// true
-}
-
-func Example_i12_3() {
-	Interpret([]byte(`print 1.0==1.0`))
-	// Output:
-	// true
-}
-
-func Example_i13() {
-	Interpret([]byte(`print not 1>3`))
-	// Output:
-	// true
-}
-
-func Example_i13_1() {
-	Interpret([]byte(`print not 1.0>3`))
-	// Output:
-	// true
-}
-
-func Example_i13_2() {
-	Interpret([]byte(`print not 1>3.0`))
-	// Output:
-	// true
-}
-
-func Example_i13_3() {
-	Interpret([]byte(`print not 1.0>3.0`))
-	// Output:
-	// true
-}
-
-func Example_i13_4() {
-	Interpret([]byte(`print not 3<=1`))
-	// Output:
-	// true
-}
-
-func Example_i14() {
-	Interpret([]byte(`print 1<2 and 0 or "whatever"`))
-	// Output:
-	// 0
-}
-
-func Example_i14_1() {
-	Interpret([]byte(`print 1.0<2 and 0 or "whatever"`))
-	// Output:
-	// 0
-}
-
-func Example_i14_2() {
-	Interpret([]byte(`print 1<2.0 and 0 or "whatever"`))
-	// Output:
-	// 0
-}
-
-func Example_i14_3() {
-	Interpret([]byte(`print 1.0<2.0 and 0 or "whatever"`))
-	// Output:
-	// 0
-}
-
-func Example_i15() {
-	Interpret([]byte(`print 1>2 or true and 42`))
-	// Output:
-	// 42
-}
-
-func Example_i16() {
-	Interpret([]byte(`print 1<10/5 and 127*-1+154`))
-	// Output:
-	// 27
-}
-
-func Example_i17() {
-	Interpret([]byte(`print "q"*2`))
-	// Output:
-	// qq
-}
-
-func Example_i18() {
-	Interpret([]byte(`print "q"+"x"`))
-	// Output:
-	// qx
-}
-
-func Example_i19() {
-	Interpret([]byte(`print "q"+3`))
-	// Output:
-	// q3
-}
-
-func Example_i20() {
-	Interpret([]byte(`print "q"+3.14`))
-	// Output:
-	// q3.14
-}
-
-func Example_i21() {
-	Interpret([]byte(`print "q"=="q"`))
-	// Output:
-	// true
-}
-
-func Example_i22() {
-	Interpret([]byte(`print "q"!="p"`))
-	// Output:
-	// true
-}
-
-func Example_i23() {
-	Interpret([]byte(`print "p"<"q"`))
-	// Output:
-	// true
-}
-
-func Example_i24() {
-	Interpret([]byte(`print "q">"p"`))
-	// Output:
-	// true
-}
-
-func Example_i25() {
-	Interpret([]byte(`print not (false or true)`))
-	// Output:
-	// false
-}
-
-func Example_i25_1() {
-	Interpret([]byte(`print not (false and true)`))
-	// Output:
-	// true
-}
-
-func Example_i25_2() {
-	Interpret([]byte(`print "" or 42`))
-	// Output:
-	// 42
-}
-
-func Example_i26() {
-	Interpret([]byte(`var a=100; var b=a-90; print -b`))
-	// Output:
-	// -10
-}
-
-func Example_i27() {
-	Interpret([]byte(`var a=1; var b=2; print a+b`))
-	// Output:
-	// 3
-}
-
-func Example_i28() {
-	Interpret([]byte(`var a=1; eval a=a+1; print a`))
-	// Output:
-	// 2
-}
-
-func Example_i29() {
-	Interpret([]byte(`var a=1; print a=a+1`))
-	// Output:
-	// 2
-}
-
-func Example_i30() {
-	Interpret([]byte(`def blk {print TYPE}`))
-	// Output:
-	// blk
-}
-
-func Example_i31() {
-	Interpret([]byte(`def blk "foo" {print TYPE+"."+NAME}`))
-	// Output:
-	// blk.foo
-}
-
-func Example_i32() {
-	Interpret([]byte(`var a=1; def blk {print TYPE}`))
-	// Output:
-	// blk
-}
-
-func Example_i33() {
-	Interpret([]byte(`print 1; def blk {print TYPE}`))
-	// Output:
-	// 1
-	// blk
-}
-
-func Example_i34() {
-	Interpret([]byte(`var a=1; def blk {print TYPE+a}`))
-	// Output:
-	// blk1
-}
-
-func Example_i35() {
-	Interpret([]byte(`def blk {var a=1; print TYPE+a}`))
-	// Output:
-	// blk1
-}
-
-func Example_i36() {
-	Interpret([]byte(`var x=1; def blk {var a=1+x; print TYPE+a}`))
-	// Output:
-	// blk2
-}
-
-func Example_i37() {
-	Interpret([]byte(`def blk {var a=1; var b=2; print TYPE+(a+b)}`))
-	// Output:
-	// blk3
-}
-
-func Example_i38() {
-	Interpret([]byte(`var x=5; def blk {var a=1; var b=2; print TYPE+(a+b+x)}`))
-	// Output:
-	// blk8
-}
-
-func Example_i39() {
-	Interpret([]byte(`def b1{var x=1; def b2 {var a=2; print TYPE+(a+x)}}`))
-	// Output:
-	// b23
-}
-
-func Example_i40() {
-	Interpret([]byte(`var a=5; def blk {var a=a+1; print TYPE+a}`))
-	// Output:
-	// blk6
-}
-
-func Example_i41() {
-	Interpret([]byte(`def b1{var a=5; def b2 {var a=a+1; print TYPE+a} print TYPE+a}`))
-	// Output:
-	// b26
-	// b15
-}
-
-func Example_i42() {
-	Interpret([]byte(`def b1{var a=5; def b2 {eval a=a+1; print TYPE+a} print TYPE+a}`))
-	// Output:
-	// b26
-	// b16
-}
-
-func Example_i43() {
-	Interpret([]byte(`def b1{ print TYPE; def b2{print TYPE} }; def b3{print TYPE}`))
-	// Output:
-	// b1
-	// b2
-	// b3
-}
-
-func Example_i44() {
-	Interpret([]byte(`var a; var b; eval a=1+(b=2); print a`))
-	// Output:
-	// 3
-}
-
-func Example_i45() {
-	Interpret([]byte(`var a; var b; print a=1+(b=2)`))
-	// Output:
-	// 3
-}
-
-func Example_i46() {
-	Interpret([]byte(`def x {42}`))
-	// Output:
-}
-
-func Example_i47() {
-	Interpret([]byte(`def x {var x=42; x+1; print x}`))
-	// Output:
-	// 42
-}
-
-func Example_i48() {
-	Interpret([]byte(`def x {a=1+(b=2); print a}`))
-	// Output:
-	// 3
-}
-
-func Example_i49() {
-	Interpret([]byte(`def x {print a=1+(b=2)}`))
-	// Output:
-	// 3
-}
-
-func Example_i50() {
-	Interpret([]byte(`def x {print (a=1)+(b=2)}`))
-	// Output:
-	// 3
-}
-
-func Example_i51() {
-	Interpret([]byte(``), OptDisasm(true))
-	// Output:
-	// == input ==
-	// 0000    1:1  RET
-}
-
-func Example_i52() {
-	Interpret([]byte(`eval nil`), OptDisasm(true))
-	// Output:
-	// == input ==
-	// 0000    1:9  NIL
-	// 0001      |  POP
-	// 0002      |  RET
-}
-
-func Example_i53() {
-	Interpret([]byte(`eval 42`), OptDisasm(true))
-	// Output:
-	// == input ==
-	// 0000    1:8  CONST         0 '42'
-	// 0002      |  POP
-	// 0003      |  RET
-}
-
-func Example_i54() {
-	Interpret([]byte(`def b {}`), OptDisasm(true))
-	// Output:
-	// == input ==
-	// 0000    1:8  DEFBLOCK      0 'b'	   1 ''
-	// 0003    1:9  ENDBLOCK
-	// 0004      |  RET
+import (
+    "bytes"
+    "strings"
+    "testing"
+)
+
+func TestInterpretFromPy(t *testing.T) {
+    var tab = []struct {
+        name, input, output string
+        disasm              bool
+    }{
+		{`0`, ``, "", false},
+		{`0.1`, `eval "expr that is discarded"`, "", false},
+		{`0.2`, `eval nil`, "", false},
+		{`0.3`, `eval "anything"`, "", false},
+		{`1`, `var a; print not a`, "true", false},
+		{`2`, `var a; print a==nil`, "true", false},
+		{`3`, `var a=1; eval a=nil; print a==nil`, "true", false},
+		{`4`, `print 1+1`, "2", false},
+		{`5`, `print 1+2.14`, "3.14", false},
+		{`6`, `print 123/2-50+2*8`, "27", false},
+		{`6.1`, `print 123.0/2-50+2*8`, "27.5", false},
+		{`6.2`, `print 123/2.0-50+2*8`, "27.5", false},
+		{`6.3`, `print 123.0/2.0-50+2*8`, "27.5", false},
+		{`6.4`, `print 123/2-50+2.0*8`, "27", false},
+		{`6.5`, `print 123/2-50+2*8.0`, "27", false},
+		{`6.6`, `print 123/2-50+2.0*8.0`, "27", false},
+		{`6.7`, `print 123/2-50.0+2*8`, "27", false},
+		{`7`, `print 1-2`, "-1", false},
+		{`8`, `print 1--2`, "3", false},
+		{`9`, `print 1- +1`, "0", false},
+		{`10`, `print 1+ +1`, "2", false},
+		{`10.1`, `print 1.0+ +1`, "2", false},
+		{`10.2`, `print 1+ +1.0`, "2", false},
+		{`10.3`, `print 1.0+ +1.0`, "2", false},
+		{`11`, `print ---10`, "-10", false},
+		{`11.1`, `print ---10.0`, "-10", false},
+		{`12`, `print 1==1`, "true", false},
+		{`12.1`, `print 1.0==1`, "true", false},
+		{`12.2`, `print 1==1.0`, "true", false},
+		{`12.3`, `print 1.0==1.0`, "true", false},
+		{`13`, `print not 1>3`, "true", false},
+		{`13.1`, `print not 1.0>3`, "true", false},
+		{`13.2`, `print not 1>3.0`, "true", false},
+		{`13.3`, `print not 1.0>3.0`, "true", false},
+		{`13.4`, `print not 3<=1`, "true", false},
+		{`14`, `print 1<2 and 0 or "whatever"`, "0", false},
+		{`14.1`, `print 1.0<2 and 0 or "whatever"`, "0", false},
+		{`14.2`, `print 1<2.0 and 0 or "whatever"`, "0", false},
+		{`14.3`, `print 1.0<2.0 and 0 or "whatever"`, "0", false},
+		{`15`, `print 1>2 or true and 42`, "42", false},
+		{`16`, `print 1<10/5 and 127*-1+154`, "27", false},
+		{`17`, `print "q"*2`, "qq", false},
+		{`18`, `print "q"+"x"`, "qx", false},
+		{`19`, `print "q"+3`, "q3", false},
+		{`20`, `print "q"+3.14`, "q3.14", false},
+		{`21`, `print "q"=="q"`, "true", false},
+		{`22`, `print "q"!="p"`, "true", false},
+		{`23`, `print "p"<"q"`, "true", false},
+		{`24`, `print "q">"p"`, "true", false},
+		{`25`, `print not (false or true)`, "false", false},
+		{`25.1`, `print not (false and true)`, "true", false},
+		{`25.2`, `print "" or 42`, "42", false},
+		{`26`, `var a=100; var b=a-90; print -b`, "-10", false},
+		{`27`, `var a=1; var b=2; print a+b`, "3", false},
+		{`28`, `var a=1; eval a=a+1; print a`, "2", false},
+		{`29`, `var a=1; print a=a+1`, "2", false},
+		{`30`, `def blk {print TYPE}`, "blk", false},
+		{`31`, `def blk "foo" {print TYPE+"."+NAME}`, "blk.foo", false},
+		{`32`, `var a=1; def blk {print TYPE}`, "blk", false},
+		{`33`, `print 1; def blk {print TYPE}`, "1\nblk", false},
+		{`34`, `var a=1; def blk {print TYPE+a}`, "blk1", false},
+		{`35`, `def blk {var a=1; print TYPE+a}`, "blk1", false},
+		{`36`, `var x=1; def blk {var a=1+x; print TYPE+a}`, "blk2", false},
+		{`37`, `def blk {var a=1; var b=2; print TYPE+(a+b)}`, "blk3", false},
+		{`38`, `var x=5; def blk {var a=1; var b=2; print TYPE+(a+b+x)}`, "blk8", false},
+		{`39`, `def b1{var x=1; def b2 {var a=2; print TYPE+(a+x)}}`, "b23", false},
+		{`40`, `var a=5; def blk {var a=a+1; print TYPE+a}`, "blk6", false},
+		{`41`, `def b1{var a=5; def b2 {var a=a+1; print TYPE+a} print TYPE+a}`, "b26\nb15", false},
+		{`42`, `def b1{var a=5; def b2 {eval a=a+1; print TYPE+a} print TYPE+a}`, "b26\nb16", false},
+		{`43`, `def b1{ print TYPE; def b2{print TYPE} }; def b3{print TYPE}`, "b1\nb2\nb3", false},
+		{`44`, `var a; var b; eval a=1+(b=2); print a`, "3", false},
+		{`45`, `var a; var b; print a=1+(b=2)`, "3", false},
+		{`46`, `def x {42}`, "", false},
+		{`47`, `def x {var x=42; x+1; print x}`, "42", false},
+		{`48`, `def x {a=1+(b=2); print a}`, "3", false},
+		{`49`, `def x {print a=1+(b=2)}`, "3", false},
+		{`50`, `def x {print (a=1)+(b=2)}`, "3", false},
+		{`51`, ``, "== input ==\n0000    1:1  RET", true},
+		{`52`, `eval nil`, "== input ==\n0000    1:9  NIL\n0001      |  POP\n0002      |  RET", true},
+		{`53`, `eval 42`, "== input ==\n0000    1:8  CONST         0 '42'\n0002      |  POP\n0003      |  RET", true},
+		{`54`, `def b {}`, "== input ==\n0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n0003    1:9  ENDBLOCK\n0004      |  RET", true},
+ }
+
+    for _, tc := range tab {
+        tc := tc
+        t.Run(tc.name, func(t *testing.T) {
+            b := new(bytes.Buffer)
+			Interpret([]byte(tc.input), OptOutput(b), OptDisasm(tc.disasm))
+
+            s := b.String()
+            s = strings.TrimRight(s, "\n")
+            if s != tc.output {
+                t.Errorf("mismatch:\nhave: %s\nwant: %s", s, tc.output)
+            }
+        })
+    }
 }

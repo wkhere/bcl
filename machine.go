@@ -2,15 +2,18 @@ package bcl
 
 import (
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 )
 
 func execute(p *prog, cf config) ([]Block, execStats, error) {
-	vm := &vm{trace: cf.trace}
-	vm.prog = p
-	vm.pc = 0
-
+	vm := &vm{
+		output: cf.output,
+		trace:  cf.trace,
+		prog:   p,
+		pc:     0,
+	}
 	err := vm.run()
 
 	vm.stats.pcFinal = vm.pc
@@ -23,7 +26,8 @@ type vm struct {
 	stack [stackSize]value
 	tos   int
 
-	trace bool
+	output io.Writer
+	trace  bool
 
 	blockStack  [blockStackSize]Block
 	blockTos    int
@@ -110,7 +114,7 @@ func (vm *vm) run() error {
 
 	for {
 		if vm.trace {
-			printStack(vm.stack[:vm.tos])
+			printStack(vm.output, vm.stack[:vm.tos])
 			vm.prog.disasmInstr(vm.pc)
 		}
 
@@ -211,7 +215,7 @@ func (vm *vm) run() error {
 
 		case opPRINT:
 			// ( a -- )
-			fmt.Println(pop())
+			fmt.Fprintln(vm.output, pop())
 
 		case opGETLOCAL:
 			// ( -- x )
@@ -298,12 +302,12 @@ func (b *Block) key(vm *vm) string {
 	return b.Type + "." + id
 }
 
-func printStack(vv []value) {
-	fmt.Printf("      #%-4d  ", len(vv))
+func printStack(w io.Writer, vv []value) {
+	fmt.Fprintf(w, "      #%-4d  ", len(vv))
 	for _, v := range vv {
-		fmt.Printf("[ %v ]", v)
+		fmt.Fprintf(w, "[ %v ]", v)
 	}
-	fmt.Println()
+	fmt.Fprintln(w)
 }
 
 type runtimeErr struct {

@@ -5,7 +5,7 @@ import "strconv"
 func parse(input string, cf config) (*prog, parseStats, error) {
 	p := &parser{
 		lexer:   newLexer(input),
-		prog:    newProg("input"),
+		prog:    newProg("input", cf.output),
 		lineFmt: newLineCalc(input).format,
 
 		identRefs: make(map[string]int, 8),

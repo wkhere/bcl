@@ -1,14 +1,18 @@
 package bcl
 
+import "io"
+
 type prog struct {
 	name      string
 	code      []byte
 	positions []int
 	constants []value
 	lineFmt   func(pos int) string
+
+	output io.Writer
 }
 
-func newProg(name string) *prog {
+func newProg(name string, output io.Writer) *prog {
 	const (
 		codeCap      = 64
 		constantsCap = 8
@@ -18,6 +22,7 @@ func newProg(name string) *prog {
 		code:      make([]byte, 0, codeCap),
 		positions: make([]int, 0, codeCap),
 		constants: make([]value, 0, constantsCap),
+		output:    output,
 	}
 }
 

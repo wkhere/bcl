@@ -14,7 +14,7 @@ func Interpret(input []byte, opts ...Option) ([]Block, error) {
 
 	prog, pstats, err := parse(inputStr, cf)
 	if cf.stats {
-		printPStats(pstats)
+		printPStats(cf.output, pstats)
 	}
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func Interpret(input []byte, opts ...Option) ([]Block, error) {
 
 	result, xstats, err := execute(prog, cf)
 	if cf.stats {
-		printXStats(xstats)
+		printXStats(cf.output, xstats)
 	}
 	return result, err
 

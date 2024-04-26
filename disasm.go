@@ -1,10 +1,13 @@
 package bcl
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+)
 
 func (p *prog) disasm() {
 	if p.name != "" {
-		fmt.Println("==", p.name, "==")
+		fmt.Fprintln(p.output, "==", p.name, "==")
 	}
 
 	for offset := 0; offset < len(p.code); {
@@ -13,11 +16,11 @@ func (p *prog) disasm() {
 }
 
 func (p *prog) disasmInstr(offset int) int {
-	fmt.Printf("%04d ", offset)
+	fmt.Fprintf(p.output, "%04d ", offset)
 	if offset > 0 && p.positions[offset] == p.positions[offset-1] {
-		fmt.Printf("     |  ")
+		fmt.Fprintf(p.output, "     |  ")
 	} else {
-		fmt.Printf("%6s  ", p.lineFmt(p.positions[offset]))
+		fmt.Fprintf(p.output, "%6s  ", p.lineFmt(p.positions[offset]))
 	}
 
 	instr := opcode(p.code[offset])
@@ -28,64 +31,64 @@ func (p *prog) disasmInstr(offset int) int {
 		opNIL, opZERO, opONE, opTRUE, opFALSE,
 		opEQ, opLT, opGT,
 		opADD, opSUB, opMUL, opDIV, opNEG, opNOT:
-		return simpleInstr(instr, offset)
+		return simpleInstr(p.output, instr, offset)
 
 	case opCONST, opGETFIELD, opSETFIELD:
-		return constInstr(instr, p, offset)
+		return constInstr(p.output, instr, p, offset)
 
 	case opGETLOCAL, opSETLOCAL, opPOPN:
-		return varbyteargInstr(instr, p, offset)
+		return varbyteargInstr(p.output, instr, p, offset)
 
 	case opDEFBLOCK:
-		return blockInstr(instr, p, offset)
+		return blockInstr(p.output, instr, p, offset)
 
 	case opJUMP, opJFALSE:
-		return jumpInstr(instr, +1, p, offset)
+		return jumpInstr(p.output, instr, +1, p, offset)
 	case opLOOP:
-		return jumpInstr(instr, -1, p, offset)
+		return jumpInstr(p.output, instr, -1, p, offset)
 
 	default:
-		fmt.Println("unknown opcode", instr)
+		fmt.Fprintln(p.output, "unknown opcode", instr)
 		return offset + 1
 	}
 }
 
-func simpleInstr(o opcode, offset int) int {
-	fmt.Println(o)
+func simpleInstr(w io.Writer, o opcode, offset int) int {
+	fmt.Fprintln(w, o)
 	return offset + 1
 }
 
-func byteargInstr(o opcode, p *prog, offset int) int {
+func byteargInstr(w io.Writer, o opcode, p *prog, offset int) int {
 	arg := p.code[offset+1]
-	fmt.Printf("%-10s %4d\n", o, arg)
+	fmt.Fprintf(w, "%-10s %4d\n", o, arg)
 	return offset + 2
 }
 
-func varbyteargInstr(o opcode, p *prog, offset int) int {
+func varbyteargInstr(w io.Writer, o opcode, p *prog, offset int) int {
 	arg, n := uvarintFromBytes(p.code[offset+1:])
-	fmt.Printf("%-10s %4d\n", o, arg)
+	fmt.Fprintf(w, "%-10s %4d\n", o, arg)
 	return offset + 1 + n
 }
 
-func constInstr(o opcode, p *prog, offset int) int {
+func constInstr(w io.Writer, o opcode, p *prog, offset int) int {
 	idx, n := uvarintFromBytes(p.code[offset+1:])
-	fmt.Printf("%-10s %4d '%v'\n", o, idx, p.constants[idx])
+	fmt.Fprintf(w, "%-10s %4d '%v'\n", o, idx, p.constants[idx])
 	return offset + 1 + n
 }
 
-func blockInstr(o opcode, p *prog, offset int) int {
+func blockInstr(w io.Writer, o opcode, p *prog, offset int) int {
 	typeIdx, n1 := uvarintFromBytes(p.code[offset+1:])
 	nameIdx, n2 := uvarintFromBytes(p.code[offset+1+n1:])
-	fmt.Printf(
+	fmt.Fprintf(w,
 		"%-10s %4d '%v'\t%4d '%v'\n",
 		o, typeIdx, p.constants[typeIdx], nameIdx, p.constants[nameIdx],
 	)
 	return offset + 1 + n1 + n2
 }
 
-func jumpInstr(o opcode, sign int, p *prog, offset int) int {
+func jumpInstr(w io.Writer, o opcode, sign int, p *prog, offset int) int {
 	jump := u16FromBytes(p.code[offset+1:])
-	fmt.Printf("%-10s %4d -> %04d\n",
+	fmt.Fprintf(w, "%-10s %4d -> %04d\n",
 		o, jump, offset+1+jumpByteLength+sign*int(jump),
 	)
 	return offset + 1 + jumpByteLength
