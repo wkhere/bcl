@@ -15,7 +15,7 @@ more on errors:
 - builtin functions:
   - getenv(key)
   - cmd(...) to run commands and catch the output!
-  - simple type conversion
+  - simple type conversions: 42 @str, expr @bool
   - consider replacing cmd & type conversions with sigils
 
 + fix: when a field is defined more than once, only the last clause
@@ -44,6 +44,10 @@ more on errors:
     (at runtime, without struct tags)
 
 + vm impl
+
+- again introduce global & local vars; how does idents resolving play with fields?
+
+- native functions
 
 - reflection: allow filling toplevel structs of different types
 
