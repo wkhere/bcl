@@ -148,6 +148,9 @@ func (vm *vm) run() error {
 			// ( a b -- c )
 			switch {
 			case isNumber(peek(1)) && isNumber(peek(0)):
+				if b := peek(0); instr == opDIV && isInt(b) && b == 0 {
+					return vm.runtimeError("division by int zero")
+				}
 				b, a := pop(), pop()
 				push(binopNumeric(instr, a, b))
 
