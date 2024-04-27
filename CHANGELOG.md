@@ -1,4 +1,6 @@
-### v0.8.7-dev
+### v0.8.7
+* CI & makefile changes
+* refine license
 
 ### v0.8.6
 * fix indentation of generated tests
