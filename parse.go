@@ -12,6 +12,8 @@ func parse(input string, cf config) (*prog, parseStats, error) {
 		// identRefs are for reusing block types & fields and selected consts
 
 		scope: new(scopeCompiler),
+
+		log: logger{cf.logw},
 	}
 
 	p.advance()
@@ -50,6 +52,7 @@ type parser struct {
 	scope *scopeCompiler
 
 	stats parseStats
+	log   logger
 }
 
 type scopeCompiler struct {
@@ -683,17 +686,17 @@ func (p *parser) error(msg string) {
 func (p *parser) errorAt(t *token, msg string) {
 	p.panicMode = true
 
-	log.Printf("line %s: error", p.lineFmt(t.pos))
+	p.log.Printf("line %s: error", p.lineFmt(t.pos))
 
 	switch {
 	case t.typ == tEOF:
-		log.Print(" at end")
+		p.log.Print(" at end")
 	case t.typ == tERR: // nop
 	default:
-		log.Printf(" at '%s'", t.val)
+		p.log.Printf(" at '%s'", t.val)
 	}
 
-	log.Printf(": %s\n", msg)
+	p.log.Printf(": %s\n", msg)
 	p.hadError = true
 }
 

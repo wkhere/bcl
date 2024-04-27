@@ -12,101 +12,155 @@ func TestInterpretFromPy(t *testing.T) {
 	var tab = []struct {
 		name, input, output string
 		disasm              bool
+		errWanted           bool
+		errMatch            string
 	}{
-		{`0`, ``, "", false},
-		{`0.1`, `eval "expr that is discarded"`, "", false},
-		{`0.2`, `eval nil`, "", false},
-		{`0.3`, `eval "anything"`, "", false},
-		{`1`, `var a; print not a`, "true", false},
-		{`2`, `var a; print a==nil`, "true", false},
-		{`3`, `var a=1; eval a=nil; print a==nil`, "true", false},
-		{`4`, `print 1+1`, "2", false},
-		{`5`, `print 1+2.14`, "3.14", false},
-		{`6`, `print 123/2-50+2*8`, "27", false},
-		{`6.1`, `print 123.0/2-50+2*8`, "27.5", false},
-		{`6.2`, `print 123/2.0-50+2*8`, "27.5", false},
-		{`6.3`, `print 123.0/2.0-50+2*8`, "27.5", false},
-		{`6.4`, `print 123/2-50+2.0*8`, "27", false},
-		{`6.5`, `print 123/2-50+2*8.0`, "27", false},
-		{`6.6`, `print 123/2-50+2.0*8.0`, "27", false},
-		{`6.7`, `print 123/2-50.0+2*8`, "27", false},
-		{`7`, `print 1-2`, "-1", false},
-		{`8`, `print 1--2`, "3", false},
-		{`9`, `print 1- +1`, "0", false},
-		{`10`, `print 1+ +1`, "2", false},
-		{`10.1`, `print 1.0+ +1`, "2", false},
-		{`10.2`, `print 1+ +1.0`, "2", false},
-		{`10.3`, `print 1.0+ +1.0`, "2", false},
-		{`11`, `print ---10`, "-10", false},
-		{`11.1`, `print ---10.0`, "-10", false},
-		{`12`, `print 1==1`, "true", false},
-		{`12.1`, `print 1.0==1`, "true", false},
-		{`12.2`, `print 1==1.0`, "true", false},
-		{`12.3`, `print 1.0==1.0`, "true", false},
-		{`13`, `print not 1>3`, "true", false},
-		{`13.1`, `print not 1.0>3`, "true", false},
-		{`13.2`, `print not 1>3.0`, "true", false},
-		{`13.3`, `print not 1.0>3.0`, "true", false},
-		{`13.4`, `print not 3<=1`, "true", false},
-		{`14`, `print 1<2 and 0 or "whatever"`, "0", false},
-		{`14.1`, `print 1.0<2 and 0 or "whatever"`, "0", false},
-		{`14.2`, `print 1<2.0 and 0 or "whatever"`, "0", false},
-		{`14.3`, `print 1.0<2.0 and 0 or "whatever"`, "0", false},
-		{`15`, `print 1>2 or true and 42`, "42", false},
-		{`16`, `print 1<10/5 and 127*-1+154`, "27", false},
-		{`17`, `print "q"*2`, "qq", false},
-		{`18`, `print "q"+"x"`, "qx", false},
-		{`19`, `print "q"+3`, "q3", false},
-		{`20`, `print "q"+3.14`, "q3.14", false},
-		{`21`, `print "q"=="q"`, "true", false},
-		{`22`, `print "q"!="p"`, "true", false},
-		{`23`, `print "p"<"q"`, "true", false},
-		{`24`, `print "q">"p"`, "true", false},
-		{`25`, `print not (false or true)`, "false", false},
-		{`25.1`, `print not (false and true)`, "true", false},
-		{`25.2`, `print "" or 42`, "42", false},
-		{`26`, `var a=100; var b=a-90; print -b`, "-10", false},
-		{`27`, `var a=1; var b=2; print a+b`, "3", false},
-		{`28`, `var a=1; eval a=a+1; print a`, "2", false},
-		{`29`, `var a=1; print a=a+1`, "2", false},
-		{`30`, `def blk {print TYPE}`, "blk", false},
-		{`31`, `def blk "foo" {print TYPE+"."+NAME}`, "blk.foo", false},
-		{`32`, `var a=1; def blk {print TYPE}`, "blk", false},
-		{`33`, `print 1; def blk {print TYPE}`, "1\nblk", false},
-		{`34`, `var a=1; def blk {print TYPE+a}`, "blk1", false},
-		{`35`, `def blk {var a=1; print TYPE+a}`, "blk1", false},
-		{`36`, `var x=1; def blk {var a=1+x; print TYPE+a}`, "blk2", false},
-		{`37`, `def blk {var a=1; var b=2; print TYPE+(a+b)}`, "blk3", false},
-		{`38`, `var x=5; def blk {var a=1; var b=2; print TYPE+(a+b+x)}`, "blk8", false},
-		{`39`, `def b1{var x=1; def b2 {var a=2; print TYPE+(a+x)}}`, "b23", false},
-		{`40`, `var a=5; def blk {var a=a+1; print TYPE+a}`, "blk6", false},
-		{`41`, `def b1{var a=5; def b2 {var a=a+1; print TYPE+a} print TYPE+a}`, "b26\nb15", false},
-		{`42`, `def b1{var a=5; def b2 {eval a=a+1; print TYPE+a} print TYPE+a}`, "b26\nb16", false},
-		{`43`, `def b1{ print TYPE; def b2{print TYPE} }; def b3{print TYPE}`, "b1\nb2\nb3", false},
-		{`44`, `var a; var b; eval a=1+(b=2); print a`, "3", false},
-		{`45`, `var a; var b; print a=1+(b=2)`, "3", false},
-		{`46`, `def x {42}`, "", false},
-		{`47`, `def x {var x=42; x+1; print x}`, "42", false},
-		{`48`, `def x {a=1+(b=2); print a}`, "3", false},
-		{`49`, `def x {print a=1+(b=2)}`, "3", false},
-		{`50`, `def x {print (a=1)+(b=2)}`, "3", false},
-		{`51`, ``, "== input ==\n0000    1:1  RET", true},
-		{`52`, `eval nil`, "== input ==\n0000    1:9  NIL\n0001      |  POP\n0002      |  RET", true},
-		{`53`, `eval 42`, "== input ==\n0000    1:8  CONST         0 '42'\n0002      |  POP\n0003      |  RET", true},
-		{`54`, `def b {}`, "== input ==\n0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n0003    1:9  ENDBLOCK\n0004      |  RET", true},
+		{`0`, ``, "", false, false, ""},
+		{`0.1`, `eval "expr that is discarded"`, "", false, false, ""},
+		{`0.2`, `eval nil`, "", false, false, ""},
+		{`0.3`, `eval "anything"`, "", false, false, ""},
+		{`1`, `var a; print not a`, "true", false, false, ""},
+		{`2`, `var a; print a==nil`, "true", false, false, ""},
+		{`3`, `var a=1; eval a=nil; print a==nil`, "true", false, false, ""},
+		{`4`, `print 1+1`, "2", false, false, ""},
+		{`5`, `print 1+2.14`, "3.14", false, false, ""},
+		{`6`, `print 123/2-50+2*8`, "27", false, false, ""},
+		{`6.1`, `print 123.0/2-50+2*8`, "27.5", false, false, ""},
+		{`6.2`, `print 123/2.0-50+2*8`, "27.5", false, false, ""},
+		{`6.3`, `print 123.0/2.0-50+2*8`, "27.5", false, false, ""},
+		{`6.4`, `print 123/2-50+2.0*8`, "27", false, false, ""},
+		{`6.5`, `print 123/2-50+2*8.0`, "27", false, false, ""},
+		{`6.6`, `print 123/2-50+2.0*8.0`, "27", false, false, ""},
+		{`6.7`, `print 123/2-50.0+2*8`, "27", false, false, ""},
+		{`7`, `print 1-2`, "-1", false, false, ""},
+		{`8`, `print 1--2`, "3", false, false, ""},
+		{`9`, `print 1- +1`, "0", false, false, ""},
+		{`10`, `print 1+ +1`, "2", false, false, ""},
+		{`10.1`, `print 1.0+ +1`, "2", false, false, ""},
+		{`10.2`, `print 1+ +1.0`, "2", false, false, ""},
+		{`10.3`, `print 1.0+ +1.0`, "2", false, false, ""},
+		{`11`, `print ---10`, "-10", false, false, ""},
+		{`11.1`, `print ---10.0`, "-10", false, false, ""},
+		{`12`, `print 1==1`, "true", false, false, ""},
+		{`12.1`, `print 1.0==1`, "true", false, false, ""},
+		{`12.2`, `print 1==1.0`, "true", false, false, ""},
+		{`12.3`, `print 1.0==1.0`, "true", false, false, ""},
+		{`13`, `print not 1>3`, "true", false, false, ""},
+		{`13.1`, `print not 1.0>3`, "true", false, false, ""},
+		{`13.2`, `print not 1>3.0`, "true", false, false, ""},
+		{`13.3`, `print not 1.0>3.0`, "true", false, false, ""},
+		{`13.4`, `print not 3<=1`, "true", false, false, ""},
+		{`14`, `print 1<2 and 0 or "whatever"`, "0", false, false, ""},
+		{`14.1`, `print 1.0<2 and 0 or "whatever"`, "0", false, false, ""},
+		{`14.2`, `print 1<2.0 and 0 or "whatever"`, "0", false, false, ""},
+		{`14.3`, `print 1.0<2.0 and 0 or "whatever"`, "0", false, false, ""},
+		{`15`, `print 1>2 or true and 42`, "42", false, false, ""},
+		{`16`, `print 1<10/5 and 127*-1+154`, "27", false, false, ""},
+		{`17`, `print "q"*2`, "qq", false, false, ""},
+		{`18`, `print "q"+"x"`, "qx", false, false, ""},
+		{`19`, `print "q"+3`, "q3", false, false, ""},
+		{`20`, `print "q"+3.14`, "q3.14", false, false, ""},
+		{`21`, `print "q"=="q"`, "true", false, false, ""},
+		{`22`, `print "q"!="p"`, "true", false, false, ""},
+		{`23`, `print "p"<"q"`, "true", false, false, ""},
+		{`24`, `print "q">"p"`, "true", false, false, ""},
+		{`25`, `print not (false or true)`, "false", false, false, ""},
+		{`25.1`, `print not (false and true)`, "true", false, false, ""},
+		{`25.2`, `print "" or 42`, "42", false, false, ""},
+		{`26`, `var a=100; var b=a-90; print -b`, "-10", false, false, ""},
+		{`27`, `var a=1; var b=2; print a+b`, "3", false, false, ""},
+		{`28`, `var a=1; eval a=a+1; print a`, "2", false, false, ""},
+		{`29`, `var a=1; print a=a+1`, "2", false, false, ""},
+		{`30`, `def blk {print TYPE}`, "blk", false, false, ""},
+		{`31`, `def blk "foo" {print TYPE+"."+NAME}`, "blk.foo", false, false, ""},
+		{`32`, `var a=1; def blk {print TYPE}`, "blk", false, false, ""},
+		{`33`, `print 1; def blk {print TYPE}`, "1\nblk", false, false, ""},
+		{`34`, `var a=1; def blk {print TYPE+a}`, "blk1", false, false, ""},
+		{`35`, `def blk {var a=1; print TYPE+a}`, "blk1", false, false, ""},
+		{`36`, `var x=1; def blk {var a=1+x; print TYPE+a}`, "blk2", false, false, ""},
+		{`37`, `def blk {var a=1; var b=2; print TYPE+(a+b)}`, "blk3", false, false, ""},
+		{`38`, `var x=5; def blk {var a=1; var b=2; print TYPE+(a+b+x)}`, "blk8", false, false, ""},
+		{`39`, `def b1{var x=1; def b2 {var a=2; print TYPE+(a+x)}}`, "b23", false, false, ""},
+		{`40`, `var a=5; def blk {var a=a+1; print TYPE+a}`, "blk6", false, false, ""},
+		{`41`, `def b1{var a=5; def b2 {var a=a+1; print TYPE+a} print TYPE+a}`, "b26\nb15", false, false, ""},
+		{`42`, `def b1{var a=5; def b2 {eval a=a+1; print TYPE+a} print TYPE+a}`, "b26\nb16", false, false, ""},
+		{`43`, `def b1{ print TYPE; def b2{print TYPE} }; def b3{print TYPE}`, "b1\nb2\nb3", false, false, ""},
+		{`44`, `var a; var b; eval a=1+(b=2); print a`, "3", false, false, ""},
+		{`45`, `var a; var b; print a=1+(b=2)`, "3", false, false, ""},
+		{`46`, `def x {42}`, "", false, false, ""},
+		{`47`, `def x {var x=42; x+1; print x}`, "42", false, false, ""},
+		{`48`, `def x {a=1+(b=2); print a}`, "3", false, false, ""},
+		{`49`, `def x {print a=1+(b=2)}`, "3", false, false, ""},
+		{`50`, `def x {print (a=1)+(b=2)}`, "3", false, false, ""},
+		{`51`, ``, "== input ==\n0000    1:1  RET", true, false, ""},
+		{`52`, `eval nil`, "== input ==\n0000    1:9  NIL\n0001      |  POP\n0002      |  RET", true, false, ""},
+		{`53`, `eval 42`, "== input ==\n0000    1:8  CONST         0 '42'\n0002      |  POP\n0003      |  RET", true, false, ""},
+		{`54`, `def b {}`, "== input ==\n0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n0003    1:9  ENDBLOCK\n0004      |  RET", true, false, ""},
+		{`55`, `1`, "", false, true, "expected statement"},
+		{`55.1`, `=1`, "", false, true, "expected statement"},
+		{`56`, `print`, "", false, true, "at end: expected expression"},
+		{`56.1`, `print print`, "", false, true, "at 'print': expected expression"},
+		{`56.2`, `print =`, "", false, true, "at '=': expected expression"},
+		{`57`, `eval`, "", false, true, "expected expression"},
+		{`58`, `eval (1`, "", false, true, "expected ')'"},
+		{`59`, `def 1`, "", false, true, "at '1': expected block type"},
+		{`60`, `def b {`, "", false, true, "at end: expected '}'"},
+		{`61.1`, `def b x {}`, "", false, true, "at 'x': expected '{'"},
+		{`61.2`, `def b 0 {}`, "", false, true, "at '0': expected '{'"},
+		{`62.1`, `def b "x" {`, "", false, true, "at end: expected '}'"},
+		{`62.2`, `def b "x" { z`, "", false, true, "at end: expected '}'"},
+		{`63.1`, `eval 1 =`, "", false, true, "at '=': invalid assignment target"},
+		{`63.2`, `eval "a" = `, "", false, true, "at '=': invalid assignment target"},
+		{`63.3`, `eval false = `, "", false, true, "at '=': invalid assignment target"},
+		{`64`, `eval a=42`, "", false, true, "at '=': invalid assignment target"},
+		{`65`, `var a; var a`, "", false, true, "at 'a': variable with this name already present"},
+		{`66`, `eval a`, "", false, true, "at 'a': undefined variable"},
 	}
 
 	for _, tc := range tab {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			b := new(bytes.Buffer)
-			Interpret([]byte(tc.input), OptOutput(b), OptDisasm(tc.disasm))
+			out := new(bytes.Buffer)
+			log := new(bytes.Buffer)
 
-			s := b.String()
-			s = strings.TrimRight(s, "\n")
-			if s != tc.output {
-				t.Errorf("mismatch:\nhave: %s\nwant: %s", s, tc.output)
+			_, err := Interpret(
+				[]byte(tc.input),
+				OptDisasm(tc.disasm),
+				OptOutput(out), OptLogger(log),
+			)
+
+			switch {
+			case err != nil && !tc.errWanted:
+				t.Errorf("unexpected error: %s", relevantError(err, log))
+
+			case err != nil && tc.errWanted:
+				rerr := relevantError(err, log)
+				if !strings.Contains(rerr, tc.errMatch) {
+					t.Errorf("error mismatch\nhave: %s\nwant matching: %s",
+						rerr, tc.errMatch,
+					)
+				}
+
+			case err == nil && tc.errWanted && tc.errMatch == "":
+				t.Errorf("no error when expecting one")
+
+			case err == nil && tc.errWanted && tc.errMatch != "":
+				t.Errorf("no error when expecting one matching: %s", tc.errMatch)
+
+			case err == nil && !tc.errWanted:
+				s := strings.TrimRight(out.String(), "\n")
+				if s != tc.output {
+					t.Errorf("mismatch:\nhave: %s\nwant: %s", s, tc.output)
+				}
 			}
 		})
+	}
+}
+
+func relevantError(err error, buf *bytes.Buffer) string {
+	if s := err.Error(); strings.HasPrefix(s, "combined errors") {
+		return strings.TrimRight(buf.String(), "\n")
+	} else {
+		return s
 	}
 }

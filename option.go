@@ -12,10 +12,14 @@ type config struct {
 	trace  bool
 	stats  bool
 	output io.Writer
+	logw   io.Writer
 }
 
 func makeConfig(oo []Option) (cf config) {
-	cf.output = os.Stdout
+	cf = config{
+		output: os.Stdout,
+		logw:   os.Stderr,
+	}
 
 	for _, o := range oo {
 		o(&cf)
@@ -37,4 +41,8 @@ func OptStats(x bool) Option {
 
 func OptOutput(w io.Writer) Option {
 	return func(cf *config) { cf.output = w }
+}
+
+func OptLogger(w io.Writer) Option {
+	return func(cf *config) { cf.logw = w }
 }

@@ -94,30 +94,67 @@ tests = [
         "== input ==\n0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
                      "0003    1:9  ENDBLOCK\n0004      |  RET",
         'disasm'],
+
+    [55,   '1', '',           "err: expected statement"],
+    [55.1, '=1', '',          "err: expected statement"],
+    [56,   'print', '',       "err: at end: expected expression"],
+    [56.1, 'print print', '', "err: at 'print': expected expression"],
+    [56.2, 'print =', '',     "err: at '=': expected expression"],
+    [57,   'eval', '',        "err: expected expression"],
+    [58,   'eval (1', '',     "err: expected ')'"],
+    [59,   'def 1', '',         "err: at '1': expected block type"],
+    [60,   'def b {', '',       "err: at end: expected '}'"],
+    [61.1, 'def b x {}', '',    "err: at 'x': expected '{'"],
+    [61.2, 'def b 0 {}', '',    "err: at '0': expected '{'"],
+    [62.1, 'def b "x" {', '',   "err: at end: expected '}'"],
+    [62.2, 'def b "x" { z', '', "err: at end: expected '}'"],
+    [63.1, 'eval 1 =', '',      "err: at '=': invalid assignment target"],
+    [63.2, 'eval "a" = ', '',   "err: at '=': invalid assignment target"],
+    [63.3, 'eval false = ', '', "err: at '=': invalid assignment target"],
+    [64,   'eval a=42', '',     "err: at '=': invalid assignment target"],
+    [65,   'var a; var a', '',  "err: at 'a': variable with this name already present"],
+    [66,   'eval a', '',        "err: at 'a': undefined variable"],
 ]
+
+
+def err_match(opt):
+     m = next((s for s in opt if s == 'err' or s.startswith('err:')), None)
+     if m:
+        if m == 'err': return m
+        return m[4:].strip() or 'err'
+
 
 def perr(*args):
     print(*args, file=stderr)
 
+
 def run_tests():
     cmd = './bcl'.split()
 
-    had_err = False
+    fail = False
     for i, prog, exp, *opt in tests:
-        try:
-            if 'disasm' in opt: cmd.append('--disasm')
+        cmd2 = cmd.copy()
+        if 'disasm' in opt: cmd2.append('--disasm')
 
-            res = subprocess.check_output(cmd, input=prog, text=True)
-            res = res.strip()
-            if res != exp:
-                had_err = True
+        proc = subprocess.run(cmd2, input=prog, text=True, capture_output=True)
+
+        if proc.returncode == 0:
+            if (res := proc.stdout.rstrip()) != exp:
+                fail = True
                 perr(f'#{i} mismatch: have {res!r}, want {exp!r}')
 
-        except subprocess.CalledProcessError:
-            perr(f'#{i} {cmd} error')
-            had_err = True
+        else:
+            msg = proc.stderr.rstrip().removesuffix("\ncombined errors from parse")
+            if m := err_match(opt):
+                if m == 'err': continue
+                if m not in msg:
+                    perr(f'#{i} error mismatch: have {msg!r}, want matching {m!r}')
+                    fail = True
+            else:
+                perr(f'#{i} unexpected error: {msg!r}')
+                fail = True
 
-    if had_err: exit(1)
+    if fail: exit(1)
 
 
 def q(s): return s.encode('unicode-escape').decode()
@@ -137,6 +174,8 @@ func TestInterpretFromPy(t *testing.T) {
     var tab = []struct {
         name, input, output string
         disasm              bool
+        errWanted           bool
+        errMatch            string
     }{"""
 
 part2 = r""" }
@@ -144,17 +183,51 @@ part2 = r""" }
     for _, tc := range tab {
         tc := tc
         t.Run(tc.name, func(t *testing.T) {
-            b := new(bytes.Buffer)
-            Interpret([]byte(tc.input), OptOutput(b), OptDisasm(tc.disasm))
+            out := new(bytes.Buffer)
+            log := new(bytes.Buffer)
 
-            s := b.String()
-            s = strings.TrimRight(s, "\n")
-            if s != tc.output {
-                t.Errorf("mismatch:\nhave: %s\nwant: %s", s, tc.output)
+            _, err := Interpret(
+                []byte(tc.input),
+                OptDisasm(tc.disasm),
+                OptOutput(out), OptLogger(log),
+            )
+
+            switch {
+            case err != nil && !tc.errWanted:
+                t.Errorf("unexpected error: %s", relevantError(err, log))
+
+            case err != nil && tc.errWanted:
+                rerr := relevantError(err, log)
+                if !strings.Contains(rerr, tc.errMatch) {
+                    t.Errorf("error mismatch\nhave: %s\nwant matching: %s",
+                        rerr, tc.errMatch,
+                    )
+                }
+
+            case err == nil && tc.errWanted && tc.errMatch == "":
+                t.Errorf("no error when expecting one")
+
+            case err == nil && tc.errWanted && tc.errMatch != "":
+                t.Errorf("no error when expecting one matching: %s", tc.errMatch)
+
+            case err == nil && !tc.errWanted:
+                s := strings.TrimRight(out.String(), "\n")
+                if s != tc.output {
+                    t.Errorf("mismatch:\nhave: %s\nwant: %s", s, tc.output)
+                }
             }
         })
     }
-}"""
+}
+
+func relevantError(err error, buf *bytes.Buffer) string {
+    if s := err.Error(); strings.HasPrefix(s, "combined errors") {
+        return strings.TrimRight(buf.String(), "\n")
+    } else {
+        return s
+    }
+}
+"""
 
 TARGET = 'testapi_test.go'
 
@@ -165,7 +238,13 @@ def generate():
 
         for (i, inp, outp, *opt) in tests:
             print(f'\t\t{{`{i}`, `{inp}`, "{q(outp)}", ', file=f, end='')
-            print('true' if 'disasm' in opt else 'false', file=f, end='')
+            print('true, ' if 'disasm' in opt else 'false, ', file=f, end='')
+            if m := err_match(opt):
+                print('true, ', file=f, end='')
+                msg = '""' if m == 'err' else f'"{q(m)}"'
+                print(msg, file=f, end='')
+            else:
+                print('false, ""', file=f, end='')
             print('},', file=f)
 
         print(part2, file=f)
