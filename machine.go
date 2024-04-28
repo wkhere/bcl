@@ -164,6 +164,9 @@ func (vm *vm) run() error {
 				b, a := pop().(float64), pop().(string)
 				push(a + strconv.FormatFloat(b, 'f', -1, 64))
 
+			case instr == opADD && isString(peek(1)) && peek(0) == nil:
+				pop()
+
 			case instr == opMUL && isString(peek(1)) && isInt(peek(0)):
 				b, a := pop().(int), pop().(string)
 				push(strings.Repeat(a, b))
