@@ -251,6 +251,9 @@ func (vm *vm) run() error {
 					parent = &vm.blockStack[i-1]
 					k      = child.key(vm)
 				)
+				// note: good to have the following safety check, although
+				// with the current syntax and with the key=type.name,
+				// it is impossible to trigger it
 				if _, ok := parent.Fields[k]; ok {
 					return vm.runtimeError("child %s duplicate at parent", k)
 				}
