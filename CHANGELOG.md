@@ -3,7 +3,7 @@
 * tests generator for error cases
 * cover a lot of error cases from both parser & vm runtime
 * lang change: allow string+nil op
-* lang fix: unary plus work only for numbers
+* lang fix: unary plus works only for numbers
 * fix division by int zero
 
 ### v0.8.7
