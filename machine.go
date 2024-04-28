@@ -284,7 +284,7 @@ func (vm *vm) run() error {
 			push(v)
 
 		case opSETFIELD:
-			// (x -- x)
+			// ( x -- x )
 			name := readConst().(string)
 			blockSet(name, peek(0))
 
