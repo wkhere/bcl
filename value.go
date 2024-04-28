@@ -49,10 +49,12 @@ func vtype(v value) string {
 		return "float"
 	case string:
 		return "string"
+	case bool:
+		return "bool"
 	default:
 		if v == nil {
-			return "<nil>"
+			return "nil"
 		}
-		return fmt.Sprintf("<%T>", v)
+		return fmt.Sprintf("unknown:%T", v)
 	}
 }
