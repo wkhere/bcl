@@ -266,7 +266,7 @@ func (vm *vm) run() error {
 			name := readConst().(string)
 			v, ok := blockGet(name)
 			if !ok {
-				return vm.runtimeError("identifier %q not resolved as var or field", name)
+				return vm.runtimeError("identifier '%s' not resolved as var or field", name)
 			}
 			push(v)
 
