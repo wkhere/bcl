@@ -156,9 +156,11 @@ part2 = r""" }
     }
 }"""
 
+TARGET = 'testapi_test.go'
+
 
 def generate():
-    with open('apigen_test.go', 'w') as f:
+    with open(TARGET, 'w') as f:
         print(part1, file=f)
 
         for (i, inp, outp, *opt) in tests:
