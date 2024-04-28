@@ -45,6 +45,8 @@ more on errors:
 
 + vm impl
 
+- test cases for assignments inside expr, to demonstrate they are valid
+
 - again introduce global & local vars; how does idents resolving play with fields?
 
 - native functions
