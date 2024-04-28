@@ -32,16 +32,17 @@ func _() {
 	_ = x[opMUL-21]
 	_ = x[opDIV-22]
 	_ = x[opNEG-23]
-	_ = x[opJUMP-24]
-	_ = x[opLOOP-25]
-	_ = x[opJFALSE-26]
-	_ = x[opPOP-27]
-	_ = x[opPOPN-28]
+	_ = x[opUNPLUS-24]
+	_ = x[opJUMP-25]
+	_ = x[opLOOP-26]
+	_ = x[opJFALSE-27]
+	_ = x[opPOP-28]
+	_ = x[opPOPN-29]
 }
 
-const _opcode_name = "NOPRETPRINTSETLOCALGETLOCALDEFBLOCKENDBLOCKSETFIELDGETFIELDCONSTNILZEROONETRUEFALSENOTEQLTGTADDSUBMULDIVNEGJUMPLOOPJFALSEPOPPOPN"
+const _opcode_name = "NOPRETPRINTSETLOCALGETLOCALDEFBLOCKENDBLOCKSETFIELDGETFIELDCONSTNILZEROONETRUEFALSENOTEQLTGTADDSUBMULDIVNEGUNPLUSJUMPLOOPJFALSEPOPPOPN"
 
-var _opcode_index = [...]uint8{0, 3, 6, 11, 19, 27, 35, 43, 51, 59, 64, 67, 71, 74, 78, 83, 86, 88, 90, 92, 95, 98, 101, 104, 107, 111, 115, 121, 124, 128}
+var _opcode_index = [...]uint8{0, 3, 6, 11, 19, 27, 35, 43, 51, 59, 64, 67, 71, 74, 78, 83, 86, 88, 90, 92, 95, 98, 101, 104, 107, 113, 117, 121, 127, 130, 134}
 
 func (i opcode) String() string {
 	if i >= opcode(len(_opcode_index)-1) {

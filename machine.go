@@ -189,6 +189,13 @@ func (vm *vm) run() error {
 			}
 			set(unopNumeric(instr, peek(0)))
 
+		case opUNPLUS:
+			// ( a  -- a )
+			if !isNumber(peek(0)) {
+				return vm.runtimeError("UNPLUS: invalid type: %s, expected number", vtype(peek(0)))
+			}
+			// do nothing
+
 		case opNOT:
 			// ( a -- b )
 			set(isFalsey(peek(0)))

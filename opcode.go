@@ -35,6 +35,7 @@ const (
 	opMUL
 	opDIV
 	opNEG
+	opUNPLUS
 
 	opJUMP // jump forward
 	opLOOP // jump backward

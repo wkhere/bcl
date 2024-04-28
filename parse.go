@@ -329,8 +329,10 @@ func unary(p *parser, _ bool) {
 	switch opType {
 	case tMINUS:
 		p.emitOp(opNEG)
+
+	case tPLUS:
+		p.emitOp(opUNPLUS)
 	}
-	// note: tPLUS also leads here and is ignored
 }
 
 func intLit(p *parser, _ bool) {
