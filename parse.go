@@ -488,7 +488,8 @@ func (p *parser) popN(count int) {
 	case 1:
 		p.emitOp(opPOP)
 	default:
-		p.emitOpWithUvarints(opPOPN, count)
+		p.emitOp(opPOPN)
+		p.emitUvarint(count)
 	}
 }
 
@@ -531,7 +532,9 @@ func (p *parser) defVar() {
 }
 
 func (p *parser) defBlock(typeIdx, nameIdx int) {
-	p.emitOpWithUvarints(opDEFBLOCK, typeIdx, nameIdx)
+	p.emitOp(opDEFBLOCK)
+	p.emitUvarint(typeIdx)
+	p.emitUvarint(nameIdx)
 }
 
 func (p *parser) endBlock() {
@@ -558,9 +561,11 @@ func (p *parser) resolveIdent(name string, canAssign bool) {
 
 	if canAssign && p.match(tEQ) {
 		expr(p)
-		p.emitOpWithUvarints(setOp, idx)
+		p.emitOp(setOp)
+		p.emitUvarint(idx)
 	} else {
-		p.emitOpWithUvarints(getOp, idx)
+		p.emitOp(getOp)
+		p.emitUvarint(idx)
 	}
 }
 
@@ -589,6 +594,12 @@ func (p *parser) emitBytes(bb ...byte) {
 	}
 }
 
+func (p *parser) emitUvarint(x int) {
+	var b [8]byte
+	n := uvarintToBytes(b[:], uint64(x))
+	p.emitBytes(b[:n]...)
+}
+
 func (p *parser) emitOp(op opcode) {
 	prog := p.currentProg()
 	prog.write(byte(op), p.prev.pos)
@@ -601,28 +612,10 @@ func (p *parser) emitOps(oo ...opcode) {
 	}
 }
 
-func (p *parser) emitOpWithArg(op opcode, b byte) {
-	p.emitOp(op)
-	p.emitByte(b)
-}
-
-func (p *parser) emitOpWithArgs(op opcode, bb ...byte) {
-	p.emitOp(op)
-	p.emitBytes(bb...)
-}
-
-func (p *parser) emitOpWithUvarints(op opcode, xx ...int) {
-	p.emitOp(op)
-	for _, x := range xx {
-		var b [8]byte
-		n := uvarintToBytes(b[:], uint64(x))
-		p.emitBytes(b[:n]...)
-	}
-}
-
 func (p *parser) emitConst(v value) {
 	idx := p.makeConst(v)
-	p.emitOpWithUvarints(opCONST, idx)
+	p.emitOp(opCONST)
+	p.emitUvarint(idx)
 }
 
 const jumpByteLength = 2
