@@ -304,7 +304,7 @@ func (vm *vm) run() error {
 func (vm *vm) runtimeError(format string, a ...any) error {
 	b := new(strings.Builder)
 	pos := vm.prog.positions[vm.pc-1]
-	fmt.Fprintf(b, "runtime error: line %s: ", vm.prog.lineFmt(pos))
+	fmt.Fprintf(b, "runtime error: line %s: ", vm.prog.linePos.format(pos))
 	fmt.Fprintf(b, format, a...)
 	return &runtimeErr{b.String()}
 }

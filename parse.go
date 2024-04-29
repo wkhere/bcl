@@ -6,7 +6,7 @@ func parse(input string, cf config) (*prog, parseStats, error) {
 	p := &parser{
 		lexer:   newLexer(input),
 		prog:    newProg("input", cf.output),
-		lineFmt: newLineCalc(input).format,
+		linePos: newLineCalc(input),
 
 		identRefs: make(map[string]int, 8),
 		// identRefs are for reusing block types & fields and selected consts
@@ -41,7 +41,7 @@ func parse(input string, cf config) (*prog, parseStats, error) {
 type parser struct {
 	lexer   *lexer
 	prog    *prog
-	lineFmt func(pos int) string
+	linePos *lineCalc
 
 	prev, current token
 	hadError      bool
@@ -462,7 +462,7 @@ func (p *parser) parsePrecedence(prec precedence) {
 func (p *parser) end() {
 	p.popN(p.scope.localCount)
 	p.emitOp(opRET)
-	p.prog.lineFmt = p.lineFmt
+	p.prog.linePos = p.linePos
 }
 
 func (p *parser) beginScope() {
@@ -689,7 +689,7 @@ func (p *parser) error(msg string) {
 func (p *parser) errorAt(t *token, msg string) {
 	p.panicMode = true
 
-	p.log.Printf("line %s: error", p.lineFmt(t.pos))
+	p.log.Printf("line %s: error", p.linePos.format(t.pos))
 
 	switch {
 	case t.typ == tEOF:

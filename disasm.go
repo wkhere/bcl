@@ -20,7 +20,7 @@ func (p *prog) disasmInstr(offset int) int {
 	if offset > 0 && p.positions[offset] == p.positions[offset-1] {
 		fmt.Fprintf(p.output, "     |  ")
 	} else {
-		fmt.Fprintf(p.output, "%6s  ", p.lineFmt(p.positions[offset]))
+		fmt.Fprintf(p.output, "%6s  ", p.linePos.format(p.positions[offset]))
 	}
 
 	instr := opcode(p.code[offset])

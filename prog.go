@@ -7,7 +7,7 @@ type prog struct {
 	code      []byte
 	positions []int
 	constants []value
-	lineFmt   func(pos int) string
+	linePos   *lineCalc
 
 	output io.Writer
 }
