@@ -54,4 +54,6 @@ more on errors:
 - reflection: allow filling toplevel structs of different types
 
 - when the language and vm is stable, port to Python, Ruby, Zig, ...
+  - way to port in small steps is to make prog struct fully serializable
+    and port the vm first
 
