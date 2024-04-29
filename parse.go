@@ -595,9 +595,10 @@ func (p *parser) emitBytes(bb ...byte) {
 }
 
 func (p *parser) emitUvarint(x int) {
-	// To be on the safe side, this buffer should be 9B, for any
-	// of the sensible varint implementations: leb128, vlq, sqlite uvarint,
-	// when encoding non-neg int as uint (max is 1<<63-1).
+	// To be on the safe side, this buffer should be 9B for sqlite4 uvarint.
+	// Other sensible varint implementations
+	// (binary/encoding aka protobuf encoding, leb128, vlq) also need max 9B
+	// when encoding non-neg int as uint (max value is 1<<63-1).
 	var b [9]byte
 	n := uvarintToBytes(b[:], uint64(x))
 	p.emitBytes(b[:n]...)
