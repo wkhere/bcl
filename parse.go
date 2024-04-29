@@ -293,6 +293,10 @@ func boolAnd(p *parser, _ bool) {
 	p.parsePrecedence(precAnd)
 	// NOTE: *not incrementing* prececence means that this op is right-assoc.
 	// It doesn't seem to hurt in bool algebra; the bytecode is even cleaner.
+	// In a chain of ANDs, first JFALSE jumps to the end of chain, making it
+	// faster. Left assoc version would jump to the middle of chain, only to
+	// test & jump again with another JFALSE.
+	//
 	// Increment if ever going back to typical left-associativity.
 
 	p.patchJump(endJump)
@@ -306,6 +310,7 @@ func boolOr(p *parser, _ bool) {
 	p.emitOp(opPOP)
 	p.parsePrecedence(precOr)
 	// See NOTE for boolAnd and not incrementing the precedence.
+	// Idea is the same, it's just the JUMP that goes to the end vs to the middle.
 
 	p.patchJump(endJump)
 }
