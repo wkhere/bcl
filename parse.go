@@ -678,7 +678,7 @@ func (p *parser) makeConst(v value) int {
 }
 
 func (p *parser) currentProg() *prog {
-	// ...
+	// this will be extended if there are more code objects, like functions
 	return p.prog
 }
 
