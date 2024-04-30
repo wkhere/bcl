@@ -157,7 +157,7 @@ with bytecode VM.
 Internals can be peeked in many ways, here is bytecode disassembly,
 execution trace with stack content, plus some stats:
 ```
- ./bcl --disasm --stats --trace <<<'var x=1; def block{eval x=x+1; field=x}'
+./bcl -dts <<<'var x=1; def block{eval x=x+1; field=x}'
 == input ==
 0000    1:8  ONE
 0001   1:20  DEFBLOCK      0 'block'	   1 ''
