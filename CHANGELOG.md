@@ -1,3 +1,6 @@
+### v0.8.10
+* lang: make numerical zero falsey
+
 ### v0.8.9 - prep for prog serialization
 * test gen: separate pkg
 * cleanup emit functions
