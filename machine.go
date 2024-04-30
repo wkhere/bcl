@@ -236,7 +236,7 @@ func (vm *vm) run() error {
 			push(vm.stack[slot])
 
 		case opSETLOCAL:
-			// (x -- x)
+			// ( x -- x )
 			slot := readUvarint()
 			vm.stack[slot] = peek(0)
 
