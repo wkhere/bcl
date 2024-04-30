@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import subprocess
+from os import system
 from sys import stderr, exit
 
 tests = [
@@ -385,6 +386,14 @@ tests = [
     [120,   'def b{x}', '',  "err: 'x' not resolved as var or field"],
     [121.1, 'print 1/0', '', "err: division by int zero"],
     [121.2, 'print 1/0.0',   '+Inf'],
+
+    [122.1, f'print  {(1<<31)-1}-1',  f'{ (1<<31)-2}'],
+    [122.2, f'print -{(1<<31)-1}+1',  f'{-(1<<31)+2}'],
+]
+
+tests_64b = [
+    ['122.1-64', f'print  {(1<<63)-1}-1',  f'{ (1<<63)-2}'],
+    ['122.2-64', f'print -{(1<<63)-1}+1',  f'{-(1<<63)+2}'],
 ]
 
 
@@ -401,9 +410,11 @@ def perr(*args):
 
 def run_tests():
     cmd = './bcl'.split()
+    bindesc = subprocess.getoutput('file ./bcl')
+    tests_extra = tests_64b if 'ELF 64-bit' in bindesc else [] 
 
     fail = False
-    for i, prog, exp, *opt in tests:
+    for i, prog, exp, *opt in tests + tests_extra:
         cmd2 = cmd.copy()
         if 'disasm' in opt: cmd2.append('--disasm')
 
@@ -506,10 +517,13 @@ TARGET = 'testapi_test.go'
 
 
 def generate():
+    arch = subprocess.getoutput('go env GOARCH')
+    tests_extra = tests_64b if '64' in arch or arch in ('s390x', 'wasm') else []
+
     with open(TARGET, 'w') as f:
         print(part1, file=f)
 
-        for (i, inp, outp, *opt) in tests:
+        for (i, inp, outp, *opt) in tests + tests_extra:
             print(f'\t\t{{`{i}`, `{inp}`, "{q(outp)}", ', file=f, end='')
             print('true, ' if 'disasm' in opt else 'false, ', file=f, end='')
             if m := err_match(opt):

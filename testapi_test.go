@@ -3,20 +3,20 @@
 package bcl_test
 
 import (
-	"bytes"
-	"strings"
-	"testing"
+    "bytes"
+    "strings"
+    "testing"
 
-	"github.com/wkhere/bcl"
+    "github.com/wkhere/bcl"
 )
 
 func TestInterpretFromPy(t *testing.T) {
-	var tab = []struct {
-		name, input, output string
-		disasm              bool
-		errWanted           bool
-		errMatch            string
-	}{
+    var tab = []struct {
+        name, input, output string
+        disasm              bool
+        errWanted           bool
+        errMatch            string
+    }{
 		{`0`, ``, "", false, false, ""},
 		{`0.1`, `eval "expr that is discarded"`, "", false, false, ""},
 		{`0.2`, `eval nil`, "", false, false, ""},
@@ -374,52 +374,55 @@ func TestInterpretFromPy(t *testing.T) {
 		{`120`, `def b{x}`, "", false, true, "'x' not resolved as var or field"},
 		{`121.1`, `print 1/0`, "", false, true, "division by int zero"},
 		{`121.2`, `print 1/0.0`, "+Inf", false, false, ""},
-	}
+		{`122.1`, `print  2147483647-1`, "2147483646", false, false, ""},
+		{`122.2`, `print -2147483647+1`, "-2147483646", false, false, ""},
+ }
 
-	for _, tc := range tab {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			out := new(bytes.Buffer)
-			log := new(bytes.Buffer)
+    for _, tc := range tab {
+        tc := tc
+        t.Run(tc.name, func(t *testing.T) {
+            out := new(bytes.Buffer)
+            log := new(bytes.Buffer)
 
-			_, err := bcl.Interpret(
-				[]byte(tc.input),
-				bcl.OptDisasm(tc.disasm),
-				bcl.OptOutput(out), bcl.OptLogger(log),
-			)
+            _, err := bcl.Interpret(
+                []byte(tc.input),
+                bcl.OptDisasm(tc.disasm),
+                bcl.OptOutput(out), bcl.OptLogger(log),
+            )
 
-			switch {
-			case err != nil && !tc.errWanted:
-				t.Errorf("unexpected error: %s", relevantError(err, log))
+            switch {
+            case err != nil && !tc.errWanted:
+                t.Errorf("unexpected error: %s", relevantError(err, log))
 
-			case err != nil && tc.errWanted:
-				rerr := relevantError(err, log)
-				if !strings.Contains(rerr, tc.errMatch) {
-					t.Errorf("error mismatch\nhave: %s\nwant matching: %s",
-						rerr, tc.errMatch,
-					)
-				}
+            case err != nil && tc.errWanted:
+                rerr := relevantError(err, log)
+                if !strings.Contains(rerr, tc.errMatch) {
+                    t.Errorf("error mismatch\nhave: %s\nwant matching: %s",
+                        rerr, tc.errMatch,
+                    )
+                }
 
-			case err == nil && tc.errWanted && tc.errMatch == "":
-				t.Errorf("no error when expecting one")
+            case err == nil && tc.errWanted && tc.errMatch == "":
+                t.Errorf("no error when expecting one")
 
-			case err == nil && tc.errWanted && tc.errMatch != "":
-				t.Errorf("no error when expecting one matching: %s", tc.errMatch)
+            case err == nil && tc.errWanted && tc.errMatch != "":
+                t.Errorf("no error when expecting one matching: %s", tc.errMatch)
 
-			case err == nil && !tc.errWanted:
-				s := strings.TrimRight(out.String(), "\n")
-				if s != tc.output {
-					t.Errorf("mismatch:\nhave: %s\nwant: %s", s, tc.output)
-				}
-			}
-		})
-	}
+            case err == nil && !tc.errWanted:
+                s := strings.TrimRight(out.String(), "\n")
+                if s != tc.output {
+                    t.Errorf("mismatch:\nhave: %s\nwant: %s", s, tc.output)
+                }
+            }
+        })
+    }
 }
 
 func relevantError(err error, buf *bytes.Buffer) string {
-	if s := err.Error(); strings.HasPrefix(s, "combined errors") {
-		return strings.TrimRight(buf.String(), "\n")
-	} else {
-		return s
-	}
+    if s := err.Error(); strings.HasPrefix(s, "combined errors") {
+        return strings.TrimRight(buf.String(), "\n")
+    } else {
+        return s
+    }
 }
+
