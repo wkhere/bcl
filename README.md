@@ -130,7 +130,8 @@ Obviously values of different non-number types are not equal.
 Order comparisons `<`, `>`, , `<=`, `>=` are allowed between numbers and between strings,
 but not between mixed types.
 
-There are boolean operators `and`, `or`, `not` behaving like in Python and Ruby:
+There are boolean operators `and`, `or`, `not` behaving like in Python,
+or like `&&`, `||`, `!` in Ruby [1]:
 they are short-cirtuit and retain the type of an operand 
 (`1==1 and 42` will return 42). Non-boolean types can be a boolean operand;
 for this, there is a definition what is considered "falsey": `false`, `nil`,
@@ -141,6 +142,8 @@ Another constant is `nil`, whose meaning is that
 a declared but uninitialized variable (`var a`) has this value.
 You can test equality to nil and it can be a part of a boolean expression,
 acting as false.
+
+[1] Note that in Ruby `!` has surprising priority, though.
 
 
 ### Note on the parser
