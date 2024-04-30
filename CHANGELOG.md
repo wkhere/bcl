@@ -37,6 +37,7 @@
 * lexer: cleanup unused fields, return closed channel info
 * improvements of error messages, makefile & docs
 * Forth-like stack comments in the vm code as the extra doc
+* require Go 1.21
 
 ### v0.8.2
 * return error for non-empty stack on prog end
