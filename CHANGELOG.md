@@ -1,3 +1,11 @@
+### v0.8.9 - prep for prog serialization
+* test gen: separate pkg
+* cleanup emit functions
+* safety fix: proper buffer for encoding a big varint
+* switch u16 encoding to big endian, to match varint
+* store linepos struct instead of a closure
+* various notes
+
 ### v0.8.8
 * fix subtle bug in tests generator from v0.8.5
 * tests generator for error cases
