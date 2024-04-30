@@ -32,6 +32,10 @@ func isFalsey(v value) bool {
 	switch x := v.(type) {
 	case bool:
 		return !x
+	case int:
+		return x == 0
+	case float64:
+		return x == 0.0
 	case string:
 		return x == ""
 	default:

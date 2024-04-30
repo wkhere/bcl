@@ -133,9 +133,8 @@ but not between mixed types.
 There are boolean operators `and`, `or`, `not` behaving like in Python and Ruby:
 they are short-cirtuit and retain the type of an operand 
 (`1==1 and 42` will return 42). Non-boolean types can be a boolean operand;
-for this, there is a definition what is considered "falsey": `false`,
-empty string, and `nil`. This may at resemble Python, but note that the zero number
-is not considered falsey -- a behavior that may change in the future.
+for this, there is a definition what is considered "falsey": `false`, `nil`,
+empty string, and zero, like in Python.
 
 Boolean constants are `true` and `false`.
 Another constant is `nil`, whose meaning is that
