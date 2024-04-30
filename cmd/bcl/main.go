@@ -2,28 +2,27 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/wkhere/bcl"
 )
 
-func readBuffer(file string) ([]byte, error) {
+func open(file string) (*os.File, error) {
 	if file == "-" {
-		return io.ReadAll(os.Stdin)
+		return os.Stdin, nil
 	}
-	return os.ReadFile(file)
+	return os.Open(file)
 }
 
 func run(a *parsedArgs) (err error) {
 
-	buf, err := readBuffer(a.file)
+	f, err := open(a.file)
 	if err != nil {
 		return err
 	}
 
-	res, err := bcl.Interpret(
-		buf,
+	res, err := bcl.InterpretFile(
+		f,
 		bcl.OptDisasm(a.disasm),
 		bcl.OptTrace(a.trace),
 		bcl.OptStats(a.stats),

@@ -87,16 +87,16 @@ tests = [
     [49, 'def x {print a=1+(b=2)}',    '3'],
     [50, 'def x {print (a=1)+(b=2)}',  '3'],
 
-    [51, '', '== input ==\n0000    1:1  RET', 'disasm'],
+    [51, '', '== /dev/stdin ==\n0000    1:1  RET', 'disasm'],
     [52, 'eval nil',
-        '== input ==\n0000    1:9  NIL\n0001      |  POP\n0002      |  RET',
+        '== /dev/stdin ==\n0000    1:9  NIL\n0001      |  POP\n0002      |  RET',
         'disasm'],
     [53, 'eval 42',
-        "== input ==\n0000    1:8  CONST         0 '42'\n"
+        "== /dev/stdin ==\n0000    1:8  CONST         0 '42'\n"
                      "0002      |  POP\n0003      |  RET",
         'disasm'],
     [54, 'def b {}',
-        "== input ==\n0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
+        "== /dev/stdin ==\n0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
                      "0003    1:9  ENDBLOCK\n0004      |  RET",
         'disasm'],
 
@@ -454,6 +454,11 @@ import (
     "github.com/wkhere/bcl"
 )
 
+type stdinBuf struct{ *strings.Reader }
+
+func (stdinBuf) Name() string { return "/dev/stdin" }
+func (stdinBuf) Close() error { return nil }
+
 func TestInterpretFromPy(t *testing.T) {
     var tab = []struct {
         name, input, output string
@@ -467,11 +472,12 @@ part2 = r""" }
     for _, tc := range tab {
         tc := tc
         t.Run(tc.name, func(t *testing.T) {
+            inp := stdinBuf{strings.NewReader(tc.input)}        
             out := new(bytes.Buffer)
             log := new(bytes.Buffer)
 
-            _, err := bcl.Interpret(
-                []byte(tc.input),
+            _, err := bcl.InterpretFile(
+                inp,
                 bcl.OptDisasm(tc.disasm),
                 bcl.OptOutput(out), bcl.OptLogger(log),
             )

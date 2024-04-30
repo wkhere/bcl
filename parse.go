@@ -2,10 +2,10 @@ package bcl
 
 import "strconv"
 
-func parse(input string, cf config) (*prog, parseStats, error) {
+func parse(input, name string, cf config) (*prog, parseStats, error) {
 	p := &parser{
 		lexer:   newLexer(input),
-		prog:    newProg("input", cf.output),
+		prog:    newProg(name, cf.output),
 		linePos: newLineCalc(input),
 
 		identRefs: make(map[string]int, 8),

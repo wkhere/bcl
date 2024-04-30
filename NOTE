@@ -1,4 +1,4 @@
-Some comments on vars, fields and scopes.
+## Vars, fields and scopes
 
 Toplevel:
 - vars are defined with `var`
@@ -26,3 +26,17 @@ about carefully.
 
 Note the differences from yacc-based bcl, where vars were global and it was
 possible to have forward declarations, with some special detection of cycles.
+
+
+## Reading multiple files
+
+To be decided: many progs, or one concatenated prog?
+
+Many progs: what about visibility of the vars and blocks?
+
+Concatenated prog:
+- needs adapting lexer to process multiple inputs, then the token needs
+  input file ref together with pos, same for prog positions and linePos
+
+In general, it's about handling many files as separate compilation units,
+or preprocessing them.
