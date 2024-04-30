@@ -1,6 +1,6 @@
 default: test
 
-generated = tokentype_string.go opcode_string.go testapi_test.go
+generated = tokentype_string.go opcode_string.go typecode_string.go testapi_test.go
 
 bcl: stringer $(generated) go.mod go.sum *.go cmd/bcl/*.go
 	go build ./cmd/bcl
@@ -10,6 +10,9 @@ tokentype_string.go: token.go
 
 opcode_string.go: opcode.go
 	go generate opcode.go
+
+typecode_string.go: typecode.go
+	go generate typecode.go
 
 testapi_test.go: test.py api_test.go
 	go generate api_test.go && go fmt testapi_test.go
