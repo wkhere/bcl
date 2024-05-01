@@ -57,3 +57,6 @@ more on errors:
   - way to port in small steps is to make prog struct fully serializable
     and port the vm first
 
+- reintroduce global vars
+- sort out scopes for processing multiple files (one prog vs many progs);
+
