@@ -1,3 +1,10 @@
+### v0.9.0
+* new API: InterpretFile, UnmarshalFile
+* use input file name in disasm/trace output
+* simplify linecalc
+* arch-dependent tests for maxint
+* various notes
+
 ### v0.8.10
 * lang: make numerical zero falsey
 
