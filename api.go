@@ -1,8 +1,6 @@
 // Package bcl provides interpreting of the Basic Configuration Language (BCL)
 // and storing the evaluated result in dynamic Blocks or static structs.
 //
-//   - [Interpret] parses and executes definitions from a BCL file,
-//     then creates Blocks
 //   - [Interpret] or [InterpretFile] parses and executes definitions
 //     from a BCL file, then creates Blocks
 //   - [CopyBlocks] takes Blocks and saves the content in static Go structs
