@@ -1,7 +1,9 @@
-package bcl
+package bcl_test
 
 import (
 	"testing"
+
+	"github.com/wkhere/bcl"
 
 	_ "embed"
 )
@@ -11,8 +13,8 @@ import (
 //go:embed testdata/basic_test.bcl
 var basicInput []byte
 
-func basicRun() ([]Block, error) {
-	return Interpret(basicInput)
+func basicRun() ([]bcl.Block, error) {
+	return bcl.Interpret(basicInput)
 }
 
 func TestBasic(t *testing.T) {
