@@ -23,9 +23,7 @@ func newLineCalc(s string) *lineCalc {
 // Note that pos starts at 0, while line and column start at 1.
 func (lc *lineCalc) lineColAt(pos int) (int, int) {
 
-	j := sort.Search(len(lc.lfs), func(i int) bool {
-		return lc.lfs[i] >= pos
-	})
+	j := sort.SearchInts(lc.lfs, pos)
 
 	if j == len(lc.lfs) {
 		if j == 0 {
