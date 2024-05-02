@@ -21,7 +21,7 @@ test: bcl test.py
 	go test -cover .
 
 bench: bcl
-	go test -bench=. -count=$(cnt) -benchmem .
+	go test -bench=$(sel) -count=$(cnt) -benchmem .
 
 cov:
 	go test -coverprofile=cov -run=$(sel) .
