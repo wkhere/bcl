@@ -519,14 +519,12 @@ func relevantError(err error, buf *bytes.Buffer) string {
 }
 """
 
-TARGET = 'testapi_test.go'
 
-
-def generate():
+def generate(target):
     arch = subprocess.getoutput('go env GOARCH')
     tests_extra = tests_64b if '64' in arch or arch in ('s390x', 'wasm') else []
 
-    with open(TARGET, 'w') as f:
+    with open(target, 'w') as f:
         print(part1, file=f)
 
         for (i, inp, outp, *opt) in tests + tests_extra:
@@ -546,6 +544,9 @@ def generate():
 if __name__ == '__main__':
     from sys import argv as args
     if len(args)>1 and args[1] == 'generate':
-        generate()
+        if len(args)>2 and args[2].endswith('.go'):
+            generate(args[2])
+        else:
+            raise SystemExit('generate, but what?')
     else:
         run_tests()
