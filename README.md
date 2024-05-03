@@ -138,10 +138,7 @@ for this, there is a definition what is considered "falsey": `false`, `nil`,
 empty string, and zero, like in Python.
 
 Boolean constants are `true` and `false`.
-Another constant is `nil`, whose meaning is that
-a declared but uninitialized variable (`var a`) has this value.
-You can test equality to nil and it can be a part of a boolean expression,
-acting as false.
+Another constant is `nil`, value of an uninitialized variable (`var a`).
 
 [1] Note that in Ruby `!` has surprising priority, though.
 
