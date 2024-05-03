@@ -6,13 +6,13 @@ bcl: stringer $(generated) go.mod go.sum *.go cmd/bcl/*.go
 	go build ./cmd/bcl
 
 tokentype_string.go: token.go
-	go generate
+	go generate token.go
 
 opcode_string.go: opcode.go
-	go generate
+	go generate opcode.go
 
 testapi_test.go: test.py api_test.go
-	go generate && go fmt testapi_test.go
+	go generate api_test.go && go fmt testapi_test.go
 
 clean:
 	rm -f bcl
