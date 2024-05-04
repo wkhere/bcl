@@ -15,9 +15,11 @@ type parsedArgs struct {
 const usage = "usage: bcl [-d|--disasm] [-t|--trace] [-r|--result] [-s|--stats] [FILE|-]"
 
 func parseArgs(args []string) (a parsedArgs, _ error) {
-
+	var rest []string
+flags:
 	for ; len(args) > 0; args = args[1:] {
 		switch arg := args[0]; {
+
 		case arg == "-h":
 			a.help = func() { fmt.Println(usage) }
 			return a, nil
@@ -39,8 +41,8 @@ func parseArgs(args []string) (a parsedArgs, _ error) {
 			continue
 
 		case arg == "--":
-			// todo: this should actually break flags processing
-			continue
+			rest = append(rest, args[1:]...)
+			break flags
 
 		case len(arg) > 2 && arg[0] == '-':
 			var nonLetter bool
@@ -63,16 +65,19 @@ func parseArgs(args []string) (a parsedArgs, _ error) {
 			return a, fmt.Errorf("unknown flag: %s\n%s", arg, usage)
 
 		default:
-			if a.file != "" {
-				return a, fmt.Errorf("too many file args\n%s", usage)
-			}
-			a.file = arg
+			rest = append(rest, arg)
 			continue
 		}
 	}
 
-	if a.file == "" {
+	switch len(rest) {
+	case 0:
 		a.file = "-"
+	case 1:
+		a.file = rest[0]
+	default:
+		return a, fmt.Errorf("too many file args\n%s", usage)
 	}
+
 	return a, nil
 }
