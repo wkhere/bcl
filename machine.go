@@ -7,9 +7,11 @@ import (
 	"strings"
 )
 
-func execute(p *prog, cf config) ([]Block, execStats, error) {
+type vmConfig struct{ trace bool }
+
+func execute(p *Prog, cf vmConfig) ([]Block, execStats, error) {
 	vm := &vm{
-		output: cf.output,
+		output: p.output,
 		trace:  cf.trace,
 		prog:   p,
 		pc:     0,
@@ -21,7 +23,7 @@ func execute(p *prog, cf config) ([]Block, execStats, error) {
 }
 
 type vm struct {
-	prog  *prog
+	prog  *Prog
 	pc    int
 	stack [stackSize]value
 	tos   int

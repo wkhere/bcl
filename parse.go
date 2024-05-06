@@ -1,11 +1,18 @@
 package bcl
 
-import "strconv"
+import (
+	"io"
+	"strconv"
+)
 
-func parse(input, name string, cf config) (*prog, parseStats, error) {
+type parseConfig struct {
+	outw, logw io.Writer
+}
+
+func parse(input, name string, cf parseConfig) (*Prog, parseStats, error) {
 	p := &parser{
 		lexer:   newLexer(input),
-		prog:    newProg(name, cf.output),
+		prog:    newProg(name, cf.outw),
 		linePos: newLineCalc(input),
 
 		identRefs: make(map[string]int, 8),
@@ -15,6 +22,8 @@ func parse(input, name string, cf config) (*prog, parseStats, error) {
 
 		log: logger{cf.logw},
 	}
+
+	p.prog.initForParse()
 
 	p.advance()
 
@@ -31,16 +40,12 @@ func parse(input, name string, cf config) (*prog, parseStats, error) {
 	p.end()
 	p.finishStats()
 
-	if cf.disasm {
-		p.prog.disasm()
-	}
-
 	return p.prog, p.stats, nil
 }
 
 type parser struct {
 	lexer   *lexer
-	prog    *prog
+	prog    *Prog
 	linePos *lineCalc
 
 	prev, current token
@@ -674,7 +679,7 @@ func (p *parser) makeConst(v value) int {
 	return idx
 }
 
-func (p *parser) currentProg() *prog {
+func (p *parser) currentProg() *Prog {
 	// this will be extended if there are more code objects, like functions
 	return p.prog
 }

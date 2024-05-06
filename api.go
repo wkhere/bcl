@@ -6,44 +6,17 @@
 //   - [CopyBlocks] takes Blocks and saves the content in static Go structs
 //   - [Unmarshal] = [Interpret] + [CopyBlocks]
 //   - [UnmarshalFile] = [InterpretFile] + [CopyBlocks]
+//
+// It is also possible to first [Parse], creating [Prog], and then [Execute] it.
+//   - [Interpret] = [Parse] + [Execute]
+//   - [InterpretFile] = [ParseFile] + [Execute]
+//
+// [Prog] can be dumped to a Writer with Dump and loaded with Load,
+// there is also wrapper function [LoadProg], to load previously dumped Prog
+// instead of using Parse on the BCL input.
 package bcl
 
 import "io"
-
-// Block is a dynamic result of running BCL [Interpret].
-// It can be put into a static structure via [CopyBlocks].
-type Block struct {
-	Type, Name string
-	Fields     map[string]any
-}
-
-// Interpret parses and executes the BCL input, creating Blocks.
-func Interpret(input []byte, opts ...Option) ([]Block, error) {
-	return interpret(input, "input", opts...)
-}
-
-func interpret(input []byte, name string, opts ...Option) (
-	[]Block, error,
-) {
-	cf := makeConfig(opts)
-	inputStr := string(input)
-
-	prog, pstats, err := parse(inputStr, name, cf)
-
-	if cf.stats {
-		printPStats(cf.output, pstats)
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	result, xstats, err := execute(prog, cf)
-	if cf.stats {
-		printXStats(cf.output, xstats)
-	}
-	return result, err
-
-}
 
 // FileInput abstracts the input that is read from a file.
 // It is going to be closed as soon as it's read.
@@ -54,15 +27,83 @@ type FileInput interface {
 	Name() string
 }
 
-// InterpretFile reads, parses and evaluates the input from a BCL file.
-// The file will be closed as soon as possible.
-func InterpretFile(f FileInput, opts ...Option) ([]Block, error) {
+// Block is a dynamic result of running BCL [Interpret].
+// It can be put into a static structure via [CopyBlocks].
+type Block struct {
+	Type, Name string
+	Fields     map[string]any
+}
+
+// Parse parses the input data, producing executable Prog.
+func Parse(input []byte, name string, opts ...Option) (*Prog, error) {
+	cf := makeConfig(opts)
+	inputStr := string(input)
+
+	prog, pstats, err := parse(
+		inputStr,
+		name,
+		parseConfig{cf.output, cf.logw},
+	)
+	if cf.disasm {
+		prog.disasm()
+	}
+	if cf.stats {
+		printPStats(cf.output, pstats)
+	}
+	return prog, err
+}
+
+// ParseFile reads and parses the input from a BCL file,
+// producing executable Prog.
+// The input file will be closed as soon as possible.
+func ParseFile(f FileInput, opts ...Option) (*Prog, error) {
 	b, err := io.ReadAll(f)
 	if err != nil {
 		return nil, err
 	}
 	f.Close()
-	return interpret(b, f.Name(), opts...)
+	return Parse(b, f.Name(), opts...)
+}
+
+func LoadProg(r io.Reader, name string, opts ...Option) (*Prog, error) {
+	cf := makeConfig(opts)
+
+	prog := newProg(name, cf.output)
+	err := prog.Load(r)
+	if cf.disasm {
+		prog.disasm()
+	}
+	return prog, err
+}
+
+// Execute executes the Prog, creating Blocks.
+func Execute(prog *Prog, opts ...Option) (result []Block, err error) {
+	cf := makeConfig(opts)
+
+	result, xstats, err := execute(prog, vmConfig{cf.trace})
+	if cf.stats {
+		printXStats(cf.output, xstats)
+	}
+	return result, err
+}
+
+// Interpret parses and executes the BCL input, creating Blocks.
+func Interpret(input []byte, opts ...Option) ([]Block, error) {
+	p, err := Parse(input, "input", opts...)
+	if err != nil {
+		return nil, err
+	}
+	return Execute(p, opts...)
+}
+
+// InterpretFile reads, parses and executes the input from a BCL file.
+// The file will be closed as soon as possible.
+func InterpretFile(f FileInput, opts ...Option) ([]Block, error) {
+	p, err := ParseFile(f, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return Execute(p, opts...)
 }
 
 // CopyBlocks copies the blocks to the dest,
