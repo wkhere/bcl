@@ -1,3 +1,9 @@
+### v0.10.0
+* cmd/bcl: --bdump, --bload flags
+* serialize Prog via Dump/Load; new API: LoadProg, Execute 
+* cmd/bcl: break flags processing on --
+* build/test/benchmark improvements
+
 ### v0.9.0
 * new API: InterpretFile, UnmarshalFile
 * use input file name in disasm/trace output
