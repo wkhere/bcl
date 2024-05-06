@@ -1,18 +1,30 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type parsedArgs struct {
-	file   string
+	file string
+
 	disasm bool
 	trace  bool
 	result bool
 	stats  bool
+	bdump  bool
+	bload  bool
+
+	bdumpFile string
+	bloadFile string
 
 	help func()
 }
 
-const usage = "usage: bcl [-d|--disasm] [-t|--trace] [-r|--result] [-s|--stats] [FILE|-]"
+const usage = "usage: bcl" +
+	" [-d|--disasm] [-t|--trace] [-r|--result] [-s|--stats]" +
+	" [--bdump|--bdump=BFILE] [--bload|--bload=BFILE]" +
+	" [FILE|-]"
 
 func parseArgs(args []string) (a parsedArgs, _ error) {
 	var rest []string
@@ -38,6 +50,28 @@ flags:
 
 		case arg == "-s", arg == "--stats":
 			a.stats = true
+			continue
+
+		case strings.HasPrefix(arg, "--bdump"):
+			a.bdump = true
+			s := arg[len("--bdump"):]
+			if len(s) > 0 {
+				if s[0] != '=' {
+					return a, fmt.Errorf("unknown flag: %s\n%s", arg, usage)
+				}
+				a.bdumpFile = s[1:]
+			}
+			continue
+
+		case strings.HasPrefix(arg, "--bload"):
+			a.bload = true
+			s := arg[len("--bload"):]
+			if len(s) > 0 {
+				if s[0] != '=' {
+					return a, fmt.Errorf("unknown flag: %s\n%s", arg, usage)
+				}
+				a.bloadFile = s[1:]
+			}
 			continue
 
 		case arg == "--":
@@ -72,12 +106,37 @@ flags:
 
 	switch len(rest) {
 	case 0:
-		a.file = "-"
 	case 1:
 		a.file = rest[0]
 	default:
 		return a, fmt.Errorf("too many file args\n%s", usage)
 	}
 
+	if a.bdump && a.bdumpFile == "" {
+		if !strings.HasSuffix(a.file, ".bcl") {
+			return a, fmt.Errorf(
+				"--bdump requires knowing bfile name, "+
+					"either given as a flag, or derived from BCL file name"+
+					"\n%s",
+				usage,
+			)
+		}
+		a.bdumpFile = a.file[:len(a.file)-len(".bcl")] + ".bcb"
+	}
+
+	if a.bload {
+		switch {
+		case a.file == "" && a.bloadFile == "":
+			// logic below to load prog from stdin
+		case a.file != "" && a.bloadFile != "":
+			return a, fmt.Errorf("conflicting BFILE and FILE\n%s", usage)
+		case a.file == "" && a.bloadFile != "":
+			a.file = a.bloadFile
+		}
+	}
+
+	if a.file == "" {
+		a.file = "-"
+	}
 	return a, nil
 }

@@ -1,5 +1,6 @@
 /bcl
 *.bcl
+*.bcb
 /cov
 /cov.html
 /tr[0-9]

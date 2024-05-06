@@ -21,9 +21,39 @@ func run(a *parsedArgs) (err error) {
 		return err
 	}
 
-	res, err := bcl.InterpretFile(
-		f,
-		bcl.OptDisasm(a.disasm),
+	var prog *bcl.Prog
+
+	if a.bload {
+		prog, err = bcl.LoadProg(
+			f, a.file,
+			bcl.OptDisasm(a.disasm),
+		)
+	} else {
+		prog, err = bcl.ParseFile(
+			f,
+			bcl.OptDisasm(a.disasm),
+			bcl.OptStats(a.stats),
+		)
+	}
+	if err != nil {
+		return err
+	}
+
+	if a.bdump {
+		bf, err := os.Create(a.bdumpFile)
+		if err != nil {
+			return fmt.Errorf("dump: %w", err)
+		}
+
+		err = prog.Dump(bf)
+		safeClose(bf, &err)
+		if err != nil {
+			return fmt.Errorf("dump: %w", err)
+		}
+	}
+
+	res, err := bcl.Execute(
+		prog,
 		bcl.OptTrace(a.trace),
 		bcl.OptStats(a.stats),
 	)
@@ -55,4 +85,11 @@ func main() {
 func die(exitcode int, err error) {
 	fmt.Fprintln(os.Stderr, err)
 	os.Exit(exitcode)
+}
+
+func safeClose(f *os.File, errp *error) {
+	cerr := f.Close()
+	if cerr != nil && *errp == nil {
+		*errp = cerr
+	}
 }
