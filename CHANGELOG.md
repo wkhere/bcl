@@ -1,3 +1,6 @@
+### v0.10.1
+* fix: disasm when no errors occured
+
 ### v0.10.0
 * cmd/bcl: --bdump, --bload flags
 * serialize Prog via Dump/Load; new API: LoadProg, Execute 
