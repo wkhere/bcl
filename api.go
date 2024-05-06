@@ -44,7 +44,7 @@ func Parse(input []byte, name string, opts ...Option) (*Prog, error) {
 		name,
 		parseConfig{cf.output, cf.logw},
 	)
-	if cf.disasm {
+	if err == nil && cf.disasm {
 		prog.disasm()
 	}
 	if cf.stats {
@@ -70,7 +70,7 @@ func LoadProg(r io.Reader, name string, opts ...Option) (*Prog, error) {
 
 	prog := newProg(name, cf.output)
 	err := prog.Load(r)
-	if cf.disasm {
+	if err == nil && cf.disasm {
 		prog.disasm()
 	}
 	return prog, err
