@@ -61,38 +61,42 @@ func u64ToI64(x uint64) int64 {
 }
 
 func valueToBytes(p []byte, v value) (n int) {
-	p[0] = byte(typecodeOf(v))
-	p = p[1:] // local copy
-	n++
-
 	switch x := v.(type) {
 	case int:
-		n += varintToBytes(p, int64(x))
+		p[0] = byte(typeINT)
+		n = 1 + varintToBytes(p[1:], int64(x))
 
 	case float64:
-		stdbinary.BigEndian.PutUint64(p, math.Float64bits(x))
-		n += 8
+		p[0] = byte(typeFLOAT)
+		stdbinary.BigEndian.PutUint64(p[1:], math.Float64bits(x))
+		n = 1 + 8
 
 	case string:
+		p[0] = byte(typeSTR)
+		p = p[1:]
 		i := uvarintToBytes(p, uint64(len(x)))
 		p = p[i:]
 		if len(p) < len(x) {
-			n += i
+			n = 1 + i
 			panic("no space")
 		}
 		copy(p, []byte(x))
-		n += i + len(x)
+		n = 1 + i + len(x)
 
 	case bool:
+		p[0] = byte(typeBOOL)
 		if x {
-			p[0] = 1
+			p[1] = 1
 		} else {
-			p[0] = 0
+			p[1] = 0
 		}
-		n++
+		n = 1 + 1
 
 	default:
-		// whether it's nil or invalid type, don't emit the value
+		if v == nil {
+			return 1 + 0 // don't emit nil value, just the type
+		}
+		panic(errInvalidValue{v})
 	}
 	return n
 }
@@ -157,24 +161,6 @@ func valueFromBuf(r *bufio.Reader) (value, error) {
 
 	default:
 		panic(errInvalidType{b[0]})
-	}
-}
-
-func typecodeOf(v value) typecode {
-	switch v.(type) {
-	case int:
-		return typeINT
-	case float64:
-		return typeFLOAT
-	case string:
-		return typeSTR
-	case bool:
-		return typeBOOL
-	default:
-		if v == nil {
-			return typeNIL
-		}
-		panic(errInvalidValue{v})
 	}
 }
 
