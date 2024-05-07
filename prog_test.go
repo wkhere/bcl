@@ -34,6 +34,20 @@ func testDumpLoad(input []byte, t *testing.T) {
 	}
 }
 
-func TestBasicProgDumpLoad(t *testing.T) {
+func TestBasicDumpLoad(t *testing.T) {
 	testDumpLoad(basicInput, t)
+}
+
+func benchDumpLoad(input []byte, b *testing.B) {
+	prog, _ := bcl.Parse(input, "input", bcl.OptOutput(io.Discard))
+
+	for i := 0; i < b.N; i++ {
+		buf := new(bytes.Buffer)
+		prog.Dump(buf)
+		bcl.LoadProg(buf, "input", bcl.OptOutput(io.Discard))
+	}
+}
+
+func BenchmarkBasicDumpLoad(b *testing.B) {
+	benchDumpLoad(basicInput, b)
 }
