@@ -182,8 +182,7 @@ func (vm *vm) run() error {
 
 			default:
 				return vm.runtimeError(
-					"%s: invalid types: %s, %s",
-					instr, vtype(peek(1)), vtype(peek(0)),
+					"%s: invalid types: %s, %s", instr, vtype(peek(1)), vtype(peek(0)),
 				)
 			}
 
