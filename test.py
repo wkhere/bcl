@@ -421,7 +421,11 @@ def run_tests():
         proc = subprocess.run(cmd2, input=prog, text=True, capture_output=True)
 
         if proc.returncode == 0:
-            if (res := proc.stdout.rstrip()) != exp:
+            if m := err_match(opt):
+                perr(f'#{i} no error when expected one matching {m!r}')
+                fail = True
+
+            elif (res := proc.stdout.rstrip()) != exp:
                 fail = True
                 perr(f'#{i} mismatch: have {res!r}, want {exp!r}')
 
