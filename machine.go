@@ -320,7 +320,7 @@ func (b *Block) key(vm *vm) string {
 }
 
 func printStack(w io.Writer, vv []value) {
-	fmt.Fprintf(w, "      #%-4d  ", len(vv))
+	fmt.Fprintf(w, "             %d: ", len(vv))
 	for _, v := range vv {
 		fmt.Fprintf(w, "[ %v ]", v)
 	}
