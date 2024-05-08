@@ -73,11 +73,31 @@ var lexTab = []struct {
 	{33, "#a\n", tt{teof(3)}},
 	{34, "#", tt{teof(1)}},
 	{35, "#\n", tt{teof(2)}},
+
+	{36, "a", tt{{tIDENT, "a", nil, 1}, teof(1)}},
+	{37, "a\n", tt{{tIDENT, "a", nil, 1}, teof(2)}},
+	{38, "a\nb", tt{{tIDENT, "a", nil, 1}, {tIDENT, "b", nil, 3}, teof(3)}},
+	{39, "a\nb\n", tt{{tIDENT, "a", nil, 1}, {tIDENT, "b", nil, 3}, teof(4)}},
+	{40, "a\nbb\nc", tt{
+		{tIDENT, "a", nil, 1}, {tIDENT, "bb", nil, 4}, {tIDENT, "c", nil, 6},
+		teof(6),
+	}},
+	{41, "a\nbb\nc\n\n", tt{
+		{tIDENT, "a", nil, 1}, {tIDENT, "bb", nil, 4}, {tIDENT, "c", nil, 6},
+		teof(8),
+	}},
+	{42, "a\nbb\nc\n\ndd", tt{
+		{tIDENT, "a", nil, 1}, {tIDENT, "bb", nil, 4}, {tIDENT, "c", nil, 6},
+		{tIDENT, "dd", nil, 10}, teof(10),
+	}},
 }
 
 func TestLexer(t *testing.T) {
 	for _, tc := range lexTab {
-		l := newLexer(tc.input)
+		c := make(chan string, 1)
+		c <- tc.input
+		close(c)
+		l := newLexer(c, dummyLcUpd)
 		res := tstream(l.tokens).collect()
 		if !reflect.DeepEqual(res, tc.tokens) {
 			t.Errorf("tc#%d mismatch:\nhave %v\nwant %v", tc.i, res, tc.tokens)
@@ -98,10 +118,15 @@ func ExampleLexer() {
 }
 
 func runExample(s string) {
-	l := newLexer(s)
+	c := make(chan string, 1)
+	c <- s
+	close(c)
+	l := newLexer(c, dummyLcUpd)
 	for r := range l.tokens {
 		fmt.Print(r)
 	}
 	fmt.Println()
 
 }
+
+func dummyLcUpd(string, int) {}

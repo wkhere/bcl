@@ -9,11 +9,16 @@ type parseConfig struct {
 	outw, logw io.Writer
 }
 
-func parse(input, name string, cf parseConfig) (*Prog, parseStats, error) {
+func parse(inputs <-chan string, name string, cf parseConfig) (
+	*Prog,
+	parseStats, error,
+) {
+	linePos := newLineCalc()
+
 	p := &parser{
-		lexer:   newLexer(input),
+		linePos: linePos,
+		lexer:   newLexer(inputs, linePos.addLine),
 		prog:    newProg(name, cf.outw),
-		linePos: newLineCalc(input),
 
 		identRefs: make(map[string]int, 8),
 		// identRefs are for reusing block types & fields and selected consts

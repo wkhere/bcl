@@ -9,14 +9,17 @@ type lineCalc struct {
 	lfs []int
 }
 
-func newLineCalc(s string) *lineCalc {
-	lfs := make([]int, 0, len(s)/32+4)
+func newLineCalc() *lineCalc {
+	lfs := make([]int, 0, 64)
+	return &lineCalc{lfs: lfs}
+}
+
+func (lc *lineCalc) addLine(s string, prefix int) {
 	for i, c := range s {
 		if c == '\n' {
-			lfs = append(lfs, i)
+			lc.lfs = append(lc.lfs, prefix+i)
 		}
 	}
-	return &lineCalc{lfs: lfs}
 }
 
 // lineColAt gives (line, column) pair for a given position.

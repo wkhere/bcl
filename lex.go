@@ -11,9 +11,10 @@ import (
 // API
 
 // newLexer creates new nexer and runs its loop.
-func newLexer(input string) *lexer {
+func newLexer(inputs <-chan string, linePosUpdater func(string, int)) *lexer {
 	l := &lexer{
-		input:  input,
+		inputs: inputs,
+		lpUpd:  linePosUpdater,
 		tokens: make(chan token, tokensBufSize),
 	}
 	go l.run()
@@ -31,8 +32,11 @@ func (l *lexer) nextToken() (_ token, ok bool) {
 const tokensBufSize = 10
 
 type lexer struct {
+	inputs     <-chan string
 	input      string
+	lpUpd      func(string, int)
 	start, pos int
+	posShift   int
 	width      int
 	tokens     chan token
 }
@@ -50,7 +54,7 @@ func (l *lexer) emit(t tokenType) {
 	l.tokens <- token{
 		typ: t,
 		val: string(l.input[l.start:l.pos]),
-		pos: l.pos,
+		pos: l.pos + l.posShift,
 	}
 	l.start = l.pos
 }
@@ -59,7 +63,7 @@ func (l *lexer) emitError(format string, args ...any) {
 	l.tokens <- token{
 		typ: tERR,
 		err: fmt.Errorf(format, args...),
-		pos: l.pos,
+		pos: l.pos + l.posShift,
 	}
 }
 
@@ -72,10 +76,21 @@ const (
 // next gets the next rune from the input.
 func (l *lexer) next() (r rune) {
 	if l.pos >= len(l.input) {
-		l.width = 0
-		return eof
+		s, ok := <-l.inputs
+		if !ok {
+			l.width = 0
+			return eof
+		}
+		l.input = l.input[l.start:l.pos] + s
+		l.posShift += l.start
+		l.lpUpd(s, l.posShift+l.pos-l.start)
+		l.start = 0
+		l.pos = 0
 	}
 	r, l.width = utf8.DecodeRuneInString(l.input[l.pos:])
+	if l.width == 0 {
+		return eof
+	}
 	l.pos += l.width
 	return r
 }

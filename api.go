@@ -16,7 +16,10 @@
 // instead of using Parse on the BCL input.
 package bcl
 
-import "io"
+import (
+	"bufio"
+	"io"
+)
 
 // FileInput abstracts the input that is read from a file.
 // It is going to be closed as soon as it's read.
@@ -36,14 +39,52 @@ type Block struct {
 
 // Parse parses the input data, producing executable Prog.
 func Parse(input []byte, name string, opts ...Option) (*Prog, error) {
-	cf := makeConfig(opts)
-	inputStr := string(input)
+	c := make(chan string, 1)
+	c <- string(input)
+	close(c)
+	return parseWithOpts(c, name, opts)
+}
 
-	prog, pstats, err := parse(
-		inputStr,
-		name,
-		parseConfig{cf.output, cf.logw},
-	)
+// ParseFile reads and parses the input from a BCL file,
+// producing executable Prog.
+// The input file will be closed as soon as possible.
+func ParseFile(f FileInput, opts ...Option) (prog *Prog, _ error) {
+	inpc := make(chan string)
+	errc := make(chan error)
+
+	go func() {
+		b := bufio.NewReader(f)
+		var line []byte
+		var err error
+		for {
+			line, err = b.ReadSlice('\n')
+			if err != nil && err != io.EOF {
+				errc <- err
+				break
+			}
+			if err == io.EOF && len(line) == 0 {
+				break
+			}
+			inpc <- string(line)
+		}
+		f.Close()
+		close(inpc)
+	}()
+
+	go func() {
+		p, err := parseWithOpts(inpc, f.Name(), opts)
+		prog = p
+		errc <- err
+	}()
+
+	err := <-errc
+	return prog, err
+}
+
+func parseWithOpts(inputs <-chan string, name string, opts []Option) (*Prog, error) {
+	cf := makeConfig(opts)
+
+	prog, pstats, err := parse(inputs, name, parseConfig{cf.output, cf.logw})
 	if err == nil && cf.disasm {
 		prog.disasm()
 	}
@@ -51,18 +92,6 @@ func Parse(input []byte, name string, opts ...Option) (*Prog, error) {
 		printPStats(cf.output, pstats)
 	}
 	return prog, err
-}
-
-// ParseFile reads and parses the input from a BCL file,
-// producing executable Prog.
-// The input file will be closed as soon as possible.
-func ParseFile(f FileInput, opts ...Option) (*Prog, error) {
-	b, err := io.ReadAll(f)
-	if err != nil {
-		return nil, err
-	}
-	f.Close()
-	return Parse(b, f.Name(), opts...)
 }
 
 func LoadProg(r io.Reader, name string, opts ...Option) (*Prog, error) {
