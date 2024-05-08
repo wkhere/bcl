@@ -54,10 +54,8 @@ func ParseFile(f FileInput, opts ...Option) (prog *Prog, _ error) {
 
 	go func() {
 		b := bufio.NewReader(f)
-		var line []byte
-		var err error
 		for {
-			line, err = b.ReadSlice('\n')
+			line, err := b.ReadSlice('\n')
 			if err != nil && err != io.EOF {
 				errc <- err
 				break
