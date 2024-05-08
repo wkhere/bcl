@@ -50,7 +50,7 @@ func Parse(input []byte, name string, opts ...Option) (*Prog, error) {
 // The input file will be closed as soon as possible.
 func ParseFile(f FileInput, opts ...Option) (prog *Prog, _ error) {
 	inpc := make(chan string)
-	errc := make(chan error)
+	errc := make(chan error, 1)
 
 	go func() {
 		b := bufio.NewReader(f)
