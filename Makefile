@@ -20,8 +20,11 @@ testapi_test.go: test.py api_test.go
 clean:
 	rm -f bcl
 
+sel=.
+cnt=6
+
 test: bcl test.py
-	go test -cover .
+	go test -cover -run=$(sel) .
 
 bench: bcl
 	go test -bench=$(sel) -count=$(cnt) -benchmem .
@@ -29,8 +32,6 @@ bench: bcl
 cov:
 	go test -coverprofile=cov -run=$(sel) .
 	go tool cover -html=cov -o cov.html
-sel=.
-cnt=6
 
 stringer: $(shell go env GOPATH)/bin/stringer
 $(shell go env GOPATH)/bin/stringer:
