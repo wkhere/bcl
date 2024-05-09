@@ -1,4 +1,7 @@
-
+### v0.10.2
+* ParseFile by lines - fixes handling big files
+* trace: nicer stack printout
+* test/benchmark improvements
 
 ### v0.10.1
 * fix: disasm when no errors occured
