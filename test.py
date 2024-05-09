@@ -430,7 +430,8 @@ def run_tests():
                 perr(f'#{i} mismatch: have {res!r}, want {exp!r}')
 
         else:
-            msg = proc.stderr.rstrip().removesuffix("\ncombined errors from parse")
+            msg = proc.stderr.rstrip()
+            msg = removesuffix(msg, "\ncombined errors from parse")
             if m := err_match(opt):
                 if m == 'err': continue
                 if m not in msg:
@@ -441,6 +442,13 @@ def run_tests():
                 fail = True
 
     if fail: exit(1)
+
+
+def removesuffix(s, suffix):
+    if s.endswith(suffix):
+        return s[:-len(suffix)]
+    else:
+        return s
 
 
 def q(s): return s.encode('unicode-escape').decode()
