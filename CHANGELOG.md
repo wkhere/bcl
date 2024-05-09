@@ -1,3 +1,5 @@
+
+
 ### v0.10.1
 * fix: disasm when no errors occured
 
@@ -6,6 +8,7 @@
 * serialize Prog via Dump/Load; new API: LoadProg, Execute 
 * cmd/bcl: break flags processing on --
 * build/test/benchmark improvements
+* BROKEN disasm - use v0.10.1
 
 ### v0.9.0
 * new API: InterpretFile, UnmarshalFile
