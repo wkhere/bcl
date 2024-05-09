@@ -1,0 +1,153 @@
+== testdata/basic_test.bcl ==
+0000   1:36  CONST         0 '8400'
+0002   2:36  CONST         1 '9400'
+0004   3:23  CONST         2 'foo.org'
+0006   4:34  GETLOCAL      1
+0008   4:58  GETLOCAL      0
+0010      |  SUB
+0011   5:13  GETLOCAL      3
+0013      |  NEG
+0014   5:18  ZERO
+0015      |  UNPLUS
+0016      |  ADD
+0017   6:12  ONE
+0018      |  NEG
+0019   6:21  CONST         3 '10'
+0021      |  NEG
+0022      |  NEG
+0023      |  NEG
+0024   6:23  CONST         4 '2'
+0026      |  DIV
+0027   6:25  ONE
+0028      |  SUB
+0029   6:26  SUB
+0030   6:31  GETLOCAL      3
+0032      |  ADD
+0033   7:15  CONST         5 'sth'
+0035   7:19  ONE
+0036      |  ADD
+0037   7:25  CONST         6 '-'
+0039      |  ADD
+0040   7:34  GETLOCAL      2
+0042      |  ADD
+0043   8:17  TRUE
+0044   9:17  GETLOCAL      4
+0046   9:21  ZERO
+0047      |  LT
+0048  10:20  CONST         7 '10000'
+0050  10:26  GETLOCAL      3
+0052      |  LT
+0053      |  NOT
+0054  11:37  GETLOCAL      7
+0056      |  NOT
+0057      |  NOT
+0058      |  NOT
+0059      |  NOT
+0060  12:20  CONST         8 '3.14159265'
+0062  15:34  DEFBLOCK      9 'tunnel'	  10 'hostyhost-service1'
+0065  16:40  GETLOCAL      1
+0067      |  SETFIELD     11 'local_port'
+0069      |  POP
+0070  17:37  GETLOCAL      0
+0072      |  SETFIELD     12 'remote_port'
+0074      |  POP
+0075  18:17  CONST        14 'hosty.'
+0077  18:26  GETLOCAL      2
+0079      |  ADD
+0080      |  SETFIELD     13 'host'
+0082      |  POP
+0083  19:25  GETLOCAL     10
+0085      |  NOT
+0086      |  SETFIELD     15 'enabled'
+0088      |  POP
+0089   20:2  ENDBLOCK
+0090  22:34  DEFBLOCK     16 'service1'	  17 'another-service1'
+0093  23:14  CONST        18 'yet'
+0095  23:20  CONST        19 '.'
+0097      |  ADD
+0098  23:36  CONST        20 'another.com'
+0100      |  ADD
+0101      |  SETFIELD     13 'host'
+0103      |  POP
+0104  24:40  GETLOCAL      1
+0106  24:44  ONE
+0107      |  ADD
+0108      |  SETFIELD     11 'local_port'
+0110      |  POP
+0111  25:37  GETLOCAL      0
+0113      |  SETFIELD     12 'remote_port'
+0115      |  POP
+0116  26:17  GETLOCAL      7
+0118      |  SETFIELD     15 'enabled'
+0120      |  POP
+0121  27:17  TRUE
+0122      |  SETFIELD     21 'prepared'
+0124      |  POP
+0125  28:22  GETLOCAL     10
+0127      |  SETFIELD     22 'started'
+0129      |  POP
+0130  29:17  GETLOCAL      8
+0132      |  SETFIELD     23 'z0neg'
+0134      |  POP
+0135  30:17  GETLOCAL      9
+0137      |  SETFIELD     24 'z1big'
+0139      |  POP
+0140  31:11  CONST        26 'a'
+0142  31:15  CONST        27 '4'
+0144      |  MUL
+0145      |  SETFIELD     25 'str'
+0147      |  POP
+0148   32:7  CONST        29 '4'
+0150   32:9  CONST        30 '3'
+0152  32:11  CONST        31 '2'
+0154      |  MUL
+0155      |  ADD
+0156      |  SETFIELD     28 'u'
+0158      |  POP
+0159   33:8  GETLOCAL      4
+0161      |  SETFIELD     32 'v'
+0163      |  POP
+0164   34:8  GETLOCAL      5
+0166  34:13  GETLOCAL      3
+0168      |  SUB
+0169      |  SETFIELD     33 'x'
+0171      |  POP
+0172  35:12  GETLOCAL      5
+0174  35:17  GETLOCAL      3
+0176      |  SUB
+0177  35:22  CONST        35 '5'
+0179      |  EQ
+0180      |  SETFIELD     34 'x_is5'
+0182      |  POP
+0183   36:7  CONST        37 '3'
+0185  36:14  CONST        38 '8'
+0187      |  NEG
+0188      |  NEG
+0189      |  NEG
+0190  36:16  CONST        39 '4'
+0192      |  DIV
+0193      |  SUB
+0194  36:22  ONE
+0195      |  UNPLUS
+0196  36:24  CONST        40 '3'
+0198  36:26  CONST        41 '2'
+0200      |  DIV
+0201      |  SUB
+0202  36:27  SUB
+0203      |  SETFIELD     36 'y'
+0205      |  POP
+0206   37:2  ENDBLOCK
+0207  39:25  DEFBLOCK     42 'just_a_test'	  43 'test'
+0210  40:13  GETLOCAL     11
+0212      |  SETFIELD     44 'field1'
+0214      |  POP
+0215  42:27  DEFBLOCK     45 'inner'	  46 'inner-thing'
+0218  43:17  CONST        48 'pi='
+0220  43:26  GETFIELD     44 'field1'
+0222      |  ADD
+0223      |  SETFIELD     47 'field2'
+0225      |  POP
+0226   44:3  ENDBLOCK
+0227   45:2  ENDBLOCK
+0228   46:1  POPN         12
+0230      |  RET

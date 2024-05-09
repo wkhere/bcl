@@ -5,12 +5,16 @@ import (
 	"testing"
 
 	"github.com/wkhere/bcl"
+	"kr.dev/diff"
 
 	_ "embed"
 )
 
 //go:embed testdata/basic_test.bcl
 var basicInput []byte
+
+//go:embed testdata/basic_test.disasm
+var basicDisasm []byte
 
 //go:embed testdata/big1.bcl
 var big1 []byte
@@ -20,6 +24,19 @@ func TestBasicBytes(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+}
+
+func TestBasicDisasm(t *testing.T) {
+	b := new(bytes.Buffer)
+	_, err := bcl.Parse(
+		basicInput,
+		"testdata/basic_test.bcl",
+		bcl.OptDisasm(true), bcl.OptOutput(b),
+	)
+	if err != nil {
+		t.Error("unexpected error:", err)
+	}
+	diff.Test(t, t.Errorf, b.Bytes(), basicDisasm)
 }
 
 func TestBasicFile(t *testing.T) {
