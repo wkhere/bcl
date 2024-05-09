@@ -30,7 +30,7 @@ func (p *Prog) disasmInstr(offset int) int {
 		opENDBLOCK,
 		opNIL, opZERO, opONE, opTRUE, opFALSE,
 		opEQ, opLT, opGT,
-		opADD, opSUB, opMUL, opDIV, opNEG, opNOT:
+		opADD, opSUB, opMUL, opDIV, opNEG, opNOT, opUNPLUS:
 		return simpleInstr(p.output, instr, offset)
 
 	case opCONST, opGETFIELD, opSETFIELD:
