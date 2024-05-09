@@ -14,7 +14,7 @@ func newLineCalc() *lineCalc {
 	return &lineCalc{lfs: lfs}
 }
 
-func (lc *lineCalc) addLine(s string, prefix int) {
+func (lc *lineCalc) add(s string, prefix int) {
 	for i, c := range s {
 		if c == '\n' {
 			lc.lfs = append(lc.lfs, prefix+i)

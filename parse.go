@@ -17,7 +17,7 @@ func parse(inputs <-chan string, name string, cf parseConfig) (
 
 	p := &parser{
 		linePos: linePos,
-		lexer:   newLexer(inputs, linePos.addLine),
+		lexer:   newLexer(inputs, linePos.add),
 		prog:    newProg(name, cf.outw),
 
 		identRefs: make(map[string]int, 8),

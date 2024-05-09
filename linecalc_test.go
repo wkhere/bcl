@@ -45,7 +45,7 @@ func TestLineCalc(t *testing.T) {
 
 	for _, tc := range tab {
 		lc := newLineCalc()
-		lc.addLine(tc.input, 0)
+		lc.add(tc.input, 0)
 
 		for wp, wlp := range tc.positions {
 			l, p := lc.lineColAt(wp)
