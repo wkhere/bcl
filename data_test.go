@@ -12,6 +12,9 @@ import (
 //go:embed testdata/basic_test.bcl
 var basicInput []byte
 
+//go:embed testdata/big1.bcl
+var big1 []byte
+
 func TestBasicBytes(t *testing.T) {
 	_, err := bcl.Interpret(basicInput)
 	if err != nil {
@@ -22,6 +25,14 @@ func TestBasicBytes(t *testing.T) {
 func TestBasicFile(t *testing.T) {
 	r := reader{bytes.NewReader(basicInput)}
 	_, err := bcl.InterpretFile(r)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestTokenLeftover(t *testing.T) {
+	r := reader{bytes.NewReader(big1)}
+	_, err := bcl.ParseFile(r)
 	if err != nil {
 		t.Error(err)
 	}
