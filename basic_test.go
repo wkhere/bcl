@@ -1,6 +1,7 @@
 package bcl_test
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/wkhere/bcl"
@@ -11,19 +12,36 @@ import (
 //go:embed testdata/basic_test.bcl
 var basicInput []byte
 
-func basicRun() ([]bcl.Block, error) {
-	return bcl.Interpret(basicInput)
-}
-
-func TestBasic(t *testing.T) {
-	_, err := basicRun()
+func TestBasicBytes(t *testing.T) {
+	_, err := bcl.Interpret(basicInput)
 	if err != nil {
 		t.Error(err)
 	}
 }
 
-func BenchmarkBasic(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		basicRun()
+func TestBasicFile(t *testing.T) {
+	r := reader{bytes.NewReader(basicInput)}
+	_, err := bcl.InterpretFile(r)
+	if err != nil {
+		t.Error(err)
 	}
 }
+
+func BenchmarkBasicBytes(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		bcl.Interpret(basicInput)
+	}
+}
+
+func BenchmarkBasicFile(b *testing.B) {
+	r := reader{bytes.NewReader(basicInput)}
+	for i := 0; i < b.N; i++ {
+		r.Seek(0, 0)
+		bcl.InterpretFile(r)
+	}
+}
+
+type reader struct{ *bytes.Reader }
+
+func (reader) Close() error { return nil }
+func (reader) Name() string { return "*test-reader*" }
