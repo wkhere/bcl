@@ -154,57 +154,57 @@ with bytecode VM.
 Internals can be peeked in many ways, here is bytecode disassembly,
 execution trace with stack content, plus some stats:
 ```
-./bcl -dts <<<'var x=1; def block{eval x=x+1; field=x}'
+./bcl -dts <<<'var x=1; def block{eval x=x+2; field=x}'
 == /dev/stdin ==
 0000    1:8  ONE
-0001   1:20  DEFBLOCK      0 'block'	   1 ''
+0001   1:20  DEFBLOCK      0 'block'         1 ''
 0004   1:28  GETLOCAL      0
-0006   1:30  ONE
-0007      |  ADD
-0008      |  SETLOCAL      0
-0010      |  POP
-0011   1:39  GETLOCAL      0
-0013      |  SETFIELD      2 'field'
-0015      |  POP
-0016   1:40  ENDBLOCK
-0017    2:1  POP
-0018      |  RET
+0006   1:30  CONST         2 '2'
+0008      |  ADD
+0009      |  SETLOCAL      0
+0011      |  POP
+0012   1:39  GETLOCAL      0
+0014      |  SETFIELD      3 'field'
+0016      |  POP
+0017   1:40  ENDBLOCK
+0018    2:1  POP
+0019      |  RET
 pstats.tokens:        20
 pstats.localMax:       1
 pstats.depthMax:       1
-pstats.constants:      3
+pstats.constants:      4
 pstats.opsCreated:    13
-pstats.codeBytes:     19
-      #0     
+pstats.codeBytes:     20
+             0: 
 0000    1:8  ONE
-      #1     [ 1 ]
-0001   1:20  DEFBLOCK      0 'block'	   1 ''
-      #1     [ 1 ]
+             1: [ 1 ]
+0001   1:20  DEFBLOCK      0 'block'         1 ''
+             1: [ 1 ]
 0004   1:28  GETLOCAL      0
-      #2     [ 1 ][ 1 ]
-0006   1:30  ONE
-      #3     [ 1 ][ 1 ][ 1 ]
-0007      |  ADD
-      #2     [ 1 ][ 2 ]
-0008      |  SETLOCAL      0
-      #2     [ 2 ][ 2 ]
-0010      |  POP
-      #1     [ 2 ]
-0011   1:39  GETLOCAL      0
-      #2     [ 2 ][ 2 ]
-0013      |  SETFIELD      2 'field'
-      #2     [ 2 ][ 2 ]
-0015      |  POP
-      #1     [ 2 ]
-0016   1:40  ENDBLOCK
-      #1     [ 2 ]
-0017    2:1  POP
-      #0     
-0018      |  RET
+             2: [ 1 ][ 1 ]
+0006   1:30  CONST         2 '2'
+             3: [ 1 ][ 1 ][ 2 ]
+0008      |  ADD
+             2: [ 1 ][ 3 ]
+0009      |  SETLOCAL      0
+             2: [ 3 ][ 3 ]
+0011      |  POP
+             1: [ 3 ]
+0012   1:39  GETLOCAL      0
+             2: [ 3 ][ 3 ]
+0014      |  SETFIELD      3 'field'
+             2: [ 3 ][ 3 ]
+0016      |  POP
+             1: [ 3 ]
+0017   1:40  ENDBLOCK
+             1: [ 3 ]
+0018    2:1  POP
+             0: 
+0019      |  RET
 xstats.tosMax:         3
 xstats.blockTosMax:    1
 xstats.opsRead:       13
-xstats.pcFinal:       19
+xstats.pcFinal:       20
 ```
 
 
