@@ -16,10 +16,7 @@
 // instead of using Parse on the BCL input.
 package bcl
 
-import (
-	"bufio"
-	"io"
-)
+import "io"
 
 // FileInput abstracts the input that is read from a file.
 // It is going to be closed as soon as it's read.
@@ -53,17 +50,17 @@ func ParseFile(f FileInput, opts ...Option) (prog *Prog, _ error) {
 	errc := make(chan error, 1)
 
 	go func() {
-		b := bufio.NewReader(f)
+		var b [4096]byte
 		for {
-			line, err := b.ReadSlice('\n')
+			n, err := f.Read(b[:])
 			if err != nil && err != io.EOF {
 				errc <- err
 				break
 			}
-			if err == io.EOF && len(line) == 0 {
+			if err == io.EOF && n == 0 {
 				break
 			}
-			inpc <- string(line)
+			inpc <- string(b[:n])
 		}
 		f.Close()
 		close(inpc)
