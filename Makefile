@@ -28,6 +28,9 @@ cnt=6
 test: src
 	go test -cover -run=$(sel) .
 
+race: src
+	go test -race .
+
 bench: src
 	go test -bench=$(sel) -count=$(cnt) -benchmem .
 
@@ -39,4 +42,4 @@ stringer: $(shell go env GOPATH)/bin/stringer
 $(shell go env GOPATH)/bin/stringer:
 	go install golang.org/x/tools/cmd/stringer@latest
 
-.PHONY: default generated src clean test bench cov stringer
+.PHONY: default generated src clean test race bench cov stringer
