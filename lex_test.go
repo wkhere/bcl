@@ -90,12 +90,32 @@ var lexTab = []struct {
 		{tIDENT, "a", nil, 1}, {tIDENT, "bb", nil, 4}, {tIDENT, "c", nil, 6},
 		{tIDENT, "dd", nil, 10}, teof(10),
 	}},
+	{43, "foobar quux1 finito", tt{
+		{tIDENT, "foobar", nil, 6}, {tIDENT, "quux1", nil, 12},
+		{tIDENT, "finito", nil, 19}, teof(19),
+	}},
 }
 
-func TestLexer(t *testing.T) {
+func TestLexerSingleInput(t *testing.T) {
 	for _, tc := range lexTab {
 		c := make(chan string, 1)
 		c <- tc.input
+		close(c)
+		l := newLexer(c, dummyLcUpd)
+		res := tstream(l.tokens).collect()
+		if !reflect.DeepEqual(res, tc.tokens) {
+			t.Errorf("tc#%d mismatch:\nhave %v\nwant %v", tc.i, res, tc.tokens)
+		}
+	}
+}
+
+func TestLexerManyInputs(t *testing.T) {
+	for _, tc := range lexTab {
+		chunks := eachN(tc.input, 4)
+		c := make(chan string, len(chunks))
+		for _, s := range chunks {
+			c <- s
+		}
 		close(c)
 		l := newLexer(c, dummyLcUpd)
 		res := tstream(l.tokens).collect()
@@ -130,3 +150,13 @@ func runExample(s string) {
 }
 
 func dummyLcUpd(string, int) {}
+
+func eachN(s string, n int) (chunks []string) {
+	chunks = make([]string, 0, len(s)/n+1)
+	for len(s) > 0 {
+		j := min(len(s), n)
+		chunks = append(chunks, s[:j])
+		s = s[j:]
+	}
+	return
+}
