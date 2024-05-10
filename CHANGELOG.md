@@ -1,3 +1,9 @@
+### v0.10.3
+* ParseFile by pages - even better
+* fix 'token leftover bug' (hard to show when parsing by lines, now important)
+* fix unary plus disasm
+* test/benchmark/doc improvements
+
 ### v0.10.2
 * ParseFile by lines - fixes handling big files
 * trace: nicer stack printout
