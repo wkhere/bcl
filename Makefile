@@ -1,8 +1,10 @@
-default: test
+default: bcl test
 
 generated = tokentype_string.go opcode_string.go typecode_string.go testapi_test.go
 
-bcl: stringer $(generated) go.mod go.sum *.go cmd/bcl/*.go
+src: stringer $(generated) go.mod go.sum *.go cmd/bcl/*.go
+
+bcl: src
 	go build ./cmd/bcl
 
 tokentype_string.go: token.go
@@ -23,13 +25,13 @@ clean:
 sel=.
 cnt=6
 
-test: bcl test.py
+test: src
 	go test -cover -run=$(sel) .
 
-bench: bcl
+bench: src
 	go test -bench=$(sel) -count=$(cnt) -benchmem .
 
-cov:
+cov: src
 	go test -coverprofile=cov -run=$(sel) .
 	go tool cover -html=cov -o cov.html
 
@@ -37,4 +39,4 @@ stringer: $(shell go env GOPATH)/bin/stringer
 $(shell go env GOPATH)/bin/stringer:
 	go install golang.org/x/tools/cmd/stringer@latest
 
-.PHONY: default generated clean test bench cov stringer
+.PHONY: default generated src clean test bench cov stringer
