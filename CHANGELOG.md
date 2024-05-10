@@ -1,3 +1,7 @@
+### v0.10.4
+* ParseFile: fix data race
+* makefile & CI improvements
+
 ### v0.10.3
 * ParseFile by pages - even better
 * fix 'token leftover bug' (hard to show when parsing by lines, now important)
