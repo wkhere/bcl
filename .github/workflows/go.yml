@@ -20,6 +20,8 @@ jobs:
 
     - run: go test -coverprofile=coverage.out ./...
 
+    - run: go test -race .
+
     - uses: jandelgado/gcov2lcov-action@v1
     - uses: coverallsapp/github-action@v2
       with:
