@@ -47,6 +47,11 @@ func (l *lexer) run() {
 	for state := lexStart; state != nil; {
 		state = state(l)
 	}
+	// drain rest of the input - may be hanging if there was a lex error:
+	for range l.inputs {
+	}
+	// now close the output; note: the order of this and above drain can really
+	// be exchanged, but I think there's less goro switching this way
 	close(l.tokens)
 }
 
