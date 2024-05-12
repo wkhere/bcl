@@ -60,4 +60,4 @@ more on errors:
 
 - with commit e18c2c5 deadlocks are fixed, but also long (or infinite) input
   is read to the end; do proper cancelling of the input reads
-  
+
