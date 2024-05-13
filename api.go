@@ -48,9 +48,12 @@ func Parse(input []byte, name string, opts ...Option) (*Prog, error) {
 func ParseFile(f FileInput, opts ...Option) (prog *Prog, _ error) {
 	inpc := make(chan string)
 	rerr := make(chan error)
+	done := make(chan struct{})
 
 	go func() {
+		defer f.Close()
 		var b [4096]byte
+
 		for {
 			n, err := f.Read(b[:])
 			if err != nil && err != io.EOF {
@@ -61,9 +64,14 @@ func ParseFile(f FileInput, opts ...Option) (prog *Prog, _ error) {
 				rerr <- nil
 				break
 			}
-			inpc <- string(b[:n])
+			select {
+			case inpc <- string(b[:n]):
+				continue
+			case <-done:
+				rerr <- nil
+				return
+			}
 		}
-		f.Close()
 		close(inpc)
 	}()
 
@@ -71,6 +79,9 @@ func ParseFile(f FileInput, opts ...Option) (prog *Prog, _ error) {
 
 	go func() {
 		p, err := parseWithOpts(inpc, f.Name(), opts)
+		if err != nil {
+			close(done)
+		}
 		prog = p
 		perr <- err
 	}()
