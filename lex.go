@@ -83,8 +83,11 @@ func (l *lexer) next() (r rune) {
 	if l.pos >= len(l.input) {
 		s, ok := <-l.inputs
 		if !ok {
-			l.width = 0
-			return eof
+			if l.pos == l.start {
+				l.width = 0
+				return eof
+			}
+			// continue with leftover + s
 		}
 		l.input = l.input[l.start:l.pos] + s
 		l.posShift += l.start
