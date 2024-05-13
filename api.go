@@ -47,18 +47,18 @@ func Parse(input []byte, name string, opts ...Option) (*Prog, error) {
 // The input file will be closed as soon as possible.
 func ParseFile(f FileInput, opts ...Option) (prog *Prog, _ error) {
 	inpc := make(chan string)
-	errc := make(chan error)
+	rerr := make(chan error)
 
 	go func() {
 		var b [4096]byte
 		for {
 			n, err := f.Read(b[:])
 			if err != nil && err != io.EOF {
-				errc <- err
+				rerr <- err
 				break
 			}
 			if err == io.EOF && n == 0 {
-				errc <- nil
+				rerr <- nil
 				break
 			}
 			inpc <- string(b[:n])
@@ -67,13 +67,15 @@ func ParseFile(f FileInput, opts ...Option) (prog *Prog, _ error) {
 		close(inpc)
 	}()
 
+	perr := make(chan error)
+
 	go func() {
 		p, err := parseWithOpts(inpc, f.Name(), opts)
 		prog = p
-		errc <- err
+		perr <- err
 	}()
 
-	err, err2 := <-errc, <-errc
+	err, err2 := <-rerr, <-perr
 	if err == nil {
 		err = err2
 	}
