@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"testing"
 
+	diff "github.com/akedrou/textdiff"
 	"github.com/wkhere/bcl"
-	"kr.dev/diff"
 
 	_ "embed"
 )
@@ -36,7 +36,9 @@ func TestBasicDisasm(t *testing.T) {
 	if err != nil {
 		t.Error("unexpected error:", err)
 	}
-	diff.Test(t, t.Errorf, b.Bytes(), basicDisasm)
+	if d := diff.Unified("want", "have", string(basicDisasm), b.String()); d != "" {
+		t.Errorf("\n%s", d)
+	}
 }
 
 func TestBasicFile(t *testing.T) {
