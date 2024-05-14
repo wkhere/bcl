@@ -28,7 +28,7 @@ more on errors:
 = done in the vm version
 
 - lists - in two variants: with the same type and varying types
-  - as lists can be nested, there is a need to encode variaty of such types
+  - as lists can be nested, there is a need to encode variety of such types
 
 + nested blocks; design carefully
 = done in the vm version
