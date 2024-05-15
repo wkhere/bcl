@@ -644,7 +644,7 @@ func (p *parser) patchJump(offset int) {
 	prog := p.currentProg()
 	jump := prog.count() - offset - jumpByteLength
 
-	if jump > 65535 {
+	if jump > 1<<(8*jumpByteLength)-1 {
 		p.error("jump too long")
 		return
 	}
