@@ -1,3 +1,7 @@
+### v0.10.6
+* simplify test dep
+* parse: code reuse, small fixes
+
 ### v0.10.5
 * ParseFile: cancel reads on lex errors; fix more data races
 * fix rare case of token leftover at end
