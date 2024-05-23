@@ -185,8 +185,10 @@ func isAlphaNum(r rune) bool {
 
 // state finalizers
 
-func (l *lexer) errorf(format string, args ...any) stateFn {
+func (l *lexer) fail(format string, args ...any) stateFn {
 	l.emitError(format, args...)
+	l.ignore()
+	l.emit(tFAIL)
 	return nil
 }
 
@@ -266,7 +268,7 @@ func lexStart(l *lexer) stateFn {
 	case isDigit(r):
 		return lexNumber
 	default:
-		return l.errorf("unknown char %#U", r)
+		return l.fail("unknown char %#U", r)
 	}
 }
 
@@ -282,7 +284,7 @@ func lexTwoRunes(r1 rune, match twoRuneMatch) stateFn {
 			l.emit(r1t)
 			return lexStart
 		}
-		return l.errorf(
+		return l.fail(
 			"expected char %q to start token %q",
 			r1, fmt.Sprintf("%c%c", r1, match.r2),
 		)
@@ -353,14 +355,14 @@ func lexFloat(l *lexer) stateFn {
 	if l.accept(".") {
 		ok := l.acceptRun(digits)
 		if !ok {
-			return l.errorf("need more digits after a dot")
+			return l.fail("need more digits after a dot")
 		}
 	}
 	if l.accept("eE") {
 		l.accept("+-")
 		ok := l.acceptRun(digits)
 		if !ok {
-			return l.errorf("need more digits for an exponent")
+			return l.fail("need more digits for an exponent")
 		}
 	}
 	l.emit(tFLOAT)
@@ -377,7 +379,7 @@ loop:
 			}
 			fallthrough
 		case eof, '\n':
-			return l.errorf("unterminated quoted string")
+			return l.fail("unterminated quoted string")
 		case '"':
 			break loop
 		}

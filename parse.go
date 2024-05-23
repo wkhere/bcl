@@ -32,7 +32,7 @@ func parse(inputs <-chan string, name string, cf parseConfig) (
 
 	p.advance()
 
-	for !p.match(tEOF) {
+	for !p.matchEnd() {
 		decl(p)
 
 		p.match(tSEMICOLON) // no check as it is optional
@@ -55,6 +55,7 @@ type parser struct {
 
 	prev, current token
 	hadError      bool
+	hadLexFail    bool
 	panicMode     bool
 
 	identRefs map[string]int // map ident names to const indices
@@ -156,7 +157,7 @@ func blockStmt(p *parser) {
 	p.beginScope()
 	defer p.endScope()
 
-	for !p.check(tRCURLY) && !p.check(tEOF) {
+	for !p.check(tRCURLY) && !p.checkEnd() {
 		decl(p)
 		if p.panicMode {
 			p.advance()
@@ -165,6 +166,9 @@ func blockStmt(p *parser) {
 		p.match(tSEMICOLON) // optional
 	}
 
+	if p.hadLexFail {
+		return
+	}
 	p.consume(tRCURLY, "expected '}'")
 }
 
@@ -248,8 +252,9 @@ func init() {
 
 		tSEMICOLON: {nil, nil, precNone},
 
-		tERR: {nil, nil, precNone},
-		tEOF: {nil, nil, precNone},
+		tERR:  {nil, nil, precNone},
+		tEOF:  {nil, nil, precNone},
+		tFAIL: {nil, nil, precNone},
 	}
 }
 
@@ -400,12 +405,15 @@ func (p *parser) advance() {
 	p.prev = p.current
 
 	for {
-		var ok bool
-		p.current, ok = p.lexer.nextToken()
+		current, ok := p.lexer.nextToken()
 		if !ok {
 			return
 		}
+		p.current = current
 		p.stats.tokens++
+		if p.current.typ == tFAIL {
+			p.hadLexFail = true
+		}
 		if p.current.typ != tERR {
 			break
 		}
@@ -430,14 +438,26 @@ func (p *parser) match(typ tokenType) bool {
 	return true
 }
 
+func (p *parser) matchEnd() bool {
+	if !p.checkEnd() {
+		return false
+	}
+	p.advance()
+	return true
+}
+
 func (p *parser) check(typ tokenType) bool {
 	return p.current.typ == typ
+}
+
+func (p *parser) checkEnd() bool {
+	return p.current.typ <= tEOF
 }
 
 func (p *parser) sync() {
 	p.panicMode = false
 
-	for p.current.typ != tEOF {
+	for !p.checkEnd() {
 		switch p.current.typ {
 		case tVAR, tDEF, tPRINT, tEVAL: // tokens delimiting a statement
 			return
@@ -701,10 +721,10 @@ func (p *parser) errorAt(t *token, msg string) {
 
 	p.log.Printf("line %s: error", p.linePos.format(t.pos))
 
-	switch {
-	case t.typ == tEOF:
+	switch t.typ {
+	case tEOF:
 		p.log.Print(" at end")
-	case t.typ == tERR: // nop
+	case tERR, tFAIL: // nop
 	default:
 		p.log.Printf(" at '%s'", t.val)
 	}

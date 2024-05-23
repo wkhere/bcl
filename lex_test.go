@@ -18,7 +18,8 @@ func (s tstream) collect() (a []token) {
 // shorter syntax in tab literals:
 type tt = []token
 
-func teof(pos int) token { return token{tEOF, "", nil, pos} }
+func teof(pos int) token  { return token{tEOF, "", nil, pos} }
+func tfail(pos int) token { return token{tFAIL, "", nil, pos} }
 func terrchar(c rune, line int) token {
 	return token{tERR, "", fmt.Errorf("unknown char %#U", c), line}
 }
@@ -30,12 +31,12 @@ var lexTab = []struct {
 }{
 	{0, "", tt{teof(0)}},
 
-	{1, "@", tt{terrchar('@', 1)}},
-	{2, `"`, tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}}},
-	{3, "\"\n", tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 2}}},
-	{4, "\"\n", tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 2}}},
-	{5, `"\`, tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 2}}},
-	{6, `"\a`, tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 3}}},
+	{1, "@", tt{terrchar('@', 1), tfail(1)}},
+	{2, `"`, tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}, tfail(1)}},
+	{3, "\"\n", tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 2}, tfail(2)}},
+	{4, "\"\n", tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 2}, tfail(2)}},
+	{5, `"\`, tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 2}, tfail(2)}},
+	{6, `"\a`, tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 3}, tfail(3)}},
 
 	{7, `1234`, tt{{tINT, "1234", nil, 4}, teof(4)}},
 	{8, `12.34`, tt{{tFLOAT, "12.34", nil, 5}, teof(5)}},
@@ -46,12 +47,12 @@ var lexTab = []struct {
 	{13, `12.34e10`, tt{{tFLOAT, "12.34e10", nil, 8}, teof(8)}},
 	{14, `12.34e+10`, tt{{tFLOAT, "12.34e+10", nil, 9}, teof(9)}},
 	{15, `12.34e-10`, tt{{tFLOAT, "12.34e-10", nil, 9}, teof(9)}},
-	{16, `12.`, tt{{tERR, "", fmt.Errorf("need more digits after a dot"), 3}}},
-	{17, `12e`, tt{{tERR, "", fmt.Errorf("need more digits for an exponent"), 3}}},
+	{16, `12.`, tt{{tERR, "", fmt.Errorf("need more digits after a dot"), 3}, tfail(3)}},
+	{17, `12e`, tt{{tERR, "", fmt.Errorf("need more digits for an exponent"), 3}, tfail(3)}},
 
 	{18, `0x10`, tt{{tINT, "0x10", nil, 4}, teof(4)}},
 	{19, `0X10`, tt{{tINT, "0X10", nil, 4}, teof(4)}},
-	{20, `0x10.0`, tt{{tINT, "0x10", nil, 4}, terrchar('.', 5)}},
+	{20, `0x10.0`, tt{{tINT, "0x10", nil, 4}, terrchar('.', 5), tfail(5)}},
 
 	{21, `>`, tt{{tGT, ">", nil, 1}, teof(1)}},
 	{22, `>=`, tt{{tGE, ">=", nil, 2}, teof(2)}},
@@ -59,6 +60,7 @@ var lexTab = []struct {
 	{24, `<= 5`, tt{{tLE, "<=", nil, 2}, {tINT, "5", nil, 4}, teof(4)}},
 	{25, `!<`, tt{
 		{tERR, "", fmt.Errorf(`expected char '!' to start token "!="`), 1},
+		tfail(1),
 	}},
 
 	{26, `{}`, tt{{tLCURLY, "{", nil, 1}, {tRCURLY, "}", nil, 2}, teof(2)}},
@@ -134,7 +136,7 @@ func ExampleLexer() {
 	// {tINT "0" 1}{tEOF "" 1}
 	// {tINT "1" 1}{tEOF "" 1}
 	// {tMINUS "-" 1}{tFLOAT "3.14" 5}{tEOF "" 5}
-	// {tERR "unknown char U+0040 '@'" 1}
+	// {tERR "unknown char U+0040 '@'" 1}{tFAIL "" 1}
 }
 
 func runExample(s string) {

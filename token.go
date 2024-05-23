@@ -12,7 +12,8 @@ type token struct {
 }
 
 const (
-	tEOF tokenType = iota
+	tFAIL tokenType = iota
+	tEOF            // values <= tEOF are finalizers
 	tERR
 
 	tINT
