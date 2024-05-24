@@ -1,3 +1,6 @@
+### v0.10.7
+* fix fake-eof and related behavior in lex/parse
+
 ### v0.10.6
 * simplify test dep
 * parse: code reuse, small fixes
