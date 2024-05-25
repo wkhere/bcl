@@ -53,8 +53,12 @@ more on errors:
   ~ way to port in small steps is to make prog struct fully serializable
     and port the vm first
 
-- sort out scopes for processing multiple files (one prog vs many progs)
 
-- reintroduce global & local vars; how does idents resolving play with fields?
+- functions, frames, call stack, prog->chunks
 - native functions
+- can the approach "all vars are local" play well with functions and frames?
+- reintroduce global & local vars; how does idents resolving play with fields?
+
+- sort out scopes for processing multiple files (one prog vs many progs) - this will be easier
+  after functions
 
