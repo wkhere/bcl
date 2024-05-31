@@ -18,6 +18,11 @@ type Struct1 struct {
 		Name string
 		Text string `bcl:"field4"`
 	}
+
+	Inner2 struct {
+		Name string
+		Text string `bcl:"field5"`
+	} `bcl:"inner.foo"`
 }
 
 func simpleUnmarshal(dest any) error {
@@ -29,6 +34,10 @@ func simpleUnmarshal(dest any) error {
 
 		def inner {
 			field4 = "inner-"+(field1+1)
+		}
+
+		def inner "foo" {
+			field5 = "inner-"+(field1+2)
 		}
 
 		another_field = 10.2
@@ -44,14 +53,18 @@ func TestSimpleUnmarshal(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if v := a[0].Field1; v != 10 {
+	x := a[0]
+	if v := x.Field1; v != 10 {
 		t.Errorf("expected Field1==10")
 	}
-	if v := a[0].Other; v != 42 {
+	if v := x.Other; v != 42 {
 		t.Errorf("expected Other==42")
 	}
-	if v := a[0].Inner.Text; v != "inner-11" {
+	if v := x.Inner.Text; v != "inner-11" {
 		t.Errorf("expected Inner==%q", "inner-11")
+	}
+	if v := x.Inner2.Text; v != "inner-12" {
+		t.Errorf("expected Inner2==%q", "inner-12")
 	}
 	t.Logf("%+v", a)
 }

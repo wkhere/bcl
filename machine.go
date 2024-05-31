@@ -31,9 +31,8 @@ type vm struct {
 	output io.Writer
 	trace  bool
 
-	blockStack  [blockStackSize]Block
-	blockTos    int
-	blockNextID int
+	blockStack [blockStackSize]Block
+	blockTos   int
 
 	result []Block
 
@@ -260,7 +259,7 @@ func (vm *vm) run() error {
 				var (
 					child  = &vm.blockStack[i]
 					parent = &vm.blockStack[i-1]
-					k      = child.key(vm)
+					k      = child.key()
 				)
 				// note: good to have the following safety check, although
 				// with the current syntax and with the key=type.name,
@@ -310,13 +309,11 @@ func (vm *vm) runtimeError(format string, a ...any) error {
 	return &runtimeErr{b.String()}
 }
 
-func (b *Block) key(vm *vm) string {
-	id := b.Name
-	if id == "" {
-		vm.blockNextID++
-		id = "#" + strconv.Itoa(vm.blockNextID)
+func (b *Block) key() string {
+	if b.Name == "" {
+		return b.Type
 	}
-	return b.Type + "." + id
+	return b.Type + "." + b.Name
 }
 
 func printStack(w io.Writer, vv []value) {
