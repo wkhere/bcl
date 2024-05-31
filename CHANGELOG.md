@@ -1,3 +1,6 @@
+### v0.10.8
+* nameless block is keyed by its type
+
 ### v0.10.7
 * fix fake-eof and related behavior in lex/parse
 
