@@ -62,3 +62,7 @@ more on errors:
 - sort out scopes for processing multiple files (one prog vs many progs)
   -> this will be easier after functions
 
+- reflection: when there is inner non-anonymous struct and its type differs
+  from the block type, there is no way to bind it - struct tag is only about
+  the name/key
+
