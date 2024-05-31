@@ -59,6 +59,6 @@ more on errors:
 - can the approach "all vars are local" play well with functions and frames?
 - reintroduce global & local vars; how does idents resolving play with fields?
 
-- sort out scopes for processing multiple files (one prog vs many progs) - this will be easier
-  after functions
+- sort out scopes for processing multiple files (one prog vs many progs)
+  -> this will be easier after functions
 
