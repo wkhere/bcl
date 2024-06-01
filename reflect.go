@@ -77,7 +77,7 @@ func copyBlock(v reflect.Value, block Block) error {
 			return copyBlock(v.Field(namei), x.(Block))
 		}
 
-		if st, bt := f.Type, vx.Type(); st != bt {
+		if st, bt := f.Type, vx.Type(); !bt.AssignableTo(st) {
 			return StructErr(
 				fmt.Sprintf(
 					"type mismatch for the mapped field: "+
