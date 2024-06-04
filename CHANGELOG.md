@@ -1,3 +1,6 @@
+### v0.10.9
+* small fix in reflect
+
 ### v0.10.8
 * nameless block is keyed by its type
 
