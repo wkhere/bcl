@@ -66,3 +66,5 @@ more on errors:
   from the block type, there is no way to bind it - struct tag is only about
   the name/key
 
+- marshal/dump, also with reflection
+
