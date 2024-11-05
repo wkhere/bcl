@@ -32,4 +32,4 @@ func (e *errfile) Read(p []byte) (int, error) {
 }
 
 func (*errfile) Close() error { return nil }
-func (*errfile) Name() string { return "test err" }
+func (*errfile) Name() string { return "<err>" }
