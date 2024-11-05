@@ -45,7 +45,7 @@ more on errors:
 
 + vm impl
 
-- test cases for assignments inside expr, to demonstrate they are valid
++ test cases for assignments inside expr, to demonstrate they are valid
 
 - reflection: allow filling toplevel structs of different types
 

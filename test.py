@@ -389,6 +389,11 @@ tests = [
 
     [122.1, f'print  {(1<<31)-1}-1',  f'{ (1<<31)-2}'],
     [122.2, f'print -{(1<<31)-1}+1',  f'{-(1<<31)+2}'],
+
+    [123.1, 'var a; print "foo"+(a=1); print a', 'foo1\n1'],
+    [123.2, 'var a; print 2+(a=1); print a',     '3\n1'],
+    [123.3, 'def b{print "foo"+(a=1); print a}', 'foo1\n1'],
+    [123.4, 'def b{var a; print "foo"+(a=1); print a}', 'foo1\n1'],
 ]
 
 tests_64b = [

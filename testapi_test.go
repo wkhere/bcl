@@ -381,6 +381,10 @@ func TestInterpretFromPy(t *testing.T) {
 		{`121.2`, `print 1/0.0`, "+Inf", false, false, ""},
 		{`122.1`, `print  2147483647-1`, "2147483646", false, false, ""},
 		{`122.2`, `print -2147483647+1`, "-2147483646", false, false, ""},
+		{`123.1`, `var a; print "foo"+(a=1); print a`, "foo1\n1", false, false, ""},
+		{`123.2`, `var a; print 2+(a=1); print a`, "3\n1", false, false, ""},
+		{`123.3`, `def b{print "foo"+(a=1); print a}`, "foo1\n1", false, false, ""},
+		{`123.4`, `def b{var a; print "foo"+(a=1); print a}`, "foo1\n1", false, false, ""},
 		{`122.1-64`, `print  9223372036854775807-1`, "9223372036854775806", false, false, ""},
 		{`122.2-64`, `print -9223372036854775807+1`, "-9223372036854775806", false, false, ""},
 	}
