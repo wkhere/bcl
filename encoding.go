@@ -11,7 +11,7 @@ import (
 )
 
 func u16ToBytes(p []byte, x uint16) {
-	p[0] = byte(x >> 8 & 0xff)
+	p[0] = byte(x >> 8)
 	p[1] = byte(x & 0xff)
 }
 
