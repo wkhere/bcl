@@ -89,17 +89,24 @@ tests = [
 
     ['51',   '', '== /dev/stdin ==\n0000    1:1  RET', 'disasm'],
     ['52',   'eval nil',
-        '== /dev/stdin ==\n0000    1:9  NIL\n0001      |  POP\n0002      |  RET',
+        '== /dev/stdin ==\n'
+        '0000    1:9  NIL\n'
+        '0001      |  POP\n'
+        '0002      |  RET',
         'disasm'
     ],
     ['53',   'eval 42',
-        "== /dev/stdin ==\n0000    1:8  CONST         0 '42'\n"
-                     "0002      |  POP\n0003      |  RET",
+        "== /dev/stdin ==\n"
+        "0000    1:8  CONST         0 '42'\n"
+        "0002      |  POP\n"
+        "0003      |  RET",
         'disasm'
     ],
     ['54',   'def b {}',
-        "== /dev/stdin ==\n0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
-                     "0003    1:9  ENDBLOCK\n0004      |  RET",
+        "== /dev/stdin ==\n"
+        "0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
+        "0003    1:9  ENDBLOCK\n"
+        "0004      |  RET",
         'disasm'
     ],
 
