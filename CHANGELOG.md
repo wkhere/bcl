@@ -1,3 +1,7 @@
+### v0.10.10
+* improve tests
+* simplify encoding code
+
 ### v0.10.9
 * small fix in reflect
 
