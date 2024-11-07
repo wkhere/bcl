@@ -19,6 +19,9 @@ var basicDisasm []byte
 //go:embed testdata/big1.bcl
 var big1 []byte
 
+//go:embed testdata/badbig1.bcl
+var badbig1 []byte
+
 func TestBasicBytes(t *testing.T) {
 	_, err := bcl.Interpret(basicInput)
 	if err != nil {
@@ -54,6 +57,14 @@ func TestTokenLeftover(t *testing.T) {
 	_, err := bcl.ParseFile(r)
 	if err != nil {
 		t.Error(err)
+	}
+}
+
+func TestEarlyParseErr(t *testing.T) {
+	r := reader{bytes.NewReader(badbig1)}
+	_, err := bcl.ParseFile(r)
+	if err == nil {
+		t.Errorf("expected error")
 	}
 }
 
