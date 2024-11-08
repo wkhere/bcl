@@ -1,4 +1,4 @@
-### v0.10.10
+### v0.10.10-dev
 * improve tests
 * simplify encoding code
 
