@@ -1,5 +1,5 @@
 Copyright (c) 2023-2024 Wojciech Kaczmarek
-Copyright (c) 2015 Robert Nystrom [1]
+Copyright (c) 2018-2021 Robert Nystrom [1]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to
@@ -23,4 +23,5 @@ IN THE SOFTWARE.
 The parser and the vm executor, namely the files parse.go, prog.go, machine.go
 and disasm.go, are based on the "Crafting Interpreters" book by Robert Nystrom,
 with the main concepts rewritten in Go. The original C code is available at:
-https://github.com/munificent/craftinginterpreters/tree/master/c .
+https://github.com/munificent/craftinginterpreters/tree/master/c
+and was originally distributed under the MIT license.
