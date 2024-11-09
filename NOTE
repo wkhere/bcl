@@ -40,3 +40,20 @@ Concatenated prog:
 
 In general, it's about handling many files as separate compilation units,
 or preprocessing them.
+
+
+# Reflection revamp
+
+A general sketch:
+
+deserialize to struct {
+  a1 []Block1
+  a2 []Block2
+...
+  x1 Block3
+...
+}
+
+Q: deserialize by structure (all Block1-s ? then all Block2-s?)
+or in-order (data order needs to follow bcl defs or there is error) ?
+
