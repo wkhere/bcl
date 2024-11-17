@@ -48,6 +48,7 @@ func Parse(input []byte, name string, opts ...Option) (*Prog, error) {
 func ParseFile(f FileInput, opts ...Option) (prog *Prog, _ error) {
 	inpc := make(chan string)
 	rerr := make(chan error)
+	perr := make(chan error)
 	done := make(chan struct{})
 
 	go func() {
@@ -74,8 +75,6 @@ func ParseFile(f FileInput, opts ...Option) (prog *Prog, _ error) {
 		}
 		close(inpc)
 	}()
-
-	perr := make(chan error)
 
 	go func() {
 		p, err := parseWithOpts(inpc, f.Name(), opts)
