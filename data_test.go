@@ -2,6 +2,7 @@ package bcl_test
 
 import (
 	"bytes"
+	"io"
 	"testing"
 
 	diff "github.com/akedrou/textdiff"
@@ -62,7 +63,8 @@ func TestTokenLeftover(t *testing.T) {
 
 func TestEarlyParseErr(t *testing.T) {
 	r := reader{bytes.NewReader(badbig1)}
-	_, err := bcl.ParseFile(r)
+	// note: triggered error is printed, so silence it:
+	_, err := bcl.ParseFile(r, bcl.OptLogger(io.Discard))
 	if err == nil {
 		t.Errorf("expected error")
 	}
