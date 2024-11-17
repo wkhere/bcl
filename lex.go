@@ -253,7 +253,19 @@ func lexStart(l *lexer) stateFn {
 		l.emit(tEOF)
 		return nil
 	case r2ok:
-		return lexTwoRunes(r, r2m)
+		r2 := l.next()
+		if r2 == r2m.r2 {
+			l.emit(r2m.typ)
+			return lexStart
+		}
+		l.backup()
+		if !r1ok {
+			return l.fail(
+				"expected char %q to start token %q", r,
+				fmt.Sprintf("%c%c", r, r2m.r2),
+			)
+		}
+		fallthrough
 	case r1ok:
 		l.emit(r1t)
 		return lexStart
@@ -269,25 +281,6 @@ func lexStart(l *lexer) stateFn {
 		return lexNumber
 	default:
 		return l.fail("unknown char %#U", r)
-	}
-}
-
-func lexTwoRunes(r1 rune, match twoRuneMatch) stateFn {
-	return func(l *lexer) stateFn {
-		r2 := l.next()
-		if r2 == match.r2 {
-			l.emit(match.typ)
-			return lexStart
-		}
-		l.backup()
-		if r1t, ok := oneRuneTokens[r1]; ok {
-			l.emit(r1t)
-			return lexStart
-		}
-		return l.fail(
-			"expected char %q to start token %q",
-			r1, fmt.Sprintf("%c%c", r1, match.r2),
-		)
 	}
 }
 
