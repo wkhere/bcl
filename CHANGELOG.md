@@ -1,6 +1,9 @@
-### v0.10.10-dev
-* improve tests
+### v0.10.10
+* fix TestEarlyParseErr where intentional error was printed
+* improve test.py
 * simplify encoding code
+* simplify handling of 2-,1-rune tokens
+* cosmetic changes
 
 ### v0.10.9
 * small fix in reflect
