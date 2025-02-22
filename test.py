@@ -404,6 +404,17 @@ tests = [
     ['123.2',  'var a; print 2+(a=1); print a',     '3\n1'],
     ['123.3',  'def b{print "foo"+(a=1); print a}', 'foo1\n1'],
     ['123.4',  'def b{var a; print "foo"+(a=1); print a}', 'foo1\n1'],
+
+    ['124.1',   'eval 42q', '',      'err: invalid syntax `42q`'],
+    ['124.2',   'eval 42"q"', '',    'err: invalid syntax `42"`'],
+    ['124.3',   'eval 42.0q', '',    'err: invalid syntax `42.0q`'],
+    ['124.4',   'eval 0x42q', '',    'err: invalid syntax `0x42q`'],
+    ['124.5',   'eval 42.0"q"', '',  'err: invalid syntax `42.0"`'],
+    ['124.6',   'eval 0x42"q"', '',  'err: invalid syntax `0x42"`'],
+    ['124.7',   'eval var"q"', '',   'err: invalid syntax `var"`'],
+    ['124.8',   'eval foo"q"', '',   'err: invalid syntax `foo"`'],
+    ['124.9',   'eval "foo"1', '',   'err: invalid syntax `"foo"1`'],
+    ['124.10',  'eval "foo"q', '',   'err: invalid syntax `"foo"q`'],
 ]
 
 tests_64b = [

@@ -53,7 +53,7 @@ func (l *lexer) run() {
 func (l *lexer) emit(t tokenType) {
 	l.tokens <- token{
 		typ: t,
-		val: string(l.input[l.start:l.pos]),
+		val: l.current(),
 		pos: l.pos + l.posShift,
 	}
 	l.start = l.pos
@@ -66,6 +66,8 @@ func (l *lexer) emitError(format string, args ...any) {
 		pos: l.pos + l.posShift,
 	}
 }
+
+func (l *lexer) current() string { return l.input[l.start:l.pos] }
 
 // input-consuming primitives
 
@@ -102,6 +104,10 @@ func (l *lexer) next() (r rune) {
 // Can be called only once per call of next.
 func (l *lexer) backup() {
 	l.pos -= l.width
+}
+
+func (l *lexer) unbackup() {
+	l.pos += l.width
 }
 
 // peek returns but does not consume the next rune in the input.
@@ -310,7 +316,11 @@ loop:
 			//eat.
 		default:
 			l.backup()
-			word := l.input[l.start:l.pos]
+			if l.peek() == '"' {
+				l.unbackup()
+				return l.fail("invalid syntax `%s`", l.current())
+			}
+			word := l.current()
 			key, isKey := keywords[word]
 			switch {
 			case isKey:
@@ -330,8 +340,13 @@ func lexNumber(l *lexer) stateFn {
 		return lexHex
 	}
 	l.acceptRun(digits)
-	if r := l.peek(); r == '.' || r == 'e' || r == 'E' {
+	r := l.peek()
+	if r == '.' || r == 'e' || r == 'E' {
 		return lexFloat
+	}
+	if r == '"' || isAlpha(r) {
+		l.unbackup()
+		return l.fail("invalid syntax `%s`", l.current())
 	}
 	l.emit(tINT)
 	return lexStart
@@ -340,6 +355,10 @@ func lexNumber(l *lexer) stateFn {
 func lexHex(l *lexer) stateFn {
 	l.acceptRun(hexdigits)
 	// omitting hex floats
+	if r := l.peek(); r == '.' || r == '"' || isAlpha(r) {
+		l.unbackup()
+		return l.fail("invalid syntax `%s`", l.current())
+	}
 	l.emit(tINT)
 	return lexStart
 }
@@ -357,6 +376,10 @@ func lexFloat(l *lexer) stateFn {
 		if !ok {
 			return l.fail("need more digits for an exponent")
 		}
+	}
+	if r := l.peek(); r == '"' || isAlpha(r) {
+		l.unbackup()
+		return l.fail("invalid syntax `%s`", l.current())
 	}
 	l.emit(tFLOAT)
 	return lexStart
@@ -376,6 +399,10 @@ loop:
 		case '"':
 			break loop
 		}
+	}
+	if r := l.peek(); isAlphaNum(r) {
+		l.unbackup()
+		return l.fail("invalid syntax `%s`", l.current())
 	}
 	l.emit(tSTR)
 	return lexStart

@@ -20,9 +20,14 @@ type tt = []token
 
 func teof(pos int) token  { return token{tEOF, "", nil, pos} }
 func tfail(pos int) token { return token{tFAIL, "", nil, pos} }
-func terrchar(c rune, line int) token {
-	return token{tERR, "", fmt.Errorf("unknown char %#U", c), line}
+func terrchar(c rune, pos int) token {
+	return token{tERR, "", fmt.Errorf("unknown char %#U", c), pos}
 }
+func terrinvalid(s string, pos int) token {
+	return token{tERR, "", fmt.Errorf("invalid syntax `%s`", s), pos}
+}
+
+var errUnterminatedQuote = fmt.Errorf("unterminated quoted string")
 
 var lexTab = []struct {
 	i      int
@@ -32,11 +37,11 @@ var lexTab = []struct {
 	{0, "", tt{teof(0)}},
 
 	{1, "@", tt{terrchar('@', 1), tfail(1)}},
-	{2, `"`, tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 1}, tfail(1)}},
-	{3, "\"\n", tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 2}, tfail(2)}},
-	{4, "\"\n", tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 2}, tfail(2)}},
-	{5, `"\`, tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 2}, tfail(2)}},
-	{6, `"\a`, tt{{tERR, "", fmt.Errorf("unterminated quoted string"), 3}, tfail(3)}},
+	{2, `"`, tt{{tERR, "", errUnterminatedQuote, 1}, tfail(1)}},
+	{3, "\"\n", tt{{tERR, "", errUnterminatedQuote, 2}, tfail(2)}},
+	{4, "\"\n", tt{{tERR, "", errUnterminatedQuote, 2}, tfail(2)}},
+	{5, `"\`, tt{{tERR, "", errUnterminatedQuote, 2}, tfail(2)}},
+	{6, `"\a`, tt{{tERR, "", errUnterminatedQuote, 3}, tfail(3)}},
 
 	{7, `1234`, tt{{tINT, "1234", nil, 4}, teof(4)}},
 	{8, `12.34`, tt{{tFLOAT, "12.34", nil, 5}, teof(5)}},
@@ -52,7 +57,7 @@ var lexTab = []struct {
 
 	{18, `0x10`, tt{{tINT, "0x10", nil, 4}, teof(4)}},
 	{19, `0X10`, tt{{tINT, "0X10", nil, 4}, teof(4)}},
-	{20, `0x10.0`, tt{{tINT, "0x10", nil, 4}, terrchar('.', 5), tfail(5)}},
+	{20, `0x10.0`, tt{terrinvalid("0x10.", 5), tfail(5)}},
 
 	{21, `>`, tt{{tGT, ">", nil, 1}, teof(1)}},
 	{22, `>=`, tt{{tGE, ">=", nil, 2}, teof(2)}},
@@ -96,6 +101,20 @@ var lexTab = []struct {
 		{tIDENT, "foobar", nil, 6}, {tIDENT, "quux1", nil, 12},
 		{tIDENT, "finito", nil, 19}, teof(19),
 	}},
+
+	{44, "a42", tt{{tIDENT, "a42", nil, 3}, teof(3)}},
+	{45, `"foo"`, tt{{tSTR, `"foo"`, nil, 5}, teof(5)}},
+
+	{46, "42q", tt{terrinvalid("42q", 3), tfail(3)}},
+	{47, `42"q"`, tt{terrinvalid(`42"`, 3), tfail(3)}},
+	{48, "42.0q", tt{terrinvalid("42.0q", 5), tfail(5)}},
+	{49, "0x42q", tt{terrinvalid("0x42q", 5), tfail(5)}},
+	{50, `42.0"q"`, tt{terrinvalid(`42.0"`, 5), tfail(5)}},
+	{51, `0x42"q"`, tt{terrinvalid(`0x42"`, 5), tfail(5)}},
+	{52, `var"q"`, tt{terrinvalid(`var"`, 4), tfail(4)}},
+	{53, `foo"q"`, tt{terrinvalid(`foo"`, 4), tfail(4)}},
+	{54, `"foo"1`, tt{terrinvalid(`"foo"1`, 6), tfail(6)}},
+	{55, `"foo"q`, tt{terrinvalid(`"foo"q`, 6), tfail(6)}},
 }
 
 func TestLexerSingleInput(t *testing.T) {
