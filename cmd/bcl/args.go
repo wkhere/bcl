@@ -127,7 +127,7 @@ flags:
 	if a.bload {
 		switch {
 		case a.file == "" && a.bloadFile == "":
-			// logic below to load prog from stdin
+			// will use stdin; handled outside of this switch
 		case a.file != "" && a.bloadFile != "":
 			return a, fmt.Errorf("conflicting BFILE and FILE\n%s", usage)
 		case a.file == "" && a.bloadFile != "":
