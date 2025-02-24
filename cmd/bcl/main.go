@@ -52,7 +52,7 @@ func run(a *parsedArgs) (err error) {
 		}
 	}
 
-	res, err := bcl.Execute(
+	res, binding, err := bcl.Execute(
 		prog,
 		bcl.OptTrace(a.trace),
 		bcl.OptStats(a.stats),
@@ -61,7 +61,8 @@ func run(a *parsedArgs) (err error) {
 		return err
 	}
 	if a.result {
-		fmt.Printf("result: %+v\n", res)
+		fmt.Printf("result:  %+v\n", res)
+		fmt.Printf("binding: %+v\n", binding)
 	}
 	return nil
 }

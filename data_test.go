@@ -24,7 +24,7 @@ var big1 []byte
 var badbig1 []byte
 
 func TestBasicBytes(t *testing.T) {
-	_, err := bcl.Interpret(basicInput)
+	_, _, err := bcl.Interpret(basicInput)
 	if err != nil {
 		t.Error(err)
 	}
@@ -47,7 +47,7 @@ func TestBasicDisasm(t *testing.T) {
 
 func TestBasicFile(t *testing.T) {
 	r := reader{bytes.NewReader(basicInput)}
-	_, err := bcl.InterpretFile(r)
+	_, _, err := bcl.InterpretFile(r)
 	if err != nil {
 		t.Error(err)
 	}

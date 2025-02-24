@@ -9,7 +9,7 @@ import (
 
 type vmConfig struct{ trace bool }
 
-func execute(p *Prog, cf vmConfig) ([]Block, execStats, error) {
+func execute(p *Prog, cf vmConfig) ([]Block, Binding, execStats, error) {
 	vm := &vm{
 		output: p.output,
 		trace:  cf.trace,
@@ -19,7 +19,7 @@ func execute(p *Prog, cf vmConfig) ([]Block, execStats, error) {
 	err := vm.run()
 
 	vm.stats.pcFinal = vm.pc
-	return vm.result, vm.stats, err
+	return vm.result, vm.binding, vm.stats, err
 }
 
 type vm struct {
@@ -34,7 +34,8 @@ type vm struct {
 	blockStack [blockStackSize]Block
 	blockTos   int
 
-	result []Block
+	result  []Block
+	binding Binding
 
 	stats execStats
 }
@@ -287,6 +288,54 @@ func (vm *vm) run() error {
 			// ( x -- x )
 			name := readConst().(string)
 			blockSet(name, peek(0))
+
+		case opBIND:
+			// ( -- )
+			blockType := readConst().(string)
+			bindOpt := readByte()
+			selector := bindSelector(bindOpt & 0x0F)
+			target := bindTarget(bindOpt & 0xF0)
+
+			blocks := make([]Block, 0, 1)
+			for _, b := range vm.result {
+				if b.Type == blockType {
+					blocks = append(blocks, b)
+				}
+			}
+			if len(blocks) == 0 {
+				return vm.runtimeError("no blocks of type %s", blockType)
+			}
+			if len(blocks) != 1 && selector == bindOne {
+				return vm.runtimeError(
+					"found %d blocks of type %s but expected just 1", len(blocks), blockType,
+				)
+			}
+
+			switch {
+			case target == bindStruct && selector == bindOne:
+				fallthrough
+
+			case target == bindStruct && selector == bindFirst:
+				vm.binding = StructBinding{Value: blocks[0]}
+
+			case target == bindStruct && selector == bindLast:
+				vm.binding = StructBinding{Value: blocks[len(blocks)-1]}
+
+			case target == bindSlice && selector == bindAll:
+				vm.binding = SliceBinding{Value: blocks}
+
+			case target == bindSlice && selector == bindOne:
+				fallthrough
+
+			case target == bindSlice && selector == bindFirst:
+				vm.binding = SliceBinding{Value: blocks[:1]}
+
+			case target == bindSlice && selector == bindLast:
+				vm.binding = SliceBinding{Value: blocks[len(blocks)-1:]}
+
+			default:
+				return vm.runtimeError("invalid bind target and selector :0x%2x", bindOpt)
+			}
 
 		case opRET:
 			// ( -- )

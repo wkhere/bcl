@@ -42,6 +42,9 @@ const (
 	opJFALSE
 	opPOP
 	opPOPN
+
+	// since bytecode 1.1:
+	opBIND
 )
 
 //go:generate stringer -type opcode -trimprefix op

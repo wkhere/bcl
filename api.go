@@ -2,10 +2,10 @@
 // and storing the evaluated result in dynamic Blocks or static structs.
 //
 //   - [Interpret] or [InterpretFile] parses and executes definitions
-//     from a BCL file, then creates Blocks
-//   - [CopyBlocks] takes Blocks and saves the content in static Go structs
-//   - [Unmarshal] = [Interpret] + [CopyBlocks]
-//   - [UnmarshalFile] = [InterpretFile] + [CopyBlocks]
+//     from a BCL file, then creates blocks and their binding
+//   - [Bind] takes blocks binding and saves the content in static Go structs
+//   - [Unmarshal] = [Interpret] + [Bind]
+//   - [UnmarshalFile] = [InterpretFile] + [Bind]
 //
 // It is also possible to first [Parse], creating [Prog], and then [Execute] it.
 //   - [Interpret] = [Parse] + [Execute]
@@ -117,39 +117,40 @@ func LoadProg(r io.Reader, name string, opts ...Option) (*Prog, error) {
 }
 
 // Execute executes the Prog, creating Blocks.
-func Execute(prog *Prog, opts ...Option) (result []Block, err error) {
+func Execute(prog *Prog, opts ...Option) (result []Block, binding Binding, err error) {
 	cf := makeConfig(opts)
 
-	result, xstats, err := execute(prog, vmConfig{cf.trace})
+	result, binding, xstats, err := execute(prog, vmConfig{cf.trace})
 	if cf.stats {
 		printXStats(cf.output, xstats)
 	}
-	return result, err
+	return result, binding, err
 }
 
 // Interpret parses and executes the BCL input, creating Blocks.
-func Interpret(input []byte, opts ...Option) ([]Block, error) {
+func Interpret(input []byte, opts ...Option) ([]Block, Binding, error) {
 	p, err := Parse(input, "input", opts...)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	return Execute(p, opts...)
 }
 
 // InterpretFile reads, parses and executes the input from a BCL file.
 // The file will be closed as soon as possible.
-func InterpretFile(f FileInput, opts ...Option) ([]Block, error) {
+func InterpretFile(f FileInput, opts ...Option) ([]Block, Binding, error) {
 	p, err := ParseFile(f, opts...)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	return Execute(p, opts...)
 }
 
-// CopyBlocks copies the blocks to the dest,
-// which needs to be a pointer to a slice of structs.
+// Bind binds the blocks selection (defined via binding) to the target.
+// Target can be actually a struct or a slice of structs, and must correspond
+// to a concrete Binding implementation, right now: StructBinding or SliceBinding.
 //
-// The requirements for the struct are:
+// When inside the struct (or the slice), the requirements are:
 //   - struct type name should correspond to the BCL block type
 //   - struct needs the Name string field
 //   - for each block field, struct needs a corresponding field, of type as
@@ -170,29 +171,30 @@ func InterpretFile(f FileInput, opts ...Option) ([]Block, error) {
 // The lack of corresponding fields in the Go struct is reported as error.
 // So is type mismatch of the fields.
 //
-// If the slice pointed by dest contained any elements, they are overwritten.
-func CopyBlocks(dest any, blocks []Block) error {
-	return copyBlocks(dest, blocks)
+// If the binding type is a slice, and a slice pointed by target
+// contained any elements, they are overwritten.
+func Bind(target any, binding Binding) error {
+	return copyBlocks(target, binding)
 }
 
-// Unmarshal interprets the BCL input, and stores the result in dest,
-// which should be a slice of structs.
-// See [CopyBlocks] for a struct format.
-func Unmarshal(input []byte, dest any) error {
-	res, err := Interpret(input)
+// Unmarshal interprets the BCL input and stores the blocks selected via 'bind' statement
+// in the target.
+// See [Bind] for details.
+func Unmarshal(input []byte, target any) error {
+	_, binding, err := Interpret(input)
 	if err != nil {
 		return err
 	}
-	return CopyBlocks(dest, res)
+	return Bind(target, binding)
 }
 
-// UnmarshalFile interprets the BCL file and stores the result in dest,
-// which should be a slice of structs.
-// See [CopyBlocks] for a struct format.
-func UnmarshalFile(f FileInput, dest any) error {
-	res, err := InterpretFile(f)
+// UnmarshalFile interprets the BCL file and stores the blocks selected via 'bind' statement
+// in the target.
+// See [Bind] for details.
+func UnmarshalFile(f FileInput, target any) error {
+	_, binding, err := InterpretFile(f)
 	if err != nil {
 		return err
 	}
-	return CopyBlocks(dest, res)
+	return Bind(target, binding)
 }

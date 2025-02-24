@@ -6,26 +6,47 @@ import (
 	"strings"
 )
 
-func copyBlocks(dest any, blocks []Block) error {
-	destPtr := reflect.ValueOf(dest)
-	if destPtr.Kind() != reflect.Pointer {
-		return TypeErr("expected pointer to a slice of structs")
+func copyBlocks(target any, binding Binding) error {
+	if binding == nil {
+		return fmt.Errorf("no binding")
 	}
 
-	destSlice := destPtr.Elem()
-	if destSlice.Kind() != reflect.Slice {
-		return TypeErr("expected pointer to a slice of structs")
+	targetPtr := reflect.ValueOf(target)
+	if targetPtr.Kind() != reflect.Pointer {
+		return TypeErr("expected pointer")
 	}
 
-	newSlice := reflect.MakeSlice(destSlice.Type(), len(blocks), len(blocks))
-	for i, block := range blocks {
-		err := copyBlock(newSlice.Index(i), block)
-		if err != nil {
-			return err
+	switch b := binding.(type) {
+
+	case StructBinding:
+		targetStruct := targetPtr.Elem()
+		if targetStruct.Kind() != reflect.Struct {
+			return TypeErr("expected pointer to a struct")
 		}
+
+		return copyBlock(targetStruct, b.Value)
+
+	case SliceBinding:
+		targetSlice := targetPtr.Elem()
+		if targetSlice.Kind() != reflect.Slice {
+			return TypeErr("expected pointer to a slice of structs")
+		}
+
+		blocks := b.Value
+		newSlice := reflect.MakeSlice(targetSlice.Type(), len(blocks), len(blocks))
+		for i, block := range blocks {
+			err := copyBlock(newSlice.Index(i), block)
+			if err != nil {
+				return err
+			}
+		}
+
+		targetSlice.Set(newSlice)
+
+	default:
+		return fmt.Errorf("unknown binding type %T", binding)
 	}
 
-	destSlice.Set(newSlice)
 	return nil
 }
 

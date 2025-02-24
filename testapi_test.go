@@ -398,6 +398,10 @@ func TestInterpretFromPy(t *testing.T) {
 		{`124.8`, `eval foo"q"`, "", false, true, fmt.Sprintf(`invalid syntax %[1]cfoo"%[1]c`, '`')},
 		{`124.9`, `eval "foo"1`, "", false, true, fmt.Sprintf(`invalid syntax %[1]c"foo"1%[1]c`, '`')},
 		{`124.10`, `eval "foo"q`, "", false, true, fmt.Sprintf(`invalid syntax %[1]c"foo"q%[1]c`, '`')},
+		{`125.1`, `def b {}; bind b -> struct`, "== /dev/stdin ==\n0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n0003    1:9  ENDBLOCK\n0004   1:27  BIND          0 'b'\t0x11\n0007      |  RET", true, false, ""},
+		{`125.2`, `def b {}; bind b -> slice`, "== /dev/stdin ==\n0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n0003    1:9  ENDBLOCK\n0004   1:26  BIND          0 'b'\t0x21\n0007      |  RET", true, false, ""},
+		{`125.3`, `def b {}; def b{x=1}; bind b:last -> slice`, "== /dev/stdin ==\n0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n0003    1:9  ENDBLOCK\n0004   1:17  DEFBLOCK      0 'b'\t   1 ''\n0007   1:20  ONE\n0008      |  SETFIELD      2 'x'\n0010      |  POP\n0011   1:21  ENDBLOCK\n0012   1:43  BIND          0 'b'\t0x23\n0015      |  RET", true, false, ""},
+		{`125.4`, `def b {}; def b{x=1}; bind b:all -> slice`, "== /dev/stdin ==\n0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n0003    1:9  ENDBLOCK\n0004   1:17  DEFBLOCK      0 'b'\t   1 ''\n0007   1:20  ONE\n0008      |  SETFIELD      2 'x'\n0010      |  POP\n0011   1:21  ENDBLOCK\n0012   1:42  BIND          0 'b'\t0x2F\n0015      |  RET", true, false, ""},
 		{`122.1-64`, `print  9223372036854775807-1`, "9223372036854775806", false, false, ""},
 		{`122.2-64`, `print -9223372036854775807+1`, "-9223372036854775806", false, false, ""},
 	}
@@ -409,7 +413,7 @@ func TestInterpretFromPy(t *testing.T) {
 			out := new(bytes.Buffer)
 			log := new(bytes.Buffer)
 
-			_, err := bcl.InterpretFile(
+			_, _, err := bcl.InterpretFile(
 				inp,
 				bcl.OptDisasm(tc.disasm),
 				bcl.OptOutput(out), bcl.OptLogger(log),

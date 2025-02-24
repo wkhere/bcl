@@ -25,6 +25,7 @@ const (
 	tDEF
 	tEVAL
 	tPRINT
+	tBIND
 	tTRUE
 	tFALSE
 	tNIL
@@ -51,6 +52,9 @@ const (
 	tMINUS
 	tSTAR
 	tSLASH
+
+	tCOLON
+	tARROW
 
 	tSEMICOLON
 

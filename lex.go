@@ -205,6 +205,7 @@ var keywords = map[string]tokenType{
 	"def":   tDEF,
 	"eval":  tEVAL,
 	"print": tPRINT,
+	"bind":  tBIND,
 	"true":  tTRUE,
 	"false": tFALSE,
 	"nil":   tNIL,
@@ -223,6 +224,7 @@ var twoRuneTokens = map[rune]twoRuneMatch{
 	'!': {'=', tBE},
 	'<': {'=', tLE},
 	'>': {'=', tGE},
+	'-': {'>', tARROW},
 }
 
 var oneRuneTokens = map[rune]tokenType{
@@ -239,6 +241,7 @@ var oneRuneTokens = map[rune]tokenType{
 	'-': tMINUS,
 	'*': tSTAR,
 	'/': tSLASH,
+	':': tCOLON,
 	';': tSEMICOLON,
 }
 

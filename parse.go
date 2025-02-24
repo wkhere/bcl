@@ -130,6 +130,8 @@ func stmt(p *parser) {
 		exprStmt(p)
 	case p.match(tDEF):
 		blockStmt(p)
+	case p.match(tBIND):
+		bindStmt(p)
 	case p.scope.depth > 0:
 		exprStmt(p)
 	default:
@@ -171,6 +173,71 @@ func blockStmt(p *parser) {
 		return
 	}
 	p.consume(tRCURLY, "expected '}'")
+}
+
+func bindStmt(p *parser) {
+	p.consume(tIDENT, "expected block type")
+	if p.panicMode {
+		return
+	}
+
+	blockType := p.prev.val
+	bindSel := bindOne
+
+	errmsg := "expected 1,first,last,all as a block selector"
+	if p.match(tCOLON) {
+		switch {
+		case p.match(tINT):
+			if p.prev.val != "1" {
+				p.error(errmsg)
+			}
+			bindSel = bindOne
+		case p.match(tIDENT):
+			switch p.prev.val {
+			case "first":
+				bindSel = bindFirst
+			case "last":
+				bindSel = bindLast
+			case "all":
+				bindSel = bindAll
+			default:
+				p.error(errmsg)
+			}
+		default:
+			p.errorAtCurrent(errmsg)
+		}
+	}
+
+	p.consume(tARROW, "expected '->'")
+	if p.panicMode {
+		return
+	}
+
+	errmsg = "expected bind target ('struct' or 'slice')"
+	p.consume(tIDENT, errmsg)
+	if p.panicMode {
+		return
+	}
+
+	var target bindTarget
+	switch p.prev.val {
+	case "struct":
+		target = bindStruct
+	case "slice":
+		target = bindSlice
+	default:
+		p.error(errmsg)
+	}
+	if bindSel == bindAll && target != bindSlice {
+		p.error("bind of multiple blocks requires slice target")
+	}
+	if p.panicMode {
+		return
+	}
+
+	p.emitOp(opBIND)
+	p.emitUvarint(p.identConst(blockType))
+	p.emitByte(byte(target&0xF0) | byte(bindSel&0x0F))
 }
 
 func printStmt(p *parser) {

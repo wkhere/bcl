@@ -415,6 +415,49 @@ tests = [
     ['124.8',   'eval foo"q"', '',   'err: invalid syntax `foo"`'],
     ['124.9',   'eval "foo"1', '',   'err: invalid syntax `"foo"1`'],
     ['124.10',  'eval "foo"q', '',   'err: invalid syntax `"foo"q`'],
+
+    ['125.1',   'def b {}; bind b -> struct',
+        "== /dev/stdin ==\n"
+        "0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
+        "0003    1:9  ENDBLOCK\n"
+        "0004   1:27  BIND          0 'b'\t0x11\n"
+        "0007      |  RET",
+        'disasm'
+    ],
+    ['125.2',   'def b {}; bind b -> slice',
+        "== /dev/stdin ==\n"
+        "0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
+        "0003    1:9  ENDBLOCK\n"
+        "0004   1:26  BIND          0 'b'\t0x21\n"
+        "0007      |  RET",
+        'disasm'
+    ],
+    ['125.3',   'def b {}; def b{x=1}; bind b:last -> slice',
+        "== /dev/stdin ==\n"
+        "0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
+        "0003    1:9  ENDBLOCK\n"
+        "0004   1:17  DEFBLOCK      0 'b'\t   1 ''\n"
+        "0007   1:20  ONE\n"
+        "0008      |  SETFIELD      2 'x'\n"
+        "0010      |  POP\n"
+        "0011   1:21  ENDBLOCK\n"
+        "0012   1:43  BIND          0 'b'\t0x23\n"
+        "0015      |  RET",
+        'disasm'
+    ],
+    ['125.4',   'def b {}; def b{x=1}; bind b:all -> slice',
+        "== /dev/stdin ==\n"
+        "0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
+        "0003    1:9  ENDBLOCK\n"
+        "0004   1:17  DEFBLOCK      0 'b'\t   1 ''\n"
+        "0007   1:20  ONE\n"
+        "0008      |  SETFIELD      2 'x'\n"
+        "0010      |  POP\n"
+        "0011   1:21  ENDBLOCK\n"
+        "0012   1:42  BIND          0 'b'\t0x2F\n"
+        "0015      |  RET",
+        'disasm'
+    ],
 ]
 
 tests_64b = [
@@ -527,7 +570,7 @@ part2 = r""" }
             out := new(bytes.Buffer)
             log := new(bytes.Buffer)
 
-            _, err := bcl.InterpretFile(
+            _, _, err := bcl.InterpretFile(
                 inp,
                 bcl.OptDisasm(tc.disasm),
                 bcl.OptOutput(out), bcl.OptLogger(log),

@@ -57,7 +57,7 @@ func (p *Prog) count() int { return len(p.code) }
 const (
 	bytecodeMagic       = "\xFC\x6C"
 	bytecodeMajor uint8 = 1
-	bytecodeMinor uint8 = 0
+	bytecodeMinor uint8 = 1
 )
 
 func (prog *Prog) Dump(dest io.Writer) error {

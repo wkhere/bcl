@@ -115,6 +115,16 @@ var lexTab = []struct {
 	{53, `foo"q"`, tt{terrinvalid(`foo"`, 4), tfail(4)}},
 	{54, `"foo"1`, tt{terrinvalid(`"foo"1`, 6), tfail(6)}},
 	{55, `"foo"q`, tt{terrinvalid(`"foo"q`, 6), tfail(6)}},
+
+	{56, "bind foo:1 -> struct", tt{
+		{tBIND, "bind", nil, 4},
+		{tIDENT, "foo", nil, 8},
+		{tCOLON, ":", nil, 9},
+		{tINT, "1", nil, 10},
+		{tARROW, "->", nil, 13},
+		{tIDENT, "struct", nil, 20},
+		teof(20),
+	}},
 }
 
 func TestLexerSingleInput(t *testing.T) {

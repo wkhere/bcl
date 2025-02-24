@@ -46,6 +46,8 @@ def tunnel "myservice-prod" {
 		max_latency = 8.5 # [ms]
 	}
 }
+
+bind tunnel -> struct
 ```
 Go:
 ```Go
@@ -59,19 +61,19 @@ type Tunnel struct {
 		MaxLatency float64
 	}
 }
-var config []Tunnel
+var config Tunnel
 
 err := bcl.UnmarshalFile(file, &config)
 fmt.Println(strings.ReplaceAll(fmt.Sprintf("%+v", config), " ", "\n  "))
 ```
 Output:
 ```
-[{Name:myservice-prod
+{Name:myservice-prod
   Host:prod.acme.com
   LocalPort:9401
   RemotePort:8400
   Enabled:true
-  Extras:{MaxLatency:8.5}}]
+  Extras:{MaxLatency:8.5}}
 ```
 ### Syntax
 
@@ -81,7 +83,7 @@ A basic statement is `def block_type [block_name] {...}` to define a block with
 `field = value` expressions inside.
 Such block after running [Interpret] will be available as 
 a [Block] with a map of fields,
-and can be further put into a static Go struct via [CopyBlocks] or [Unmarshal].
+and can be put into a static Go struct via [Bind] or [Unmarshal].
 Blocks can be nested.
 
 Both toplevel scope and a block can have variables created with 
@@ -210,5 +212,5 @@ xstats.pcFinal:       20
 [strange limitations]: https://stackoverflow.com/a/73745980/229154
 [Block]: https://pkg.go.dev/github.com/wkhere/bcl#Block
 [Interpret]:  https://pkg.go.dev/github.com/wkhere/bcl#Interpret
-[CopyBlocks]: https://pkg.go.dev/github.com/wkhere/bcl#CopyBlocks
+[Bind]:       https://pkg.go.dev/github.com/wkhere/bcl#Bind
 [Unmarshal]:  https://pkg.go.dev/github.com/wkhere/bcl#Unmarshal
