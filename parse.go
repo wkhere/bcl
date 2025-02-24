@@ -123,15 +123,16 @@ func varDecl(p *parser) {
 }
 
 func stmt(p *parser) {
-	if p.match(tPRINT) {
+	switch {
+	case p.match(tPRINT):
 		printStmt(p)
-	} else if p.match(tEVAL) {
+	case p.match(tEVAL):
 		exprStmt(p)
-	} else if p.match(tDEF) {
+	case p.match(tDEF):
 		blockStmt(p)
-	} else if p.scope.depth > 0 {
+	case p.scope.depth > 0:
 		exprStmt(p)
-	} else {
+	default:
 		p.errorAtCurrent("expected statement")
 	}
 }
