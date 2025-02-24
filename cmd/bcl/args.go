@@ -115,8 +115,8 @@ flags:
 	if a.bdump && a.bdumpFile == "" {
 		if !strings.HasSuffix(a.file, ".bcl") {
 			return a, fmt.Errorf(
-				"--bdump requires knowing bfile name, "+
-					"either given as a flag, or derived from BCL file name"+
+				"--bdump requires knowing BFILE name, "+
+					"either given as a flag, or derived from FILE"+
 					"\n%s",
 				usage,
 			)
