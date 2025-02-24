@@ -1,3 +1,8 @@
+### v0.10.11
+* test.py: allow backticks in error messages
+* lex: return syntax errors for "skicky tokens"
+* cmd/bcl: better error for --bdump flag
+
 ### v0.10.10
 * fix TestEarlyParseErr where intentional error was printed
 * improve test.py
