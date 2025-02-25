@@ -70,6 +70,8 @@ more on errors:
   from the block type, there is no way to bind it - struct tag is only about
   the name/key
 
-- marshal/dump, also with reflection
-
 + reflection revamp
+  - document bind syntax in the readme
+  - print warning when bind statement is repeated
+  - provide binding from the command-line
+  - dump (marshal) Go structures to BCL; ofc, with corresponding bind statement
