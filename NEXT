@@ -15,8 +15,12 @@ more on errors:
 - builtin functions:
   - getenv(key)
   - cmd(...) to run commands and catch the output!
+- more syntax:
   - simple type conversions: 42 @str, expr @bool
-  - consider replacing cmd & type conversions with sigils
+  - alt synatx: 42:str, expr:bool
+- consider replacing cmd & type conversions with sigils
+- more types:
+	- dt (time.Duration)
 
 + fix: when a field is defined more than once, only the last clause
   is evaluated; should evaluate all then overwrite with the last one
