@@ -1,3 +1,10 @@
+### v0.12.0 "bind polishing"
+* API change: Unmarshal/UnmarshalFile with variadic options
+* API change: remove TypeErr, StructErr
+* bind improvements: errors, warnings, tests, docs
+* silence expected errors in reflect tests / benchmarks
+* encoding fix: always write typeNIL
+
 ### v0.11.0
 * bind syntax
 * API change: Execute/Interpret return Binding as well
