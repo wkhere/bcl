@@ -148,7 +148,7 @@ func InterpretFile(f FileInput, opts ...Option) ([]Block, Binding, error) {
 
 // Bind binds the blocks selection (defined via binding) to the target.
 // Target can be actually a struct or a slice of structs, and must correspond
-// to a concrete Binding implementation, right now: StructBinding or SliceBinding.
+// to a concrete Binding implementation, right now: [StructBinding] or [SliceBinding].
 //
 // When inside the struct (or the slice), the requirements are:
 //   - struct type name should correspond to the BCL block type
