@@ -29,6 +29,7 @@
 ### v0.10.5
 * ParseFile: cancel reads on lex errors; fix more data races
 * fix rare case of token leftover at end
+
 This version solves a number of nontrivial concurrency and buffering issues.
 
 ### v0.10.4
