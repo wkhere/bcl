@@ -55,8 +55,10 @@ bind tunnel -> struct
 bind tunnel:last -> struct
 bind tunnel:first -> struct
 bind tunnel:"name" -> struct
-bind tunnel:* -> slice
+bind tunnel:all -> slice
 bind tunnel:"name1","name2" -> slice
+
+Note: enumerating blocks by name is not implemented yet.
 
 Rules for bind targets based on a target type:
 - struct: target is a ptr-to-struct of a type matching the block type
