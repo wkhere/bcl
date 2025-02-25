@@ -125,17 +125,6 @@ fields:
 	return nil
 }
 
-func unsnakeMatcher(snake string) func(string) bool {
-	u := strings.ReplaceAll(snake, "_", "")
-	return func(s string) bool {
-		return strings.EqualFold(s, u)
-	}
-}
-
-func unsnakeEq(orig, snake string) bool {
-	return unsnakeMatcher(snake)(orig)
-}
-
 type fieldMappingErr string
 
 func (e fieldMappingErr) Error() string { return string(e) }
