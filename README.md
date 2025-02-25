@@ -62,7 +62,6 @@ type Tunnel struct {
 var config []Tunnel
 
 err := bcl.UnmarshalFile(file, &config)
-// handle err
 fmt.Println(strings.ReplaceAll(fmt.Sprintf("%+v", config), " ", "\n  "))
 ```
 Output:
