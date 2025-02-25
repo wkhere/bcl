@@ -94,6 +94,7 @@ func valueToBytes(p []byte, v value) (n int) {
 
 	default:
 		if v == nil {
+			p[0] = byte(typeNIL)
 			return 1 + 0 // don't emit nil value, just the type
 		}
 		panic(errInvalidValue{v})
