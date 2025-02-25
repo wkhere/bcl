@@ -72,6 +72,6 @@ more on errors:
 
 + reflection revamp
   - document bind syntax in the readme
-  - print warning when bind statement is repeated
+  + print warning when bind statement is repeated
   - provide binding from the command-line
   - dump (marshal) Go structures to BCL; ofc, with corresponding bind statement

@@ -29,6 +29,7 @@ type vm struct {
 	tos   int
 
 	output io.Writer
+	log    io.Writer
 	trace  bool
 
 	blockStack [blockStackSize]Block
@@ -291,6 +292,10 @@ func (vm *vm) run() error {
 
 		case opBIND:
 			// ( -- )
+			if vm.binding != nil {
+				vm.warning("repeated bind statement, last one overrides")
+			}
+
 			blockType := readConst().(string)
 			bindOpt := readByte()
 			selector := bindSelector(bindOpt & 0x0F)
@@ -356,6 +361,13 @@ func (vm *vm) runtimeError(format string, a ...any) error {
 	fmt.Fprintf(b, "runtime error: line %s: ", vm.prog.linePos.format(pos))
 	fmt.Fprintf(b, format, a...)
 	return &runtimeErr{b.String()}
+}
+
+func (vm *vm) warning(format string, a ...any) {
+	pos := vm.prog.positions[vm.pc-1]
+	w := vm.prog.log
+	fmt.Fprintf(w, "WARNING: line %s: ", vm.prog.linePos.format(pos))
+	fmt.Fprintf(w, format+"\n", a...)
 }
 
 func (b *Block) key() string {

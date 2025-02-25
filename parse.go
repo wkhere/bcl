@@ -1,15 +1,10 @@
 package bcl
 
 import (
-	"io"
 	"strconv"
 )
 
-type parseConfig struct {
-	outw, logw io.Writer
-}
-
-func parse(inputs <-chan string, name string, cf parseConfig) (
+func parse(inputs <-chan string, name string, w writers) (
 	*Prog,
 	parseStats, error,
 ) {
@@ -18,14 +13,14 @@ func parse(inputs <-chan string, name string, cf parseConfig) (
 	p := &parser{
 		linePos: linePos,
 		lexer:   newLexer(inputs, linePos.add),
-		prog:    newProg(name, cf.outw),
+		prog:    newProg(name, w),
 
 		identRefs: make(map[string]int, 8),
 		// identRefs are for reusing block types & fields and selected consts
 
 		scope: new(scopeCompiler),
 
-		log: logger{cf.logw},
+		log: logger{w.logw},
 	}
 
 	p.prog.initForParse()

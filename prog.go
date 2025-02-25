@@ -13,13 +13,14 @@ type Prog struct {
 	positions []int
 	linePos   *lineCalc
 
-	output io.Writer
+	output, log io.Writer
 }
 
-func newProg(name string, output io.Writer) *Prog {
+func newProg(name string, w writers) *Prog {
 	return &Prog{
 		name:   name,
-		output: output,
+		output: w.outw,
+		log:    w.logw,
 	}
 }
 

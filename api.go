@@ -95,7 +95,7 @@ func ParseFile(f FileInput, opts ...Option) (prog *Prog, _ error) {
 func parseWithOpts(inputs <-chan string, name string, opts []Option) (*Prog, error) {
 	cf := makeConfig(opts)
 
-	prog, pstats, err := parse(inputs, name, parseConfig{cf.output, cf.logw})
+	prog, pstats, err := parse(inputs, name, writers{cf.output, cf.logw})
 	if err == nil && cf.disasm {
 		prog.disasm()
 	}
@@ -108,7 +108,7 @@ func parseWithOpts(inputs <-chan string, name string, opts []Option) (*Prog, err
 func LoadProg(r io.Reader, name string, opts ...Option) (*Prog, error) {
 	cf := makeConfig(opts)
 
-	prog := newProg(name, cf.output)
+	prog := newProg(name, writers{cf.output, cf.logw})
 	err := prog.Load(r)
 	if err == nil && cf.disasm {
 		prog.disasm()
