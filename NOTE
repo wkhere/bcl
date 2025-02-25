@@ -50,12 +50,12 @@ bind <block_type>:<block_selector> -> <target_type>
 
 Examples:
 bind tunnel:1 -> struct   # must be just 1 block of type tunnel; same as:
-bind tunnel -> struct
+bind tunnel   -> struct
 
-bind tunnel:last -> struct
+bind tunnel:last  -> struct
 bind tunnel:first -> struct
+bind tunnel:all   -> slice
 bind tunnel:"name" -> struct
-bind tunnel:all -> slice
 bind tunnel:"name1","name2" -> slice
 
 Note: enumerating blocks by name is not implemented yet.
@@ -65,6 +65,6 @@ Rules for bind targets based on a target type:
 - slice:  target is a ptr-to-slice of structs of a type matching the block type
 
 Bind rule can be defined only at the toplevel and correspond to blocks defined
-before. (VM instruction impl should use already existing []Block).
+before. (VM instruction impl should use already evaluated []Block).
 
 Subsequent bind rule ovverrides previous one and should generate a warning.
