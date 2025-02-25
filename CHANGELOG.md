@@ -2,6 +2,7 @@
 * bind syntax
 * API change: Execute/Interpret return Binding as well
 * API change: CopyBlocks -> Bind
+* bytecode version 1.1
 
 This new mechanism gives a simple and robust way to bind parsed
 blocks to Go structs (single struct or a slice of structs).
