@@ -458,6 +458,12 @@ tests = [
         "0015      |  RET",
         'disasm'
     ],
+
+    ['126.1', 'bind x -> struct', '',                       'err: no blocks of type x'],
+    ['126.2', 'def x{}; def x{}; bind x -> struct', '',     'err: found 2 blocks of type x'],
+    ['126.3', 'def x{}; def x{}; bind x:1   -> struct', '', 'err: ound 2 blocks of type x'],
+    ['126.4', 'def x{}; def x{}; bind x:all -> struct', '', 'err: bind of multiple blocks'],
+    ['126.5', 'def x{}; bind x->slice; bind x->struct', ''],
 ]
 
 tests_64b = [

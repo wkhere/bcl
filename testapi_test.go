@@ -402,6 +402,11 @@ func TestInterpretFromPy(t *testing.T) {
 		{`125.2`, `def b {}; bind b -> slice`, "== /dev/stdin ==\n0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n0003    1:9  ENDBLOCK\n0004   1:26  BIND          0 'b'\t0x21\n0007      |  RET", true, false, ""},
 		{`125.3`, `def b {}; def b{x=1}; bind b:last -> slice`, "== /dev/stdin ==\n0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n0003    1:9  ENDBLOCK\n0004   1:17  DEFBLOCK      0 'b'\t   1 ''\n0007   1:20  ONE\n0008      |  SETFIELD      2 'x'\n0010      |  POP\n0011   1:21  ENDBLOCK\n0012   1:43  BIND          0 'b'\t0x23\n0015      |  RET", true, false, ""},
 		{`125.4`, `def b {}; def b{x=1}; bind b:all -> slice`, "== /dev/stdin ==\n0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n0003    1:9  ENDBLOCK\n0004   1:17  DEFBLOCK      0 'b'\t   1 ''\n0007   1:20  ONE\n0008      |  SETFIELD      2 'x'\n0010      |  POP\n0011   1:21  ENDBLOCK\n0012   1:42  BIND          0 'b'\t0x2F\n0015      |  RET", true, false, ""},
+		{`126.1`, `bind x -> struct`, "", false, true, `no blocks of type x`},
+		{`126.2`, `def x{}; def x{}; bind x -> struct`, "", false, true, `found 2 blocks of type x`},
+		{`126.3`, `def x{}; def x{}; bind x:1   -> struct`, "", false, true, `ound 2 blocks of type x`},
+		{`126.4`, `def x{}; def x{}; bind x:all -> struct`, "", false, true, `bind of multiple blocks`},
+		{`126.5`, `def x{}; bind x->slice; bind x->struct`, "", false, false, ""},
 		{`122.1-64`, `print  9223372036854775807-1`, "9223372036854775806", false, false, ""},
 		{`122.2-64`, `print -9223372036854775807+1`, "-9223372036854775806", false, false, ""},
 	}
