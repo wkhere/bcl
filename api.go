@@ -28,7 +28,7 @@ type FileInput interface {
 }
 
 // Block is a dynamic result of running BCL [Interpret].
-// It can be put into a static structure via [CopyBlocks].
+// It can be put into a static structure via [Bind].
 type Block struct {
 	Type, Name string
 	Fields     map[string]any
@@ -116,7 +116,7 @@ func LoadProg(r io.Reader, name string, opts ...Option) (*Prog, error) {
 	return prog, err
 }
 
-// Execute executes the Prog, creating Blocks.
+// Execute executes the Prog.
 func Execute(prog *Prog, opts ...Option) (result []Block, binding Binding, err error) {
 	cf := makeConfig(opts)
 
@@ -127,7 +127,7 @@ func Execute(prog *Prog, opts ...Option) (result []Block, binding Binding, err e
 	return result, binding, err
 }
 
-// Interpret parses and executes the BCL input, creating Blocks.
+// Interpret parses and executes the BCL input.
 func Interpret(input []byte, opts ...Option) ([]Block, Binding, error) {
 	p, err := Parse(input, "input", opts...)
 	if err != nil {
