@@ -13,7 +13,7 @@ func copyBlocks(target any, binding Binding) error {
 
 	targetPtr := reflect.ValueOf(target)
 	if targetPtr.Kind() != reflect.Pointer {
-		return TypeErr("expected pointer")
+		return fmt.Errorf("expected pointer")
 	}
 
 	switch b := binding.(type) {
@@ -21,7 +21,7 @@ func copyBlocks(target any, binding Binding) error {
 	case StructBinding:
 		targetStruct := targetPtr.Elem()
 		if targetStruct.Kind() != reflect.Struct {
-			return TypeErr("expected pointer to a struct")
+			return fmt.Errorf("expected pointer to a struct")
 		}
 
 		return copyBlock(targetStruct, b.Value)
@@ -29,7 +29,7 @@ func copyBlocks(target any, binding Binding) error {
 	case SliceBinding:
 		targetSlice := targetPtr.Elem()
 		if targetSlice.Kind() != reflect.Slice {
-			return TypeErr("expected pointer to a slice of structs")
+			return fmt.Errorf("expected pointer to a slice of structs")
 		}
 
 		blocks := b.Value
@@ -53,9 +53,7 @@ func copyBlocks(target any, binding Binding) error {
 func copyBlock(v reflect.Value, block Block) error {
 	t := v.Type()
 	if st, bt := t.Name(), block.Type; st != "" && !unsnakeEq(st, bt) {
-		return StructErr(
-			fmt.Sprintf("mismatch: struct type %s, block type %s", st, bt),
-		)
+		return fmt.Errorf("mismatch: struct type %s, block type %s", st, bt)
 	}
 
 	tagged := map[string]int{}
@@ -81,14 +79,12 @@ func copyBlock(v reflect.Value, block Block) error {
 			f, ok = t.FieldByNameFunc(unsnakeMatcher(name))
 		}
 		if !ok {
-			return StructErr(
+			return fieldMappingErr(
 				fmt.Sprintf("field mapping for %q not found in struct", name),
 			)
 		}
 		if !f.IsExported() {
-			return StructErr(
-				fmt.Sprintf("found field %q but is unexported", f.Name),
-			)
+			return fmt.Errorf("found field %q but is unexported", f.Name)
 		}
 
 		namei := f.Index[0]
@@ -99,12 +95,9 @@ func copyBlock(v reflect.Value, block Block) error {
 		}
 
 		if st, bt := f.Type, vx.Type(); !bt.AssignableTo(st) {
-			return StructErr(
-				fmt.Sprintf(
-					"type mismatch for the mapped field: "+
-						"struct.%s has %s, block.%s has %s",
-					f.Name, st, name, bt,
-				),
+			return fmt.Errorf(
+				"type mismatch for the mapped field: struct.%s has %s, block.%s has %s",
+				f.Name, st, name, bt,
 			)
 		}
 
@@ -114,9 +107,7 @@ func copyBlock(v reflect.Value, block Block) error {
 
 	err := setField("Name", block.Name)
 	if err != nil {
-		// todo: do better than string search for filtering the error
-		if se, ok := err.(StructErr); block.Name == "" && ok &&
-			strings.Contains(string(se), " not found ") {
+		if _, ok := err.(fieldMappingErr); block.Name == "" && ok {
 			goto fields
 		}
 		return err
@@ -142,11 +133,9 @@ func unsnakeEq(orig, snake string) bool {
 	return unsnakeMatcher(snake)(orig)
 }
 
-type TypeErr string
-type StructErr string
+type fieldMappingErr string
 
-func (e TypeErr) Error() string   { return string(e) }
-func (e StructErr) Error() string { return string(e) }
+func (e fieldMappingErr) Error() string { return string(e) }
 
 var blockType reflect.Type
 
