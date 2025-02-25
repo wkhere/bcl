@@ -1,6 +1,7 @@
 package bcl
 
 import (
+	"io"
 	"reflect"
 	"regexp"
 	"testing"
@@ -222,7 +223,7 @@ var reflectTab = []reflecttc{
 func TestReflect(t *testing.T) {
 	for i, tc := range reflectTab {
 
-		err := Unmarshal([]byte(tc.input), tc.dest)
+		err := Unmarshal([]byte(tc.input), tc.dest, OptLogger(io.Discard))
 
 		switch {
 		case err != nil && tc.errp == nil:
