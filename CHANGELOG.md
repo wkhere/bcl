@@ -1,3 +1,6 @@
+### v0.10.12
+* shorten license extra text (pkg.go.dev policy)
+
 ### v0.10.11
 * test.py: allow backticks in error messages
 * lex: return syntax errors for "skicky tokens"
