@@ -137,9 +137,4 @@ type fieldMappingErr string
 
 func (e fieldMappingErr) Error() string { return string(e) }
 
-var blockType reflect.Type
-
-func init() {
-	var b Block
-	blockType = reflect.TypeOf(b)
-}
+var blockType = reflect.TypeOf(Block{})
