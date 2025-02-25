@@ -73,10 +73,10 @@ func TestSimpleUnmarshal(t *testing.T) {
 }
 
 func BenchmarkSimpleUnmarshal(b *testing.B) {
-	var a []Struct1
+	var x Struct1
 
 	for i := 0; i < b.N; i++ {
-		simpleUnmarshal(&a)
+		simpleUnmarshal(&x)
 	}
 }
 
