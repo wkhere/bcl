@@ -180,8 +180,8 @@ func Bind(target any, binding Binding) error {
 // Unmarshal interprets the BCL input and stores the blocks selected via 'bind' statement
 // in the target.
 // See [Bind] for details.
-func Unmarshal(input []byte, target any) error {
-	_, binding, err := Interpret(input)
+func Unmarshal(input []byte, target any, opts ...Option) error {
+	_, binding, err := Interpret(input, opts...)
 	if err != nil {
 		return err
 	}
@@ -191,8 +191,8 @@ func Unmarshal(input []byte, target any) error {
 // UnmarshalFile interprets the BCL file and stores the blocks selected via 'bind' statement
 // in the target.
 // See [Bind] for details.
-func UnmarshalFile(f FileInput, target any) error {
-	_, binding, err := InterpretFile(f)
+func UnmarshalFile(f FileInput, target any, opts ...Option) error {
+	_, binding, err := InterpretFile(f, opts...)
 	if err != nil {
 		return err
 	}
