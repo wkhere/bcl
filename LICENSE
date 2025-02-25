@@ -23,5 +23,4 @@ IN THE SOFTWARE.
 The parser and the vm executor, namely the files parse.go, prog.go, machine.go
 and disasm.go, are based on the "Crafting Interpreters" book by Robert Nystrom,
 with the main concepts rewritten in Go. The original C code is available at:
-https://github.com/munificent/craftinginterpreters/tree/master/c
-and was originally distributed under the MIT license.
+https://github.com/munificent/craftinginterpreters/tree/master/c .
