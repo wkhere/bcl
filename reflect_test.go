@@ -120,16 +120,23 @@ var reflectTab = []reflecttc{
 	rerror(`bind any -> struct`, &[]struct{}{}, "no blocks of type any"),
 
 	rerror(`def any{}; bind any -> struct`, nil, "expected pointer"),
-	rerror(`def any{}; bind any -> struct`, 1, "expected pointer"),
-	rerror(`def any{}; bind any -> struct`, struct{}{}, "expected pointer"),
+	rerror(`def any{}; bind any -> struct`, 1, "expected pointer, have: int"),
+	rerror(`def any{}; bind any -> struct`, struct{}{}, "expected pointer, have: struct"),
 	rvalid(`def any{}; bind any -> struct`, &struct{}{}, &struct{}{}),
-	rerror(`def any{}; bind any -> struct`, &[]struct{}{}, "expected pointer to a struct"),
+	rerror(`def any{}; bind any -> struct`, &[]struct{}{},
+		"pointer deref: expected struct, have: slice",
+	),
 
 	rerror(`def any{}; bind any -> slice`, nil, "expected pointer"),
-	rerror(`def any{}; bind any -> slice`, 1, "expected pointer"),
-	rerror(`def any{}; bind any -> slice`, struct{}{}, "expected pointer"),
-	rerror(`def any{}; bind any -> slice`, &struct{}{}, "expected pointer to a slice of structs"),
+	rerror(`def any{}; bind any -> slice`, struct{}{}, "expected pointer, have: struct"),
+	rerror(`def any{}; bind any -> slice`, &struct{}{},
+		"pointer deref: expected slice, have: struct",
+	),
 	rvalid(`def any{}; bind any -> slice`, &[]struct{}{}, &[]struct{}{{}}), // empty struct inside
+	// the next one is nasty: would panic if there was no checking for a slice element:
+	rerror(`def int{}; bind int -> slice`, &[]int{},
+		"slice element deref: expected struct, have: int",
+	),
 
 	rvalid(`def any{x=1}; bind any -> struct`, &struct{ X int }{}, &struct{ X int }{X: 1}),
 	rvalid(`def any{x=1}; bind any:all -> slice`, &[]struct{ X int }{}, &[]struct{ X int }{{X: 1}}),

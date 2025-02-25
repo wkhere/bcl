@@ -12,24 +12,27 @@ func copyBlocks(target any, binding Binding) error {
 	}
 
 	targetPtr := reflect.ValueOf(target)
-	if targetPtr.Kind() != reflect.Pointer {
-		return fmt.Errorf("expected pointer")
+	if k := targetPtr.Kind(); k != reflect.Pointer {
+		return fmt.Errorf("bind target: expected pointer, have: %s", k)
 	}
 
 	switch b := binding.(type) {
 
 	case StructBinding:
 		targetStruct := targetPtr.Elem()
-		if targetStruct.Kind() != reflect.Struct {
-			return fmt.Errorf("expected pointer to a struct")
+		if k := targetStruct.Kind(); k != reflect.Struct {
+			return fmt.Errorf("bind target: pointer deref: expected struct, have: %s", k)
 		}
 
 		return copyBlock(targetStruct, b.Value)
 
 	case SliceBinding:
 		targetSlice := targetPtr.Elem()
-		if targetSlice.Kind() != reflect.Slice {
-			return fmt.Errorf("expected pointer to a slice of structs")
+		if k := targetSlice.Kind(); k != reflect.Slice {
+			return fmt.Errorf("bind target: pointer deref: expected slice, have: %s", k)
+		}
+		if k := targetSlice.Type().Elem().Kind(); k != reflect.Struct {
+			return fmt.Errorf("bind target: slice element deref: expected struct, have: %s", k)
 		}
 
 		blocks := b.Value
