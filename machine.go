@@ -303,11 +303,11 @@ func (vm *vm) run() error {
 				}
 			}
 			if len(blocks) == 0 {
-				return vm.runtimeError("no blocks of type %s", blockType)
+				return vm.runtimeError("bind: no blocks of type %s", blockType)
 			}
 			if len(blocks) != 1 && selector == bindOne {
 				return vm.runtimeError(
-					"found %d blocks of type %s but expected just 1", len(blocks), blockType,
+					"bind: found %d blocks of type %s but expected just 1", len(blocks), blockType,
 				)
 			}
 
