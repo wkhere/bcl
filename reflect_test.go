@@ -105,6 +105,11 @@ type S2 struct {
 	X    int `bcl:"y"`
 }
 
+type S3 struct {
+	X    int
+	Name string // note the name is not the first field
+}
+
 var reflectTab = []reflecttc{
 
 	rerror(``, nil, "no binding"),
@@ -225,6 +230,9 @@ var reflectTab = []reflecttc{
 	rerror(`def foo{}; bind foo:"q" -> struct`, &S{}, "combined errors from parse"),
 	rerror(`def foo{}; bind "foo"   -> struct`, &S{}, "combined errors from parse"),
 	rerror(`def foo{}; bind foo     -> oopsie`, &S{}, "combined errors from parse"),
+
+	rvalid(`def s3 "foo" {x=1}; bind s3 -> struct`, &S3{}, &S3{Name: "foo", X: 1}),
+	rvalid(`def s3 "foo" {x=1}; bind s3 -> struct`, &S3{}, &S3{X: 1, Name: "foo"}),
 }
 
 func TestReflect(t *testing.T) {
