@@ -15,3 +15,7 @@ type logger struct {
 func (l logger) Print(a ...any)                 { fmt.Fprint(l.w, a...) }
 func (l logger) Println(a ...any)               { fmt.Fprintln(l.w, a...) }
 func (l logger) Printf(format string, a ...any) { fmt.Fprintf(l.w, format, a...) }
+
+type writers struct {
+	outw, logw io.Writer
+}
