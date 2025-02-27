@@ -86,6 +86,11 @@ more on errors:
 		field.x = ...
 
 
+- reflection BUG with multiple inner blocks: fields are mixed
+  Consider forbidding repeated inner blocks at all. What sense would they make?
+  How to reflect them properly?
+
+
 + reflection revamp
   - document bind syntax in the readme
   + print warning when bind statement is repeated
