@@ -97,5 +97,6 @@ more on errors:
   - print warning about possibly unintended use of bind x -> slice
   - provide binding from the command-line
   - dump (marshal) Go structures to BCL; ofc, with corresponding bind statement
+  - how to bind different block types
 
 - print expr1, expr2
