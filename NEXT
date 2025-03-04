@@ -20,7 +20,7 @@ more on errors:
   - alt synatx: 42:str, expr:bool
 - consider replacing cmd & type conversions with sigils
 - more types:
-	- dt (time.Duration)
+  - dt (time.Duration)
 
 + fix: when a field is defined more than once, only the last clause
   is evaluated; should evaluate all then overwrite with the last one
@@ -70,20 +70,21 @@ more on errors:
   from the block type, there is no way to bind it - struct tag is only about
   the name/key
 
+
 - scope issues:
   - "eval x=val" inside a block is equivalent to the raw "x=val" expr-statement;
     it sets a block field, but only if x is not in any upper scope;
-	otherwise sets the corresponding var.
-	That is counter-intuitive.
+    otherwise sets the corresponding var.
+    That is counter-intuitive.
     Better to have clear distinction: what updates vars vs fields.
 
-	Special rules about eval (like restricting it to modifying only vars inside
+  Special rules about eval (like restricting it to modifying only vars inside
     a block) is not only hard to omplement, but brings more questions, like:
-	what "print x=val" inside a block should do?
+  what "print x=val" inside a block should do?
 
-	Possible solution: ident prefixes:
-		var.x = var.x + 1
-		field.x = ...
+  Possible solution: ident prefixes:
+    var.x = var.x + 1
+    field.x = ...
 
 
 - reflection BUG with multiple inner blocks: fields are mixed
@@ -98,8 +99,8 @@ more on errors:
   - provide binding from the command-line
   - dump (marshal) Go structures to BCL; ofc, with corresponding bind statement
   - how to bind different block types:
-	bind foo:all -> field:Foo slice
-	bind quux:1  -> field:Q struct
+      bind foo:all -> field:Foo slice
+      bind quux:1  -> field:Q struct
     (requires that all bind statements have field selector if any of them has)
 
 
