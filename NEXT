@@ -21,6 +21,7 @@ more on errors:
 - consider replacing cmd & type conversions with sigils
 - more types:
   - dt (time.Duration)
+  - currencies (Decimal)
 
 + fix: when a field is defined more than once, only the last clause
   is evaluated; should evaluate all then overwrite with the last one
