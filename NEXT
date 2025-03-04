@@ -40,7 +40,7 @@ more on errors:
 
 ~ ability to use reference to other block's field, possibly nested
 = partly done in the vm version in the way that in the nested block expr can
-  refer to the field in any of the parend blocks; what remains to be done is:
+  refer to the field in any of the parent blocks; what remains to be done is:
   - ability to use paths to all blocks/fields across the whole file 
 
 - unmarshaling options:
