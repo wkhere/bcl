@@ -28,8 +28,13 @@ cnt=6
 test: src
 	go test -cover -run=$(sel) .
 
-race: src
+test-py:
+	./test.py
+
+test-race: src
 	go test -race .
+
+test-full: test test-py test-race
 
 bench: src
 	go test -bench=$(sel) -count=$(cnt) -benchmem .
