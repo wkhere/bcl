@@ -17,7 +17,7 @@ more on errors:
   - cmd(...) to run commands and catch the output!
 - more syntax:
   - simple type conversions: 42 @str, expr @bool
-  - alt synatx: 42:str, expr:bool
+  - alt syntax: 42:str, expr:bool
 - consider replacing cmd & type conversions with sigils
 - more types:
   - dt (time.Duration)
