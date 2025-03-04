@@ -97,6 +97,10 @@ more on errors:
   - print warning about possibly unintended use of bind x -> slice
   - provide binding from the command-line
   - dump (marshal) Go structures to BCL; ofc, with corresponding bind statement
-  - how to bind different block types
+  - how to bind different block types:
+	bind foo:all -> field:Foo slice
+	bind quux:1  -> field:Q struct
+    (requires that all bind statements have field selector if any of them has)
+
 
 - print expr1, expr2
