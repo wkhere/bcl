@@ -87,6 +87,15 @@ more on errors:
     var.x = var.x + 1
     field.x = ...
 
+  Also, ident resolution should work in a way that vars and fields are
+  in the same namespace; so, in the current block, first the vars and fields
+  of that block should be searched, then the upper vars & fields ..etc.
+  Currently, first the vars are searched all the way to the toplevel,
+  then all the blocks up to the most outer one; that sucks.
+  Solution: use the 'local' struct for fields, with some special flag;
+  based on that flag, generate ops accordingly.
+  This would allow getting rid of a runtime resolution error, which is ugly.
+
 
 - reflection BUG with multiple inner blocks: fields are mixed
   Consider forbidding repeated inner blocks at all. What sense would they make?
