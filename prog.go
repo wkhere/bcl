@@ -111,7 +111,6 @@ func (prog *Prog) Load(src io.Reader) (err error) {
 	r := bufio.NewReaderSize(src, 4096)
 
 	var b [2]byte
-	var p []byte
 	var n int
 	var m uint64
 
@@ -137,7 +136,7 @@ func (prog *Prog) Load(src io.Reader) (err error) {
 	if err != nil {
 		return fmt.Errorf("name size: %w", err)
 	}
-	p, err = r.Peek(int(m))
+	p, err := r.Peek(int(m))
 	if err != nil {
 		return fmt.Errorf("name too short: %w", err)
 	}
