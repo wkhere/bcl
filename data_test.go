@@ -23,7 +23,7 @@ var big1 []byte
 //go:embed testdata/badbig1.bcl
 var badbig1 []byte
 
-func TestBasicBytes(t *testing.T) {
+func TestBasicInput(t *testing.T) {
 	_, _, err := bcl.Interpret(basicInput)
 	if err != nil {
 		t.Error(err)
