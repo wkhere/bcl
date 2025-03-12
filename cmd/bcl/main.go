@@ -28,6 +28,7 @@ func run(a *parsedArgs) (err error) {
 			f, a.file,
 			bcl.OptDisasm(a.disasm),
 		)
+		f.Close()
 	} else {
 		prog, err = bcl.ParseFile(
 			f,
