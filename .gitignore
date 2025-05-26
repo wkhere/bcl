@@ -3,5 +3,4 @@
 *.bcb
 /cov
 /cov.html
-/tr[0-9]
 /misc/
