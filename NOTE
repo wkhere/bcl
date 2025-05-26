@@ -32,14 +32,20 @@ possible to have forward declarations, with some special detection of cycles.
 
 To be decided: many progs, or one concatenated prog?
 
-Many progs: what about visibility of the vars and blocks?
+Many progs:
+* each input file is a separate compilation unit and produces a prog
+* what about visibility of the vars and blocks? need either 'export' syntax in
+  the referred file, or 'extern' syntax in the referring file, or a form of both
+* more elegant but more complex and more changes to the API
 
 Concatenated prog:
-- needs adapting lexer to process multiple inputs, then the token needs
-  input file ref together with pos, same for prog positions and linePos
-
-In general, it's about handling many files as separate compilation units,
-or preprocessing them.
+* 'include' syntax
+* there is one compilation unit, with tokens coming from multiple input files
+* lexer needs to handle multiple inputs (done)
+* token.pos needs to be extended with a file name (tbd)
+* same for prog positions and linePos, actually the prog needs a filename table
+  and an index to that table with each pos (tbd)
+* simpler and less changes to the API
 
 
 # Reflection revamp
