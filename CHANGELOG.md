@@ -1,3 +1,11 @@
+* better notes on alternatives for multiple input files
+* notes on scope issues and possible evolution 
+* note on reflection bug with inner blocks
+* fix cmd: missing Close after bload
+* fix bytecode version in comments
+* snake-case goodies, not fully used yet
+* minor optimisations, source layout
+
 ### v0.12.0 "bind polishing"
 * API change: Unmarshal/UnmarshalFile with variadic options
 * API change: remove TypeErr, StructErr
