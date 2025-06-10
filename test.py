@@ -464,6 +464,32 @@ tests = [
     ['126.3', 'def x{}; def x{}; bind x:1   -> struct', '', 'err: found 2 blocks of type x'],
     ['126.4', 'def x{}; def x{}; bind x:all -> struct', '', 'err: bind of multiple blocks'],
     ['126.5', 'def x{}; bind x->slice; bind x->struct', ''],
+
+    ['127.1', 'def b "foo"{}; bind b:"foo" -> struct',
+        "== /dev/stdin ==\n"
+        "0000   1:13  DEFBLOCK      0 'b'\t   1 'foo'\n"
+        "0003   1:14  ENDBLOCK\n"
+        "0004   1:38  BINDNB        0 'b'\t   2 'foo'\t0x14\n"
+        "0008      |  RET",
+        'disasm'
+    ],
+    ['127.2', 'def b "foo"{}; def b "bar"{}; bind b:"bar" -> struct',
+        "== /dev/stdin ==\n"
+        "0000   1:13  DEFBLOCK      0 'b'\t   1 'foo'\n"
+        "0003   1:14  ENDBLOCK\n"
+        "0004   1:28  DEFBLOCK      0 'b'\t   2 'bar'\n"
+        "0007   1:29  ENDBLOCK\n"
+        "0008   1:53  BINDNB        0 'b'\t   3 'bar'\t0x14\n"
+        "0012      |  RET",
+        'disasm'
+    ],
+
+    ['128.1', 'bind x:"foo" -> struct', '',            'err: no blocks of type x'],
+    ['128.2', 'def x{}; bind x:"foo" -> struct', '',   'err: block x:"foo" not found'],
+    ['128.3', 'def x "a"{}; bind x:"foo" -> struct', '',   'err: block x:"foo" not found'],
+    ['128.4', 'def x "a"{}; bind x:"foo" -> slice',  '',   'err: block x:"foo" not found'],
+    ['128.5', 'def x "a"{}; def x "b"{}; bind x:"a" -> struct', ''],
+    ['128.6', 'def x "a"{}; def x "b"{}; bind x:"b" -> struct', ''],
 ]
 
 tests_64b = [

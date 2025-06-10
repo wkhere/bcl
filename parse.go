@@ -178,8 +178,9 @@ func bindStmt(p *parser) {
 
 	blockType := p.prev.val
 	bindSel := bindOne
+	selBlockName := ""
 
-	errmsg := "expected 1,first,last,all as a block selector"
+	errmsg := `expected 1,first,last,all,"name" as a block selector`
 	if p.match(tCOLON) {
 		switch {
 		case p.match(tINT):
@@ -187,6 +188,11 @@ func bindStmt(p *parser) {
 				p.error(errmsg)
 			}
 			bindSel = bindOne
+
+		case p.match(tSTR):
+			bindSel = bindNamedBlock
+			selBlockName, _ = strconv.Unquote(p.prev.val)
+
 		case p.match(tIDENT):
 			switch p.prev.val {
 			case "first":
@@ -198,6 +204,7 @@ func bindStmt(p *parser) {
 			default:
 				p.error(errmsg)
 			}
+
 		default:
 			p.errorAtCurrent(errmsg)
 		}
@@ -227,6 +234,14 @@ func bindStmt(p *parser) {
 		p.error("bind of multiple blocks requires slice target")
 	}
 	if p.panicMode {
+		return
+	}
+
+	if bindSel == bindNamedBlock {
+		p.emitOp(opBINDNB)
+		p.emitUvarint(p.identConst(blockType))
+		p.emitUvarint(p.makeConst(selBlockName))
+		p.emitByte(byte(target&0xF0) | byte(bindNamedBlock&0x0F))
 		return
 	}
 

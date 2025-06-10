@@ -7,6 +7,7 @@ const (
 	bindOne bindSelector = iota + 1
 	bindFirst
 	bindLast
+	bindNamedBlock
 	bindAll = 15
 )
 

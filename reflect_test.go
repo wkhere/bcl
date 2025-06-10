@@ -232,7 +232,7 @@ var reflectTab = []reflecttc{
 
 	rerror(`def foo{}; bind foo:2   -> struct`, &S{}, "combined errors from parse"),
 	rerror(`def foo{}; bind foo:sth -> struct`, &S{}, "combined errors from parse"),
-	rerror(`def foo{}; bind foo:"q" -> struct`, &S{}, "combined errors from parse"),
+	rerror(`def foo{}; bind foo:"q" -> struct`, &S{}, `block foo:"q" not found`),
 	rerror(`def foo{}; bind "foo"   -> struct`, &S{}, "combined errors from parse"),
 	rerror(`def foo{}; bind foo     -> oopsie`, &S{}, "combined errors from parse"),
 
@@ -241,6 +241,16 @@ var reflectTab = []reflecttc{
 	rvalid(`def s4 {};         bind s4 -> struct`, &S4{}, &S4{}),
 	rvalid(`def s4 {x=1};      bind s4 -> struct`, &S4{}, &S4{X: 1}),
 	rvalid(`def s4 {x=1; y=2}; bind s4 -> struct`, &S4{}, &S4{X: 1, Y: 2}),
+
+	rerror(`def s {}; bind s:"foo" -> struct`, &S{}, `block s:"foo" not found`),
+	rvalid(`def s "foo"{}; bind s:"foo" -> struct`, &S{}, &S{Name: "foo"}),
+	rvalid(`def s "foo"{x=1}; bind s:"foo" -> struct`, &S{}, &S{Name: "foo", X: 1}),
+	rvalid(`def s "foo"{x=1}; def s "bar"{x=2}; bind s:"foo" -> struct`, &S{},
+		&S{Name: "foo", X: 1},
+	),
+	rvalid(`def s "foo"{x=1}; def s "bar"{x=2}; bind s:"bar" -> struct`, &S{},
+		&S{Name: "bar", X: 2},
+	),
 }
 
 func TestReflect(t *testing.T) {

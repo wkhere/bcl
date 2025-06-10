@@ -50,6 +50,9 @@ func (p *Prog) disasmInstr(offset int) int {
 	case opBIND:
 		return bindInstr(p.output, instr, p, offset)
 
+	case opBINDNB:
+		return bindnbInstr(p.output, instr, p, offset)
+
 	default:
 		fmt.Fprintln(p.output, "unknown opcode", instr)
 		return offset + 1
@@ -102,4 +105,14 @@ func bindInstr(w io.Writer, o opcode, p *Prog, offset int) int {
 	arg := p.code[offset+1+n]
 	fmt.Fprintf(w, "%-10s %4d '%v'\t0x%2X\n", o, idx, p.constants[idx], arg)
 	return offset + 1 + n + 1
+}
+
+func bindnbInstr(w io.Writer, o opcode, p *Prog, offset int) int {
+	idx1, n := uvarintFromBytes(p.code[offset+1:])
+	idx2, m := uvarintFromBytes(p.code[offset+1+n:])
+	arg := p.code[offset+1+n+m]
+	fmt.Fprintf(w, "%-10s %4d '%v'\t%4d '%v'\t0x%2X\n",
+		o, idx1, p.constants[idx1], idx2, p.constants[idx2], arg,
+	)
+	return offset + 1 + n + m + 1
 }

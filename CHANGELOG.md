@@ -1,3 +1,4 @@
+* bind named block
 * better notes on alternatives for multiple input files
 * notes on scope issues and possible evolution 
 * note on reflection bug with inner blocks

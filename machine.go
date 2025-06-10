@@ -298,48 +298,23 @@ func (vm *vm) run() error {
 
 			blockType := readConst().(string)
 			bindOpt := readByte()
-			selector := bindSelector(bindOpt & 0x0F)
-			target := bindTarget(bindOpt & 0xF0)
 
-			blocks := make([]Block, 0, 1)
-			for _, b := range vm.result {
-				if b.Type == blockType {
-					blocks = append(blocks, b)
-				}
-			}
-			if len(blocks) == 0 {
-				return vm.runtimeError("bind: no blocks of type %s", blockType)
-			}
-			if len(blocks) != 1 && selector == bindOne {
-				return vm.runtimeError(
-					"bind: found %d blocks of type %s but expected just 1", len(blocks), blockType,
-				)
+			if err := vm.bind(blockType, "", bindOpt); err != nil {
+				return err
 			}
 
-			switch {
-			case target == bindStruct && selector == bindOne:
-				fallthrough
+		case opBINDNB:
+			// ( -- )
+			if vm.binding != nil {
+				vm.warning("repeated bind statement, last one overrides")
+			}
 
-			case target == bindStruct && selector == bindFirst:
-				vm.binding = StructBinding{Value: blocks[0]}
+			blockType := readConst().(string)
+			blockName := readConst().(string)
+			bindOpt := readByte()
 
-			case target == bindStruct && selector == bindLast:
-				vm.binding = StructBinding{Value: blocks[len(blocks)-1]}
-
-			case target == bindSlice && selector == bindAll:
-				vm.binding = SliceBinding{Value: blocks}
-
-			case target == bindSlice && selector == bindOne:
-				fallthrough
-
-			case target == bindSlice && selector == bindFirst:
-				vm.binding = SliceBinding{Value: blocks[:1]}
-
-			case target == bindSlice && selector == bindLast:
-				vm.binding = SliceBinding{Value: blocks[len(blocks)-1:]}
-
-			default:
-				return vm.runtimeError("invalid bind target and selector :0x%2x", bindOpt)
+			if err := vm.bind(blockType, blockName, bindOpt); err != nil {
+				return err
 			}
 
 		case opRET:
@@ -353,6 +328,70 @@ func (vm *vm) run() error {
 			// ( -- )
 		}
 	}
+}
+
+func (vm *vm) bind(blockType, blockName string, bindOpt byte) error {
+	selector := bindSelector(bindOpt & 0x0F)
+	target := bindTarget(bindOpt & 0xF0)
+
+	blocks := make([]Block, 0, 1)
+	for _, b := range vm.result {
+		if b.Type == blockType {
+			blocks = append(blocks, b)
+		}
+	}
+	selectedIdx := -1
+
+	switch {
+	case len(blocks) == 0:
+		return vm.runtimeError("bind: no blocks of type %s", blockType)
+
+	case len(blocks) != 1 && selector == bindOne:
+		return vm.runtimeError(
+			"bind: found %d blocks of type %s but expected just 1", len(blocks), blockType,
+		)
+
+	case selector == bindNamedBlock:
+		for i := range blocks {
+			if blocks[i].Name == blockName {
+				selectedIdx = i
+				break
+			}
+		}
+		if selectedIdx < 0 {
+			return vm.runtimeError("bind: block %s:%q not found", blockType, blockName)
+		}
+	}
+
+	switch {
+	case target == bindStruct && selector == bindOne:
+		fallthrough
+
+	case target == bindStruct && selector == bindFirst:
+		vm.binding = StructBinding{Value: blocks[0]}
+
+	case target == bindStruct && selector == bindLast:
+		vm.binding = StructBinding{Value: blocks[len(blocks)-1]}
+
+	case target == bindStruct && selector == bindNamedBlock:
+		vm.binding = StructBinding{Value: blocks[selectedIdx]}
+
+	case target == bindSlice && selector == bindAll:
+		vm.binding = SliceBinding{Value: blocks}
+
+	case target == bindSlice && selector == bindOne:
+		fallthrough
+
+	case target == bindSlice && selector == bindFirst:
+		vm.binding = SliceBinding{Value: blocks[:1]}
+
+	case target == bindSlice && selector == bindLast:
+		vm.binding = SliceBinding{Value: blocks[len(blocks)-1:]}
+
+	default:
+		return vm.runtimeError("invalid bind target and selector :0x%2x", bindOpt)
+	}
+	return nil
 }
 
 func (vm *vm) runtimeError(format string, a ...any) error {
