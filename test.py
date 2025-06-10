@@ -572,7 +572,7 @@ part2 = r""" }
     for _, tc := range tab {
         tc := tc
         t.Run(tc.name, func(t *testing.T) {
-            inp := stdinBuf{strings.NewReader(tc.input)}        
+            inp := stdinBuf{strings.NewReader(tc.input)}
             out := new(bytes.Buffer)
             log := new(bytes.Buffer)
 
@@ -616,8 +616,7 @@ func relevantError(err error, buf *bytes.Buffer) string {
     } else {
         return s
     }
-}
-"""
+}"""
 
 
 def generate(target):
