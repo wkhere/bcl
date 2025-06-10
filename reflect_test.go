@@ -110,6 +110,11 @@ type S3 struct {
 	Name string // note the name is not the first field
 }
 
+type S4 struct {
+	X, Y     int
+	DontCare any
+}
+
 var reflectTab = []reflecttc{
 
 	rerror(``, nil, "no binding"),
@@ -233,6 +238,8 @@ var reflectTab = []reflecttc{
 
 	rvalid(`def s3 "foo" {x=1}; bind s3 -> struct`, &S3{}, &S3{Name: "foo", X: 1}),
 	rvalid(`def s3 "foo" {x=1}; bind s3 -> struct`, &S3{}, &S3{X: 1, Name: "foo"}),
+
+	rvalid(`def s4 {x=1;y=2}; bind s4 -> struct`, &S4{}, &S4{X: 1, Y: 2}),
 }
 
 func TestReflect(t *testing.T) {
