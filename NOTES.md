@@ -70,9 +70,6 @@ bind tunnel:"name" -> struct
 bind tunnel:"name1","name2" -> slice
 ```
 
-Note: as of v0.12.1 binding blocks by name is implemented only for the case of
-a single named block.
-
 Rules for bind targets based on a target type:
 
 - `struct`: target is a ptr-to-struct of a type matching the block type

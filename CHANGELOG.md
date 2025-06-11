@@ -1,3 +1,8 @@
+* bind multiple named blocks
+* allow binding single named block to a 1-element slice
+  (same as with :first,:last,:1)
+* bytecode version 1.3 (bind instruction carrying multiple block names)
+
 ### v0.12.1
 The main highlight of this version is allowing the bind of a named block
 (a single block, for now).

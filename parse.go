@@ -178,9 +178,9 @@ func bindStmt(p *parser) {
 
 	blockType := p.prev.val
 	bindSel := bindOne
-	selBlockName := ""
+	selBlockNames := []string{}
 
-	errmsg := `expected 1,first,last,all,"name" as a block selector`
+	errmsg := `expected block selector: 1 first last all "name" "name1","name2"`
 	if p.match(tCOLON) {
 		switch {
 		case p.match(tINT):
@@ -190,8 +190,21 @@ func bindStmt(p *parser) {
 			bindSel = bindOne
 
 		case p.match(tSTR):
-			bindSel = bindNamedBlock
-			selBlockName, _ = strconv.Unquote(p.prev.val)
+			name, _ := strconv.Unquote(p.prev.val)
+			selBlockNames = append(selBlockNames, name)
+			if p.match(tCOMMA) {
+				bindSel = bindNamedBlocks
+				for p.match(tSTR) {
+					name, _ = strconv.Unquote(p.prev.val)
+					selBlockNames = append(selBlockNames, name)
+					if p.match(tCOMMA) {
+						continue
+					}
+					break
+				}
+			} else {
+				bindSel = bindNamedBlock
+			}
 
 		case p.match(tIDENT):
 			switch p.prev.val {
@@ -237,17 +250,27 @@ func bindStmt(p *parser) {
 		return
 	}
 
-	if bindSel == bindNamedBlock {
+	switch bindSel {
+	case bindNamedBlock:
 		p.emitOp(opBINDNB)
 		p.emitUvarint(p.identConst(blockType))
-		p.emitUvarint(p.makeConst(selBlockName))
+		p.emitUvarint(p.makeConst(selBlockNames[0]))
 		p.emitByte(byte(target&0xF0) | byte(bindNamedBlock&0x0F))
-		return
-	}
 
-	p.emitOp(opBIND)
-	p.emitUvarint(p.identConst(blockType))
-	p.emitByte(byte(target&0xF0) | byte(bindSel&0x0F))
+	case bindNamedBlocks:
+		p.emitOp(opBINDNBS)
+		p.emitUvarint(p.identConst(blockType))
+		p.emitUvarint(len(selBlockNames))
+		for _, name := range selBlockNames {
+			p.emitUvarint(p.makeConst(name))
+		}
+		p.emitByte(byte(target&0xF0) | byte(bindNamedBlocks&0x0F))
+
+	default:
+		p.emitOp(opBIND)
+		p.emitUvarint(p.identConst(blockType))
+		p.emitByte(byte(target&0xF0) | byte(bindSel&0x0F))
+	}
 }
 
 func printStmt(p *parser) {
@@ -329,6 +352,7 @@ func init() {
 		tVAR: {nil, nil, precNone},
 
 		tSEMICOLON: {nil, nil, precNone},
+		tCOMMA:     {nil, nil, precNone},
 
 		tERR:  {nil, nil, precNone},
 		tEOF:  {nil, nil, precNone},

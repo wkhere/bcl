@@ -44,6 +44,8 @@ type vm struct {
 const (
 	stackSize      = 1024
 	blockStackSize = 16
+
+	bindMaxNBlocks = 64
 )
 
 type execStats struct {
@@ -299,7 +301,7 @@ func (vm *vm) run() error {
 			blockType := readConst().(string)
 			bindOpt := readByte()
 
-			if err := vm.bind(blockType, "", bindOpt); err != nil {
+			if err := vm.bind(blockType, nil, bindOpt); err != nil {
 				return err
 			}
 
@@ -313,7 +315,31 @@ func (vm *vm) run() error {
 			blockName := readConst().(string)
 			bindOpt := readByte()
 
-			if err := vm.bind(blockType, blockName, bindOpt); err != nil {
+			if err := vm.bind(blockType, []string{blockName}, bindOpt); err != nil {
+				return err
+			}
+
+		case opBINDNBS:
+			// ( -- )
+			if vm.binding != nil {
+				vm.warning("repeated bind statement, last one overrides")
+			}
+
+			blockType := readConst().(string)
+			var blockNames []string
+			if n := readUvarint(); n > bindMaxNBlocks {
+				return vm.runtimeError(
+					"bind: too many named blocks, type=%s, n=%d", blockType, n,
+				)
+			} else {
+				blockNames = make([]string, n)
+			}
+			for i := range blockNames {
+				blockNames[i] = readConst().(string)
+			}
+			bindOpt := readByte()
+
+			if err := vm.bind(blockType, blockNames, bindOpt); err != nil {
 				return err
 			}
 
@@ -330,7 +356,7 @@ func (vm *vm) run() error {
 	}
 }
 
-func (vm *vm) bind(blockType, blockName string, bindOpt byte) error {
+func (vm *vm) bind(blockType string, blockNames []string, bindOpt byte) error {
 	selector := bindSelector(bindOpt & 0x0F)
 	target := bindTarget(bindOpt & 0xF0)
 
@@ -340,7 +366,7 @@ func (vm *vm) bind(blockType, blockName string, bindOpt byte) error {
 			blocks = append(blocks, b)
 		}
 	}
-	selectedIdx := -1
+	var selectedByName []Block
 
 	switch {
 	case len(blocks) == 0:
@@ -352,14 +378,36 @@ func (vm *vm) bind(blockType, blockName string, bindOpt byte) error {
 		)
 
 	case selector == bindNamedBlock:
+		name := blockNames[0]
+		var found bool
 		for i := range blocks {
-			if blocks[i].Name == blockName {
-				selectedIdx = i
+			if blocks[i].Name == name {
+				selectedByName = []Block{blocks[i]}
+				found = true
 				break
 			}
 		}
-		if selectedIdx < 0 {
-			return vm.runtimeError("bind: block %s:%q not found", blockType, blockName)
+		if !found {
+			return vm.runtimeError("bind: block %s:%q not found", blockType, name)
+		}
+
+	case selector == bindNamedBlocks:
+		if len(blockNames) == 0 {
+			return vm.runtimeError("bind: empty named blocks list, type=%s", blockType)
+		}
+
+		blockMap := make(map[string]*Block, len(blocks))
+
+		for i := range blocks {
+			b := &blocks[i]
+			blockMap[b.Name] = b
+		}
+		for _, name := range blockNames {
+			b, ok := blockMap[name]
+			if !ok {
+				return vm.runtimeError("bind: block %s:%q not found", blockType, name)
+			}
+			selectedByName = append(selectedByName, *b)
 		}
 	}
 
@@ -374,7 +422,7 @@ func (vm *vm) bind(blockType, blockName string, bindOpt byte) error {
 		vm.binding = StructBinding{Value: blocks[len(blocks)-1]}
 
 	case target == bindStruct && selector == bindNamedBlock:
-		vm.binding = StructBinding{Value: blocks[selectedIdx]}
+		vm.binding = StructBinding{Value: selectedByName[0]}
 
 	case target == bindSlice && selector == bindAll:
 		vm.binding = SliceBinding{Value: blocks}
@@ -387,6 +435,12 @@ func (vm *vm) bind(blockType, blockName string, bindOpt byte) error {
 
 	case target == bindSlice && selector == bindLast:
 		vm.binding = SliceBinding{Value: blocks[len(blocks)-1:]}
+
+	case target == bindSlice && selector == bindNamedBlock:
+		vm.binding = SliceBinding{Value: selectedByName}
+
+	case target == bindSlice && selector == bindNamedBlocks:
+		vm.binding = SliceBinding{Value: selectedByName}
 
 	default:
 		return vm.runtimeError("invalid bind target and selector :0x%2x", bindOpt)

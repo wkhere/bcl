@@ -44,12 +44,13 @@ func _() {
 	_ = x[tCOLON-33]
 	_ = x[tARROW-34]
 	_ = x[tSEMICOLON-35]
-	_ = x[tMAX-36]
+	_ = x[tCOMMA-36]
+	_ = x[tMAX-37]
 }
 
-const _tokenType_name = "tFAILtEOFtERRtINTtFLOATtSTRtIDENTtVARtDEFtEVALtPRINTtBINDtTRUEtFALSEtNILtEQtLCURLYtRCURLYtLPARENtRPARENtORtANDtNOTtEEtBEtLTtLEtGTtGEtPLUStMINUStSTARtSLASHtCOLONtARROWtSEMICOLONtMAX"
+const _tokenType_name = "tFAILtEOFtERRtINTtFLOATtSTRtIDENTtVARtDEFtEVALtPRINTtBINDtTRUEtFALSEtNILtEQtLCURLYtRCURLYtLPARENtRPARENtORtANDtNOTtEEtBEtLTtLEtGTtGEtPLUStMINUStSTARtSLASHtCOLONtARROWtSEMICOLONtCOMMAtMAX"
 
-var _tokenType_index = [...]uint8{0, 5, 9, 13, 17, 23, 27, 33, 37, 41, 46, 52, 57, 62, 68, 72, 75, 82, 89, 96, 103, 106, 110, 114, 117, 120, 123, 126, 129, 132, 137, 143, 148, 154, 160, 166, 176, 180}
+var _tokenType_index = [...]uint8{0, 5, 9, 13, 17, 23, 27, 33, 37, 41, 46, 52, 57, 62, 68, 72, 75, 82, 89, 96, 103, 106, 110, 114, 117, 120, 123, 126, 129, 132, 137, 143, 148, 154, 160, 166, 176, 182, 186}
 
 func (i tokenType) String() string {
 	if i < 0 || i >= tokenType(len(_tokenType_index)-1) {

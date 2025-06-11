@@ -57,6 +57,7 @@ const (
 	tARROW
 
 	tSEMICOLON
+	tCOMMA
 
 	tMAX // used only in the rules table
 )

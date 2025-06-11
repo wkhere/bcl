@@ -251,6 +251,14 @@ var reflectTab = []reflecttc{
 	rvalid(`def s "foo"{x=1}; def s "bar"{x=2}; bind s:"bar" -> struct`, &S{},
 		&S{Name: "bar", X: 2},
 	),
+
+	rvalid(`def s "foo"{}; bind s:"foo"  -> slice`, &[]S{}, &[]S{{Name: "foo"}}),
+	rerror(`def s "foo"{}; bind s:"foo2" -> slice`, &[]S{}, `block s:"foo2" not found`),
+	rerror(`def s "foo"{}; bind s:"foo", -> struct`, &S{}, `invalid bind target and selector`),
+	rvalid(`def s "foo"{}; bind s:"foo", -> slice`, &[]S{}, &[]S{{Name: "foo"}}),
+	rvalid(`def s "foo"{}; def s "bar"{}; bind s:"foo","bar" -> slice`, &[]S{},
+		&[]S{{Name: "foo"}, {Name: "bar"}},
+	),
 }
 
 func TestReflect(t *testing.T) {

@@ -243,6 +243,7 @@ var oneRuneTokens = map[rune]tokenType{
 	'/': tSLASH,
 	':': tCOLON,
 	';': tSEMICOLON,
+	',': tCOMMA,
 }
 
 const (

@@ -464,6 +464,8 @@ tests = [
     ['126.3', 'def x{}; def x{}; bind x:1   -> struct', '', 'err: found 2 blocks of type x'],
     ['126.4', 'def x{}; def x{}; bind x:all -> struct', '', 'err: bind of multiple blocks'],
     ['126.5', 'def x{}; bind x->slice; bind x->struct', ''],
+    ['126.6', 'def x{}; bind x: -> slice', '',    'err: expected block selector'],
+    ['126.7', 'def x{}; bind x:foo -> slice', '', 'err: expected block selector'],
 
     ['127.1', 'def b "foo"{}; bind b:"foo" -> struct',
         "== /dev/stdin ==\n"
@@ -490,6 +492,36 @@ tests = [
     ['128.4', 'def x "a"{}; bind x:"foo" -> slice',  '',   'err: block x:"foo" not found'],
     ['128.5', 'def x "a"{}; def x "b"{}; bind x:"a" -> struct', ''],
     ['128.6', 'def x "a"{}; def x "b"{}; bind x:"b" -> struct', ''],
+    ['128.7', 'def x "a"{}; bind x:"a" -> slice',               ''],
+    ['128.8', 'def x "a"{}; def x "b"{}; bind x:"a" -> slice',  ''],
+    ['128.9', 'def x "a"{}; def x "b"{}; bind x:"b" -> slice',  ''],
+
+    ['129.1', 'def b "foo"{}; bind b:"foo", -> slice',
+        "== /dev/stdin ==\n"
+        "0000   1:13  DEFBLOCK      0 'b'\t   1 'foo'\n"
+        "0003   1:14  ENDBLOCK\n"
+        "0004   1:38  BINDNBS       0 'b'\t   2 'foo'\t0x25\n"
+        "0009      |  RET",
+        'disasm'
+    ],
+    ['129.2', 'def b "foo"{}; def b "bar"{}; bind b:"foo","bar" -> slice',
+        "== /dev/stdin ==\n"
+        "0000   1:13  DEFBLOCK      0 'b'\t   1 'foo'\n"
+        "0003   1:14  ENDBLOCK\n"
+        "0004   1:28  DEFBLOCK      0 'b'\t   2 'bar'\n"
+        "0007   1:29  ENDBLOCK\n"
+        "0008   1:58  BINDNBS       0 'b'\t   3 'foo'\t   4 'bar'\t0x25\n"
+        "0014      |  RET",
+        'disasm'
+    ],
+
+    ['130.1', 'def x "a"{}; bind x:"foo", -> struct', '', 'err: block x:"foo" not found'],
+    ['130.2', 'def x "a"{}; bind x:"a", -> struct', '',   'err: invalid bind target and selector'],
+    ['130.3', 'def x "a"{}; bind x:"a",   -> slice',                ''],
+    ['130.4', 'def x "a"{}; def x "b"{}; bind x:"a","b"  -> slice', ''],
+    ['130.5', 'def x "a"{}; def x "b"{}; bind x:"a","b", -> slice', ''],
+    ['130.6', 'def x "a"{}; def x "b"{}; bind x:"c", -> slice', '', 'err: block x:"c" not found'],
+
 ]
 
 tests_64b = [

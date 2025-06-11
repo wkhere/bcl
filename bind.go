@@ -8,6 +8,7 @@ const (
 	bindFirst
 	bindLast
 	bindNamedBlock
+	bindNamedBlocks
 	bindAll = 15
 )
 
