@@ -1,4 +1,4 @@
-### V0.12.1
+### v0.12.1
 The main highlight of this version is allowing the bind of a named block
 (a single block, for now).
 
