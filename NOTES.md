@@ -1,11 +1,13 @@
 ## Vars, fields and scopes
 
 Toplevel:
+
 - vars are defined with `var`
 - vars are local, it is simply the toplevel scope, accessible from everywhere
 - no forward declarations
 
 Block:
+
 - vars are defined with `var`
 - vars are local
 - vars referenced are searched in the current scope, then in the outer scopes
@@ -33,13 +35,15 @@ possible to have forward declarations, with some special detection of cycles.
 To be decided: many progs, or one concatenated prog?
 
 Many progs:
+
 * each input file is a separate compilation unit and produces a prog
 * what about visibility of the vars and blocks? need either 'export' syntax in
   the referred file, or 'extern' syntax in the referring file, or a form of both
 * more elegant but more complex and more changes to the API
 
 Concatenated prog:
-* 'include' syntax
+
+* `include` syntax
 * there is one compilation unit, with tokens coming from multiple input files
 * lexer needs to handle multiple inputs (done)
 * token.pos needs to be extended with a file name (tbd)
@@ -48,13 +52,14 @@ Concatenated prog:
 * simpler and less changes to the API
 
 
-# Reflection revamp
+## Reflection revamp
 
 Extra syntax for binding parsed blocks to various structs via reflection:
 
-bind <block_type>:<block_selector> -> <target_type>
+`bind <block_type>:<block_selector> -> <target_type>`
 
 Examples:
+```
 bind tunnel:1 -> struct   # must be just 1 block of type tunnel; same as:
 bind tunnel   -> struct
 
@@ -63,15 +68,17 @@ bind tunnel:first -> struct
 bind tunnel:all   -> slice
 bind tunnel:"name" -> struct
 bind tunnel:"name1","name2" -> slice
+```
 
 Note: as of v0.12.1 binding blocks by name is implemented only for the case of
 a single named block.
 
 Rules for bind targets based on a target type:
-- struct: target is a ptr-to-struct of a type matching the block type
-- slice:  target is a ptr-to-slice of structs of a type matching the block type
+
+- `struct`: target is a ptr-to-struct of a type matching the block type
+- `slice`:  target is a ptr-to-slice of structs of a type matching the block type
 
 Bind rule can be defined only at the toplevel and correspond to blocks defined
-before. (VM instruction impl should use already evaluated []Block).
+before. (VM instruction impl should use already evaluated `[]Block`).
 
 Subsequent bind rule ovverrides previous one and should generate a warning.
