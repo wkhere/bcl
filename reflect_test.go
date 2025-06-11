@@ -238,8 +238,9 @@ var reflectTab = []reflecttc{
 
 	rvalid(`def s3 "foo" {x=1}; bind s3 -> struct`, &S3{}, &S3{Name: "foo", X: 1}),
 	rvalid(`def s3 "foo" {x=1}; bind s3 -> struct`, &S3{}, &S3{X: 1, Name: "foo"}),
-
-	rvalid(`def s4 {x=1;y=2}; bind s4 -> struct`, &S4{}, &S4{X: 1, Y: 2}),
+	rvalid(`def s4 {};         bind s4 -> struct`, &S4{}, &S4{}),
+	rvalid(`def s4 {x=1};      bind s4 -> struct`, &S4{}, &S4{X: 1}),
+	rvalid(`def s4 {x=1; y=2}; bind s4 -> struct`, &S4{}, &S4{X: 1, Y: 2}),
 }
 
 func TestReflect(t *testing.T) {
