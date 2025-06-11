@@ -1,3 +1,4 @@
+### v0.12.2
 * bind multiple named blocks
 * allow binding single named block to a 1-element slice
   (same as with :first,:last,:1)
