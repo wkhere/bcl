@@ -1,9 +1,15 @@
-* bind named block
+### V0.12.1
+The main highlight of this version is allowing the bind of a named block
+(a single block, for now).
+
+More changes:
+
+* bytecode version 1.2
+  (new bind selector requires an instruction carrying a block name)
 * better notes on alternatives for multiple input files
 * notes on scope issues and possible evolution 
 * note on reflection bug with inner blocks
 * fix cmd: missing Close after bload
-* fix bytecode version in comments
 * snake-case goodies, not fully used yet
 * minor optimisations, source layout
 
