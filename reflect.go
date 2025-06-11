@@ -69,6 +69,8 @@ func copyBlock(v reflect.Value, block Block) error {
 		}
 	}
 
+	blockType := reflect.TypeOf(Block{})
+
 	setField := func(name string, x any) error {
 		var f reflect.StructField
 		var ok bool
@@ -130,8 +132,6 @@ fields:
 type fieldMappingErr string
 
 func (e fieldMappingErr) Error() string { return string(e) }
-
-var blockType = reflect.TypeOf(Block{})
 
 func unsnakeMatcher(snake string) func(string) bool {
 	u := strings.ReplaceAll(snake, "_", "")
