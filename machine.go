@@ -443,7 +443,7 @@ func (vm *vm) bind(blockType string, blockNames []string, bindOpt byte) error {
 		vm.binding = SliceBinding{Value: selectedByName}
 
 	default:
-		return vm.runtimeError("invalid bind target and selector :0x%2x", bindOpt)
+		return vm.runtimeError("invalid bind target and selector: 0x%2x", bindOpt)
 	}
 	return nil
 }
