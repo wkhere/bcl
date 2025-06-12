@@ -47,4 +47,4 @@ stringer: $(shell go env GOPATH)/bin/stringer
 $(shell go env GOPATH)/bin/stringer:
 	go install golang.org/x/tools/cmd/stringer@latest
 
-.PHONY: default generated src clean test race bench cov stringer
+.PHONY: default generated src clean test test-py test-race test-full bench cov stringer
