@@ -126,10 +126,12 @@ func (prog *Prog) Load(src io.Reader) (err error) {
 		return fmt.Errorf("missing bcode major/minor version")
 	}
 	if b[0] != bytecodeMajor {
-		return fmt.Errorf("invalid bcode major version")
+		return fmt.Errorf("invalid bcode major version: have %d.x, want %d.x", b[0], bytecodeMajor)
 	}
 	if b[1] > bytecodeMinor {
-		return fmt.Errorf("invalid bcode minor version")
+		return fmt.Errorf("invalid bcode minor version: have %d.%d, want <=%d.%d",
+			b[0], b[1], b[0], bytecodeMinor,
+		)
 	}
 
 	m, err = uvarintFromBuf(r)
