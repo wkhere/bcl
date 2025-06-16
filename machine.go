@@ -295,7 +295,7 @@ func (vm *vm) run() error {
 		case opBIND:
 			// ( -- )
 			if vm.binding != nil {
-				vm.warning("repeated bind statement, last one overrides")
+				vm.warning("repeated bind statement overrides previous one")
 			}
 
 			blockType := readConst().(string)
@@ -308,7 +308,7 @@ func (vm *vm) run() error {
 		case opBINDNB:
 			// ( -- )
 			if vm.binding != nil {
-				vm.warning("repeated bind statement, last one overrides")
+				vm.warning("repeated bind statement overrides previous one")
 			}
 
 			blockType := readConst().(string)
@@ -322,7 +322,7 @@ func (vm *vm) run() error {
 		case opBINDNBS:
 			// ( -- )
 			if vm.binding != nil {
-				vm.warning("repeated bind statement, last one overrides")
+				vm.warning("repeated bind statement overrides previous one")
 			}
 
 			blockType := readConst().(string)
