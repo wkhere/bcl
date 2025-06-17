@@ -49,6 +49,9 @@ const (
 	opBINDNB
 	// since bytecode 1.3:
 	opBINDNBS
+	// since bytecode 1.4:
+	opDEFUBIND
+	opENDUBIND
 )
 
 //go:generate stringer -type opcode -trimprefix op

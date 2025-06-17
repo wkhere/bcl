@@ -28,6 +28,7 @@ func (p *Prog) disasmInstr(offset int) int {
 	case
 		opNOP, opRET, opPRINT, opPOP,
 		opENDBLOCK,
+		opDEFUBIND, opENDUBIND,
 		opNIL, opZERO, opONE, opTRUE, opFALSE,
 		opEQ, opLT, opGT,
 		opADD, opSUB, opMUL, opDIV, opNEG, opNOT, opUNPLUS:

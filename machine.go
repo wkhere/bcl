@@ -35,8 +35,9 @@ type vm struct {
 	log    io.Writer
 	trace  bool
 
-	result  []Block
-	binding Binding
+	result       []Block
+	binding      Binding
+	umbrellaOpen bool
 
 	stats execStats
 }
@@ -292,9 +293,27 @@ func (vm *vm) run() error {
 			name := readConst().(string)
 			setField(name, peek(0))
 
+		case opDEFUBIND:
+			// ( -- )
+			if vm.umbrellaOpen {
+				return vm.runtimeError("nested umbrella binding is not allowed")
+			}
+			if vm.binding != nil {
+				vm.warning("repeated bind statement overrides previous one")
+			}
+			vm.binding = &UmbrellaBinding{}
+			vm.umbrellaOpen = true
+
+		case opENDUBIND:
+			// ( -- )
+			if !vm.umbrellaOpen {
+				return vm.runtimeError("expected umbrella binding present")
+			}
+			vm.umbrellaOpen = false
+
 		case opBIND:
 			// ( -- )
-			if vm.binding != nil {
+			if vm.binding != nil && !vm.umbrellaOpen {
 				vm.warning("repeated bind statement overrides previous one")
 			}
 
@@ -307,7 +326,7 @@ func (vm *vm) run() error {
 
 		case opBINDNB:
 			// ( -- )
-			if vm.binding != nil {
+			if vm.binding != nil && !vm.umbrellaOpen {
 				vm.warning("repeated bind statement overrides previous one")
 			}
 
@@ -321,7 +340,7 @@ func (vm *vm) run() error {
 
 		case opBINDNBS:
 			// ( -- )
-			if vm.binding != nil {
+			if vm.binding != nil && !vm.umbrellaOpen {
 				vm.warning("repeated bind statement overrides previous one")
 			}
 
@@ -367,6 +386,7 @@ func (vm *vm) bind(blockType string, blockNames []string, bindOpt byte) error {
 		}
 	}
 	var selectedByName []Block
+	var binding Binding
 
 	switch {
 	case len(blocks) == 0:
@@ -416,35 +436,43 @@ func (vm *vm) bind(blockType string, blockNames []string, bindOpt byte) error {
 		fallthrough
 
 	case target == bindStruct && selector == bindFirst:
-		vm.binding = StructBinding{Value: blocks[0]}
+		binding = StructBinding{Value: blocks[0]}
 
 	case target == bindStruct && selector == bindLast:
-		vm.binding = StructBinding{Value: blocks[len(blocks)-1]}
+		binding = StructBinding{Value: blocks[len(blocks)-1]}
 
 	case target == bindStruct && selector == bindNamedBlock:
-		vm.binding = StructBinding{Value: selectedByName[0]}
+		binding = StructBinding{Value: selectedByName[0]}
 
 	case target == bindSlice && selector == bindAll:
-		vm.binding = SliceBinding{Value: blocks}
+		binding = SliceBinding{Value: blocks}
 
 	case target == bindSlice && selector == bindOne:
 		fallthrough
 
 	case target == bindSlice && selector == bindFirst:
-		vm.binding = SliceBinding{Value: blocks[:1]}
+		binding = SliceBinding{Value: blocks[:1]}
 
 	case target == bindSlice && selector == bindLast:
-		vm.binding = SliceBinding{Value: blocks[len(blocks)-1:]}
+		binding = SliceBinding{Value: blocks[len(blocks)-1:]}
 
 	case target == bindSlice && selector == bindNamedBlock:
-		vm.binding = SliceBinding{Value: selectedByName}
+		binding = SliceBinding{Value: selectedByName}
 
 	case target == bindSlice && selector == bindNamedBlocks:
-		vm.binding = SliceBinding{Value: selectedByName}
+		binding = SliceBinding{Value: selectedByName}
 
 	default:
 		return vm.runtimeError("invalid bind target and selector: 0x%2x", bindOpt)
 	}
+
+	if vm.umbrellaOpen {
+		ub := vm.binding.(*UmbrellaBinding)
+		ub.Parts = append(ub.Parts, binding)
+	} else {
+		vm.binding = binding
+	}
+
 	return nil
 }
 
