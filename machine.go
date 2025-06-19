@@ -97,7 +97,7 @@ func (vm *vm) run() error {
 		vm.stack[vm.tos-1] = v
 	}
 
-	blockGet := func(name string) (v value, ok bool) {
+	getField := func(name string) (v value, ok bool) {
 		switch name {
 		case "TYPE":
 			return vm.blockStack[vm.blockTos-1].Type, true
@@ -113,7 +113,7 @@ func (vm *vm) run() error {
 		}
 		return
 	}
-	blockSet := func(name string, v value) {
+	setField := func(name string, v value) {
 		vm.blockStack[vm.blockTos-1].Fields[name] = v
 	}
 
@@ -281,7 +281,7 @@ func (vm *vm) run() error {
 		case opGETFIELD:
 			// ( -- x )
 			name := readConst().(string)
-			v, ok := blockGet(name)
+			v, ok := getField(name)
 			if !ok {
 				return vm.runtimeError("identifier '%s' not resolved as var or field", name)
 			}
@@ -290,7 +290,7 @@ func (vm *vm) run() error {
 		case opSETFIELD:
 			// ( x -- x )
 			name := readConst().(string)
-			blockSet(name, peek(0))
+			setField(name, peek(0))
 
 		case opBIND:
 			// ( -- )
