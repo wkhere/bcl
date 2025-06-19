@@ -25,15 +25,15 @@ func execute(p *Prog, cf vmConfig) ([]Block, Binding, execStats, error) {
 type vm struct {
 	prog  *Prog
 	pc    int
-	stack [stackSize]value
 	tos   int
+	stack [stackSize]value
+
+	blockTos   int
+	blockStack [blockStackSize]Block
 
 	output io.Writer
 	log    io.Writer
 	trace  bool
-
-	blockStack [blockStackSize]Block
-	blockTos   int
 
 	result  []Block
 	binding Binding
