@@ -148,11 +148,12 @@ func snake(input string) string {
 	nextRune := func(idx int) rune { r, _ := utf8.DecodeRuneInString(input[idx:]); return r }
 
 	var b strings.Builder
-	var prev rune
+	var prevUpper bool
 
 	for i, v := range input {
-		if unicode.IsUpper(v) {
-			if i > 0 && (unicode.IsLower(prev) ||
+		upper := unicode.IsUpper(v)
+		if upper {
+			if i > 0 && (!prevUpper ||
 				unicode.IsLower(nextRune(i+utf8.RuneLen(v)))) {
 				b.WriteByte('_')
 			}
@@ -160,7 +161,7 @@ func snake(input string) string {
 		} else {
 			b.WriteRune(v)
 		}
-		prev = v
+		prevUpper = upper
 	}
 	return b.String()
 }
