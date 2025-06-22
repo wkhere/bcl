@@ -2,5 +2,5 @@
 *.bcl
 *.bcb
 /cov
-/cov.html
+/cov*.html
 /misc/
