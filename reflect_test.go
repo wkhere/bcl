@@ -315,6 +315,9 @@ var snakeTab = []struct{ input, want string }{
 	{"ąćęŁŃÓŚŹŻ", "ąćę_łńóśźż"},
 	{"ĄĆęŁŃÓŚŹŻ", "ą_ćę_łńóśźż"},
 	{"ĄĆĘŁŃóśźż", "ąćęł_ńóśźż"},
+
+	{"TCPDump", "tcp_dump"},
+	{"SQLite", "sq_lite"}, // unfortunately
 }
 
 func TestSnakeUnsnake(t *testing.T) {
