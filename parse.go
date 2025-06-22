@@ -171,6 +171,30 @@ func blockStmt(p *parser) {
 }
 
 func bindStmt(p *parser) {
+	if p.match(tLCURLY) {
+
+		p.emitOp(opDEFUBIND)
+
+		for !p.check(tRCURLY) && !p.checkEnd() {
+			bindpartStmt(p)
+			if p.panicMode {
+				p.advance()
+			}
+			p.match(tSEMICOLON) // optional
+		}
+
+		if p.hadLexFail {
+			return
+		}
+		p.consume(tRCURLY, "expected '}'")
+		p.emitOp(opENDUBIND)
+
+	} else {
+		bindpartStmt(p)
+	}
+}
+
+func bindpartStmt(p *parser) {
 	p.consume(tIDENT, "expected block type")
 	if p.panicMode {
 		return
