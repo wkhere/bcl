@@ -291,6 +291,14 @@ func TestReflect(t *testing.T) {
 	}
 }
 
+func BenchmarkReflect(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		for _, tc := range reflectTab[:75] {
+			_ = Unmarshal([]byte(tc.input), tc.dest, OptLogger(io.Discard))
+		}
+	}
+}
+
 var snakeTab = []struct{ input, want string }{
 	{"", ""},
 	{"x", "x"},
