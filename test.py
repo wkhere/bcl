@@ -522,6 +522,64 @@ tests = [
     ['130.5', 'def x "a"{}; def x "b"{}; bind x:"a","b", -> slice', ''],
     ['130.6', 'def x "a"{}; def x "b"{}; bind x:"c", -> slice', '', 'err: block x:"c" not found'],
 
+
+    ['131.1', 'bind {}',
+        "== /dev/stdin ==\n"
+        "0000    1:7  DEFUBIND\n"
+        "0001    1:8  ENDUBIND\n"
+        "0002      |  RET",
+        'disasm'
+    ],
+    ['131.2', 'def x{}; bind {x -> struct}',
+        "== /dev/stdin ==\n"
+        "0000    1:7  DEFBLOCK      0 'x'\t   1 ''\n"
+        "0003    1:8  ENDBLOCK\n"
+        "0004   1:16  DEFUBIND\n"
+        "0005   1:27  BIND          0 'x'\t0x11\n"
+        "0008   1:28  ENDUBIND\n"
+        "0009      |  RET",
+        'disasm'
+    ],
+    ['131.3', 'def x{}; def y{}; bind {x -> struct; y:all -> slice}',
+        "== /dev/stdin ==\n"
+        "0000    1:7  DEFBLOCK      0 'x'\t   1 ''\n"
+        "0003    1:8  ENDBLOCK\n"
+        "0004   1:16  DEFBLOCK      2 'y'\t   1 ''\n"
+        "0007   1:17  ENDBLOCK\n"
+        "0008   1:25  DEFUBIND\n"
+        "0009   1:36  BIND          0 'x'\t0x11\n"
+        "0012   1:52  BIND          2 'y'\t0x2F\n"
+        "0015   1:53  ENDUBIND\n"
+        "0016      |  RET",
+        'disasm'
+    ],
+    ['131.4', 'def x{}; def y{}; bind {y -> struct; x:all -> slice}',
+        "== /dev/stdin ==\n"
+        "0000    1:7  DEFBLOCK      0 'x'\t   1 ''\n"
+        "0003    1:8  ENDBLOCK\n"
+        "0004   1:16  DEFBLOCK      2 'y'\t   1 ''\n"
+        "0007   1:17  ENDBLOCK\n"
+        "0008   1:25  DEFUBIND\n"
+        "0009   1:36  BIND          2 'y'\t0x11\n"
+        "0012   1:52  BIND          0 'x'\t0x2F\n"
+        "0015   1:53  ENDUBIND\n"
+        "0016      |  RET",
+        'disasm'
+    ],
+
+    ['132.1', 'bind {}', ''],
+    ['132.2', 'def x{}; bind {x -> struct}',     ''],
+    ['132.3', 'def x{}; bind {x:all -> slice}',  ''],
+    ['132.4', 'def x{}; def y{}; bind {x -> struct; y -> struct}',     ''],
+    ['132.5', 'def x{}; def y{}; bind {x -> struct; y:all -> slice}',  ''],
+    ['132.6', 'def x{}; def y{}; bind {x:all -> slice; y -> struct}',  ''],
+
+    ['133.1', 'bind {42x}', '',          'err: invalid syntax'],
+    ['133.2', 'bind {x -> struct}', '',  'err: no blocks of type x'],
+    ['133.3', 'def x{}; bind {x:"a" -> struct}', '',  'err: block x:"a" not found'],
+    ['133.4', 'def x{}; bind {x:"a" -> struct}', '',  'err: block x:"a" not found'],
+    ['133.5', 'bind{bind}', '',    'err: expected block type'],
+    ['133.6', 'bind{bind{}}', '',  'err: expected block type'],
 ]
 
 tests_64b = [
