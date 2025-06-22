@@ -69,8 +69,6 @@ func copyBlock(v reflect.Value, block Block) error {
 		}
 	}
 
-	blockType := reflect.TypeOf(Block{})
-
 	setField := func(name string, x any) error {
 		var f reflect.StructField
 		var ok bool
@@ -97,7 +95,7 @@ func copyBlock(v reflect.Value, block Block) error {
 		namei := f.Index[0]
 		vx := reflect.ValueOf(x)
 
-		if vx.Type().AssignableTo(blockType) {
+		if vx.Type().AssignableTo(reflect.TypeOf(Block{})) {
 			return copyBlock(v.Field(namei), x.(Block))
 		}
 
