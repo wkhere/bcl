@@ -45,7 +45,7 @@ func simpleUnmarshal(dest any) error {
 		other_field = 42
 	}
 
-	bind struct1 -> struct
+	bind struct1
 	`
 	return Unmarshal([]byte(bcl), dest)
 }
@@ -123,66 +123,70 @@ var reflectTab = []reflecttc{
 	rerror(``, &struct{}{}, "no binding"),
 	rerror(``, &[]struct{}{}, "no binding"),
 
-	rerror(`bind any -> struct`, nil, "no blocks of type any"),
-	rerror(`bind any -> struct`, 1, "no blocks of type any"),
-	rerror(`bind any -> struct`, struct{}{}, "no blocks of type any"),
-	rerror(`bind any -> struct`, &struct{}{}, "no blocks of type any"),
-	rerror(`bind any -> struct`, &[]struct{}{}, "no blocks of type any"),
+	rerror(`bind any`, nil, "no blocks of type any"),
+	rerror(`bind any`, 1, "no blocks of type any"),
+	rerror(`bind any`, struct{}{}, "no blocks of type any"),
+	rerror(`bind any`, &struct{}{}, "no blocks of type any"),
+	rerror(`bind any`, &[]struct{}{}, "no blocks of type any"),
 
-	rerror(`def any{}; bind any -> struct`, nil, "expected pointer"),
-	rerror(`def any{}; bind any -> struct`, 1, "expected pointer, have: int"),
-	rerror(`def any{}; bind any -> struct`, struct{}{}, "expected pointer, have: struct"),
-	rvalid(`def any{}; bind any -> struct`, &struct{}{}, &struct{}{}),
-	rerror(`def any{}; bind any -> struct`, &[]struct{}{},
+	// 10:
+	rerror(`def any{}; bind any`, nil, "expected pointer"),
+	rerror(`def any{}; bind any`, 1, "expected pointer, have: int"),
+	rerror(`def any{}; bind any`, struct{}{}, "expected pointer, have: struct"),
+	rvalid(`def any{}; bind any`, &struct{}{}, &struct{}{}),
+	rerror(`def any{}; bind any`, &[]struct{}{},
 		"pointer deref: expected struct, have: slice",
 	),
 
-	rerror(`def any{}; bind any -> slice`, nil, "expected pointer"),
-	rerror(`def any{}; bind any -> slice`, struct{}{}, "expected pointer, have: struct"),
-	rerror(`def any{}; bind any -> slice`, &struct{}{},
+	// 15:
+	rerror(`def any{}; bind any`, nil, "expected pointer"),
+	rerror(`def any{}; bind any`, struct{}{}, "expected pointer, have: struct"),
+	rerror(`def any{}; bind any:all`, &struct{}{},
 		"pointer deref: expected slice, have: struct",
 	),
-	rvalid(`def any{}; bind any -> slice`, &[]struct{}{}, &[]struct{}{{}}), // empty struct inside
+	rvalid(`def any{}; bind any:all`, &[]struct{}{}, &[]struct{}{{}}), // empty struct inside
 	// the next one is nasty: would panic if there was no checking for a slice element:
-	rerror(`def int{}; bind int -> slice`, &[]int{},
+	rerror(`def int{}; bind int:all`, &[]int{},
 		"slice element deref: expected struct, have: int",
 	),
 
-	rvalid(`def any{x=1}; bind any -> struct`, &struct{ X int }{}, &struct{ X int }{X: 1}),
-	rvalid(`def any{x=1}; bind any:all -> slice`, &[]struct{ X int }{}, &[]struct{ X int }{{X: 1}}),
-	rvalid(`def any "foo" {}; bind any -> struct`,
+	// 20:
+	rvalid(`def any{x=1}; bind any`, &struct{ X int }{}, &struct{ X int }{X: 1}),
+	rvalid(`def any{x=1}; bind any:all`, &[]struct{ X int }{}, &[]struct{ X int }{{X: 1}}),
+	rvalid(`def any "foo" {}; bind any`,
 		&struct{ Name string }{},
 		&struct{ Name string }{Name: "foo"},
 	),
-	rvalid(`def any "foo" {}; bind any:all -> slice`,
+	rvalid(`def any "foo" {}; bind any:all`,
 		&[]struct{ Name string }{},
 		&[]struct{ Name string }{{Name: "foo"}},
 	),
-	rerror(`def any "foo" {}; bind any -> struct`,
+	rerror(`def any "foo" {}; bind any`,
 		&struct{}{},
 		`field mapping for "Name" not found in struct`,
 	),
 
-	rvalid(`def any "foo" {s="quux"}; bind any -> struct`,
+	// 25:
+	rvalid(`def any "foo" {s="quux"}; bind any`,
 		&struct{ Name, S string }{},
 		&struct{ Name, S string }{Name: "foo", S: "quux"},
 	),
-	rerror(`def any "foo" {x=10}; bind any -> struct`,
+	rerror(`def any "foo" {x=10}; bind any`,
 		&struct{ Name string }{},
 		`field mapping for "x" not found in struct`,
 	),
-	rerror(`def any "foo" {x=10}; bind any:all -> slice`,
+	rerror(`def any "foo" {x=10}; bind any:all`,
 		&[]struct{ Name string }{},
 		`field mapping for "x" not found in struct`,
 	),
-	rerror(`def any "foo" {x=10}; bind any -> struct`,
+	rerror(`def any "foo" {x=10}; bind any`,
 		&struct {
 			Name string
 			x    int
 		}{},
 		`found field "x" but is unexported`,
 	),
-	rerror(`def any "foo" {x=10}; bind any -> slice`,
+	rerror(`def any "foo" {x=10}; bind any:all`,
 		&[]struct {
 			Name string
 			x    int
@@ -190,73 +194,85 @@ var reflectTab = []reflecttc{
 		`found field "x" but is unexported`,
 	),
 
-	rvalid(`def s "foo" {x=1}; bind s -> struct`, &S{}, &S{Name: "foo", X: 1}),
-	rvalid(`def s "foo" {x=1}; bind s -> slice`, &[]S{}, &[]S{{Name: "foo", X: 1}}),
-	rvalid(`def s {x=1}; def s{x=2}; bind s:all -> slice`, &[]S{}, &[]S{{X: 1}, {X: 2}}),
-	rerror(`def y "foo" {x=1}; bind y -> struct`, &S{}, "mismatch: struct type S, block type y"),
-	rerror(`def y "foo" {x=1}; bind y -> slice`, &[]S{}, "mismatch: struct type S, block type y"),
+	// 30:
+	rvalid(`def s "foo" {x=1}; bind s`, &S{}, &S{Name: "foo", X: 1}),
+	rvalid(`def s "foo" {x=1}; bind s:all`, &[]S{}, &[]S{{Name: "foo", X: 1}}),
+	rvalid(`def s {x=1}; def s{x=2}; bind s:all`, &[]S{}, &[]S{{X: 1}, {X: 2}}),
+	rerror(`def y "foo" {x=1}; bind y`, &S{}, "mismatch: struct type S, block type y"),
+	rerror(`def y "foo" {x=1}; bind y:all`, &[]S{}, "mismatch: struct type S, block type y"),
 
-	rerror(`def s {y=1}; bind s -> struct`, &S{}, `field mapping for "y" not found in struct`),
-	rerror(`def s {y=1}; bind s -> slice`, &[]S{}, `field mapping for "y" not found in struct`),
-	rvalid(`def s2 "foo" {y=1}; bind s2 -> struct`, &S2{}, &S2{Name: "foo", X: 1}),
-	rvalid(`def s2 "foo" {y=1}; bind s2 -> slice`, &[]S2{}, &[]S2{{Name: "foo", X: 1}}),
-	rvalid(`def s2 "foo" {y=1}; bind s2:all -> slice`, &[]S2{}, &[]S2{{Name: "foo", X: 1}}),
+	rerror(`def s {y=1}; bind s`, &S{}, `field mapping for "y" not found in struct`),
+	rerror(`def s {y=1}; bind s:all`, &[]S{}, `field mapping for "y" not found in struct`),
+	rvalid(`def s2 "foo" {y=1}; bind s2`, &S2{}, &S2{Name: "foo", X: 1}),
+	rvalid(`def s2 "foo" {y=1}; bind s2:all`, &[]S2{}, &[]S2{{Name: "foo", X: 1}}),
+	rvalid(`def s2 "foo" {y=1}; bind s2:"foo",`, &[]S2{}, &[]S2{{Name: "foo", X: 1}}),
 
-	rerror(`def s {x=""}; bind s -> struct`, &S{},
+	// 40:
+	rerror(`def s {x=""}; bind s`, &S{},
 		"type mismatch.+ struct.X has int, block.x has string",
 	),
-	rerror(`def s {X=""}; bind s -> struct`, &S{},
+	rerror(`def s {X=""}; bind s`, &S{},
 		"type mismatch.+ struct.X has int, block.X has string",
 	),
-	rerror(`def s {x=""}; bind s -> slice`, &[]S{},
+	rerror(`def s {x=""}; bind s:all`, &[]S{},
 		"type mismatch.+ struct.X has int, block.x has string",
 	),
-	rerror(`def s "foo" {x=""}; bind s -> struct`, &S{},
+	rerror(`def s "foo" {x=""}; bind s`, &S{},
 		"type mismatch.+ struct.X has int, block.x has string",
 	),
-	rerror(`def s "foo" {x=""}; bind s -> slice`, &[]S{},
+	rerror(`def s "foo" {x=""}; bind s:all`, &[]S{},
 		"type mismatch.+ struct.X has int, block.x has string",
 	),
 
-	rerror(`def s{}; def s{x=1}; bind s -> struct`, &S{}, "found 2 blocks of type s "),
-	rerror(`def s{}; def s{x=1}; bind s:1 -> struct`, &S{}, "found 2 blocks of type s "),
-	rvalid(`def s{}; def s{x=1}; bind s:first -> struct`, &S{}, &S{}),
-	rvalid(`def s{}; def s{x=1}; bind s:last  -> struct`, &S{}, &S{X: 1}),
-	rerror(`def s{}; def s{x=1}; bind s:all   -> struct`, &S{}, "combined errors from parse"),
+	// 45:
+	rerror(`def s{}; def s{x=1}; bind s`, &S{}, "found 2 blocks of type s "),
+	rerror(`def s{}; def s{x=1}; bind s:1`, &S{}, "found 2 blocks of type s "),
+	rvalid(`def s{}; def s{x=1}; bind s:first`, &S{}, &S{}),
+	rvalid(`def s{}; def s{x=1}; bind s:last `, &S{}, &S{X: 1}),
+	rerror(`def s{}; def s{x=1}; bind s:all`, &S{}, "expected slice, have: struct"),
 
-	rerror(`def s{}; def s{x=1}; bind s -> slice`, &[]S{}, "found 2 blocks of type s "),
-	rerror(`def s{}; def s{x=1}; bind s -> slice`, &[]S{}, "found 2 blocks of type s "),
-	rvalid(`def s{}; def s{x=1}; bind s:first -> slice`, &[]S{}, &[]S{{}}),
-	rvalid(`def s{}; def s{x=1}; bind s:last  -> slice`, &[]S{}, &[]S{{X: 1}}),
-	rvalid(`def s{}; def s{x=1}; bind s:all   -> slice`, &[]S{}, &[]S{{}, {X: 1}}),
+	// 50:
+	rerror(`def s{}; def s{x=1}; bind s`, &S{}, "found 2 blocks of type s "),
+	rerror(`def s{}; def s{x=1}; bind s:"foo"`, &S{}, `block s:"foo" not found`),
+	rerror(`placeholder`, nil, "combined errors"),
+	// ^^ rvalid(`def s{}; def s{x=1}; bind s:first,`, &[]S{}, &[]S{{}}),
+	rerror(`placeholder`, nil, "combined errors"),
+	// ^^ rvalid(`def s{}; def s{x=1}; bind s:last,  -> slice`, &[]S{}, &[]S{{X: 1}}),
+	rvalid(`def s{}; def s{x=1}; bind s:all`, &[]S{}, &[]S{{}, {X: 1}}),
 
-	rerror(`def foo{}; bind foo:2   -> struct`, &S{}, "combined errors from parse"),
-	rerror(`def foo{}; bind foo:sth -> struct`, &S{}, "combined errors from parse"),
-	rerror(`def foo{}; bind foo:"q" -> struct`, &S{}, `block foo:"q" not found`),
-	rerror(`def foo{}; bind "foo"   -> struct`, &S{}, "combined errors from parse"),
-	rerror(`def foo{}; bind foo     -> oopsie`, &S{}, "combined errors from parse"),
+	// 55:
+	rerror(`def foo{}; bind foo:2`, &S{}, "combined errors from parse"),
+	rerror(`def foo{}; bind foo:sth`, &S{}, "combined errors from parse"),
+	rerror(`def foo{}; bind foo:"q"`, &S{}, `block foo:"q" not found`),
+	rerror(`def foo{}; bind "foo"`, &S{}, "combined errors from parse"),
+	rerror(`def foo{}; bind foo`, &S{}, "struct type S, block type foo"),
 
-	rvalid(`def s3 "foo" {x=1}; bind s3 -> struct`, &S3{}, &S3{Name: "foo", X: 1}),
-	rvalid(`def s3 "foo" {x=1}; bind s3 -> struct`, &S3{}, &S3{X: 1, Name: "foo"}),
-	rvalid(`def s4 {};         bind s4 -> struct`, &S4{}, &S4{}),
-	rvalid(`def s4 {x=1};      bind s4 -> struct`, &S4{}, &S4{X: 1}),
-	rvalid(`def s4 {x=1; y=2}; bind s4 -> struct`, &S4{}, &S4{X: 1, Y: 2}),
+	// 60:
+	rvalid(`def s3 "foo" {x=1}; bind s3 `, &S3{}, &S3{Name: "foo", X: 1}),
+	rvalid(`def s3 "foo" {x=1}; bind s3`, &S3{}, &S3{X: 1, Name: "foo"}),
+	rvalid(`def s4 {};          bind s4`, &S4{}, &S4{}),
+	rvalid(`def s4 {x=1};       bind s4`, &S4{}, &S4{X: 1}),
+	rvalid(`def s4 {x=1; y=2};  bind s4`, &S4{}, &S4{X: 1, Y: 2}),
 
-	rerror(`def s {}; bind s:"foo" -> struct`, &S{}, `block s:"foo" not found`),
-	rvalid(`def s "foo"{}; bind s:"foo" -> struct`, &S{}, &S{Name: "foo"}),
-	rvalid(`def s "foo"{x=1}; bind s:"foo" -> struct`, &S{}, &S{Name: "foo", X: 1}),
-	rvalid(`def s "foo"{x=1}; def s "bar"{x=2}; bind s:"foo" -> struct`, &S{},
+	// 65:
+	rerror(`def s {}; bind s:"foo"`, &S{}, `block s:"foo" not found`),
+	rvalid(`def s "foo"{}; bind s:"foo"`, &S{}, &S{Name: "foo"}),
+	rvalid(`def s "foo"{x=1}; bind s:"foo"`, &S{}, &S{Name: "foo", X: 1}),
+	rvalid(`def s "foo"{x=1}; def s "bar"{x=2}; bind s:"foo"`, &S{},
 		&S{Name: "foo", X: 1},
 	),
-	rvalid(`def s "foo"{x=1}; def s "bar"{x=2}; bind s:"bar" -> struct`, &S{},
+	rvalid(`def s "foo"{x=1}; def s "bar"{x=2}; bind s:"bar"`, &S{},
 		&S{Name: "bar", X: 2},
 	),
 
-	rvalid(`def s "foo"{}; bind s:"foo"  -> slice`, &[]S{}, &[]S{{Name: "foo"}}),
-	rerror(`def s "foo"{}; bind s:"foo2" -> slice`, &[]S{}, `block s:"foo2" not found`),
-	rerror(`def s "foo"{}; bind s:"foo", -> struct`, &S{}, `invalid bind target and selector`),
-	rvalid(`def s "foo"{}; bind s:"foo", -> slice`, &[]S{}, &[]S{{Name: "foo"}}),
-	rvalid(`def s "foo"{}; def s "bar"{}; bind s:"foo","bar" -> slice`, &[]S{},
+	// 70:
+	rvalid(`def s "foo"{}; bind s:"foo",`, &[]S{}, &[]S{{Name: "foo"}}),
+	rerror(`def s "foo"{}; bind s:"foo2",`, &[]S{}, `block s:"foo2" not found`),
+	rerror(`def s "foo"{}; bind s:"foo",`, &S{}, `expected slice, have: struct`),
+	rvalid(`def s "foo"{}; def s "bar"{}; bind s:"foo","bar"`, &[]S{},
+		&[]S{{Name: "foo"}, {Name: "bar"}},
+	),
+	rvalid(`def s "foo"{}; def s "bar"{}; bind s:"foo","bar",`, &[]S{},
 		&[]S{{Name: "foo"}, {Name: "bar"}},
 	),
 }

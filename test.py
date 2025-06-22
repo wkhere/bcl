@@ -416,23 +416,23 @@ tests = [
     ['124.9',   'eval "foo"1', '',   'err: invalid syntax `"foo"1`'],
     ['124.10',  'eval "foo"q', '',   'err: invalid syntax `"foo"q`'],
 
-    ['125.1',   'def b {}; bind b -> struct',
+    ['125.1',   'def b {}; bind b',
         "== /dev/stdin ==\n"
         "0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
         "0003    1:9  ENDBLOCK\n"
-        "0004   1:27  BIND          0 'b'\t0x11\n"
+        "0004   1:17  BIND          0 'b'\t0x11\n"
         "0007      |  RET",
         'disasm'
     ],
-    ['125.2',   'def b {}; bind b -> slice',
+    ['125.2',   'def b {}; bind b:all',
         "== /dev/stdin ==\n"
         "0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
         "0003    1:9  ENDBLOCK\n"
-        "0004   1:26  BIND          0 'b'\t0x21\n"
+        "0004   1:21  BIND          0 'b'\t0x2F\n"
         "0007      |  RET",
         'disasm'
     ],
-    ['125.3',   'def b {}; def b{x=1}; bind b:last -> slice',
+    ['125.3',   'def b {}; def b{x=1}; bind b:last',
         "== /dev/stdin ==\n"
         "0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
         "0003    1:9  ENDBLOCK\n"
@@ -441,11 +441,11 @@ tests = [
         "0008      |  SETFIELD      2 'x'\n"
         "0010      |  POP\n"
         "0011   1:21  ENDBLOCK\n"
-        "0012   1:43  BIND          0 'b'\t0x23\n"
+        "0012   1:34  BIND          0 'b'\t0x13\n"
         "0015      |  RET",
         'disasm'
     ],
-    ['125.4',   'def b {}; def b{x=1}; bind b:all -> slice',
+    ['125.4',   'def b {}; def b{x=1}; bind b:all',
         "== /dev/stdin ==\n"
         "0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
         "0003    1:9  ENDBLOCK\n"
@@ -454,73 +454,71 @@ tests = [
         "0008      |  SETFIELD      2 'x'\n"
         "0010      |  POP\n"
         "0011   1:21  ENDBLOCK\n"
-        "0012   1:42  BIND          0 'b'\t0x2F\n"
+        "0012   1:33  BIND          0 'b'\t0x2F\n"
         "0015      |  RET",
         'disasm'
     ],
 
-    ['126.1', 'bind x -> struct', '',                       'err: no blocks of type x'],
-    ['126.2', 'def x{}; def x{}; bind x -> struct', '',     'err: found 2 blocks of type x'],
-    ['126.3', 'def x{}; def x{}; bind x:1   -> struct', '', 'err: found 2 blocks of type x'],
-    ['126.4', 'def x{}; def x{}; bind x:all -> struct', '', 'err: bind of multiple blocks'],
-    ['126.5', 'def x{}; bind x->slice; bind x->struct', ''],
-    ['126.6', 'def x{}; bind x: -> slice', '',    'err: expected block selector'],
-    ['126.7', 'def x{}; bind x:foo -> slice', '', 'err: expected block selector'],
+    ['126.1', 'bind x', '',                       'err: no blocks of type x'],
+    ['126.2', 'def x{}; def x{}; bind x', '',     'err: found 2 blocks of type x'],
+    ['126.3', 'def x{}; def x{}; bind x:1', '',   'err: found 2 blocks of type x'],
+    ['126.4', 'def x{}; bind x:   ', '',          'err: expected block selector'],
+    ['126.5', 'def x{}; bind x:foo', '',          'err: expected block selector'],
+    ['126.6', 'def x{}; bind x; bind x:all', ''],
 
-    ['127.1', 'def b "foo"{}; bind b:"foo" -> struct',
+    ['127.1', 'def b "foo"{}; bind b:"foo"',
         "== /dev/stdin ==\n"
         "0000   1:13  DEFBLOCK      0 'b'\t   1 'foo'\n"
         "0003   1:14  ENDBLOCK\n"
-        "0004   1:38  BINDNB        0 'b'\t   2 'foo'\t0x14\n"
+        "0004   1:28  BINDNB        0 'b'\t   2 'foo'\t0x14\n"
         "0008      |  RET",
         'disasm'
     ],
-    ['127.2', 'def b "foo"{}; def b "bar"{}; bind b:"bar" -> struct',
+    ['127.2', 'def b "foo"{}; def b "bar"{}; bind b:"bar"',
         "== /dev/stdin ==\n"
         "0000   1:13  DEFBLOCK      0 'b'\t   1 'foo'\n"
         "0003   1:14  ENDBLOCK\n"
         "0004   1:28  DEFBLOCK      0 'b'\t   2 'bar'\n"
         "0007   1:29  ENDBLOCK\n"
-        "0008   1:53  BINDNB        0 'b'\t   3 'bar'\t0x14\n"
+        "0008   1:43  BINDNB        0 'b'\t   3 'bar'\t0x14\n"
         "0012      |  RET",
         'disasm'
     ],
 
-    ['128.1', 'bind x:"foo" -> struct', '',            'err: no blocks of type x'],
-    ['128.2', 'def x{}; bind x:"foo" -> struct', '',   'err: block x:"foo" not found'],
-    ['128.3', 'def x "a"{}; bind x:"foo" -> struct', '',   'err: block x:"foo" not found'],
-    ['128.4', 'def x "a"{}; bind x:"foo" -> slice',  '',   'err: block x:"foo" not found'],
-    ['128.5', 'def x "a"{}; def x "b"{}; bind x:"a" -> struct', ''],
-    ['128.6', 'def x "a"{}; def x "b"{}; bind x:"b" -> struct', ''],
-    ['128.7', 'def x "a"{}; bind x:"a" -> slice',               ''],
-    ['128.8', 'def x "a"{}; def x "b"{}; bind x:"a" -> slice',  ''],
-    ['128.9', 'def x "a"{}; def x "b"{}; bind x:"b" -> slice',  ''],
+    ['128.1', 'bind x:"foo"', '',                'err: no blocks of type x'],
+    ['128.2', 'def x{}; bind x:"foo"', '',       'err: block x:"foo" not found'],
+    ['128.3', 'def x "a"{}; bind x:"foo"', '',   'err: block x:"foo" not found'],
+    ['128.4', 'def x "a"{}; bind x:"foo",', '',  'err: block x:"foo" not found'],
+    ['128.5', 'def x "a"{}; def x "b"{}; bind x:"a"', ''],
+    ['128.6', 'def x "a"{}; def x "b"{}; bind x:"b"', ''],
+    ['128.7', 'def x "a"{}; bind x:"a",',             ''],
+    ['128.8', 'def x "a"{}; def x "b"{}; bind x:"a",',  ''],
+    ['128.9', 'def x "a"{}; def x "b"{}; bind x:"b",',  ''],
 
-    ['129.1', 'def b "foo"{}; bind b:"foo", -> slice',
+    ['129.1', 'def b "foo"{}; bind b:"foo",',
         "== /dev/stdin ==\n"
         "0000   1:13  DEFBLOCK      0 'b'\t   1 'foo'\n"
         "0003   1:14  ENDBLOCK\n"
-        "0004   1:38  BINDNBS       0 'b'\t   2 'foo'\t0x25\n"
+        "0004   1:29  BINDNBS       0 'b'\t   2 'foo'\t0x25\n"
         "0009      |  RET",
         'disasm'
     ],
-    ['129.2', 'def b "foo"{}; def b "bar"{}; bind b:"foo","bar" -> slice',
+    ['129.2', 'def b "foo"{}; def b "bar"{}; bind b:"foo","bar"',
         "== /dev/stdin ==\n"
         "0000   1:13  DEFBLOCK      0 'b'\t   1 'foo'\n"
         "0003   1:14  ENDBLOCK\n"
         "0004   1:28  DEFBLOCK      0 'b'\t   2 'bar'\n"
         "0007   1:29  ENDBLOCK\n"
-        "0008   1:58  BINDNBS       0 'b'\t   3 'foo'\t   4 'bar'\t0x25\n"
+        "0008   1:49  BINDNBS       0 'b'\t   3 'foo'\t   4 'bar'\t0x25\n"
         "0014      |  RET",
         'disasm'
     ],
 
-    ['130.1', 'def x "a"{}; bind x:"foo", -> struct', '', 'err: block x:"foo" not found'],
-    ['130.2', 'def x "a"{}; bind x:"a", -> struct', '',   'err: invalid bind target and selector'],
-    ['130.3', 'def x "a"{}; bind x:"a",   -> slice',                ''],
-    ['130.4', 'def x "a"{}; def x "b"{}; bind x:"a","b"  -> slice', ''],
-    ['130.5', 'def x "a"{}; def x "b"{}; bind x:"a","b", -> slice', ''],
-    ['130.6', 'def x "a"{}; def x "b"{}; bind x:"c", -> slice', '', 'err: block x:"c" not found'],
+    ['130.1', 'def x "a"{}; bind x:"a",',   ''],
+    ['130.2', 'def x "a"{}; def x "b"{}; bind x:"a","b"',  ''],
+    ['130.3', 'def x "a"{}; def x "b"{}; bind x:"a","b",', ''],
+    ['130.4', 'def x "a"{}; bind x:"foo",',            '', 'err: block x:"foo" not found'],
+    ['130.5', 'def x "a"{}; def x "b"{}; bind x:"c",', '', 'err: block x:"c" not found'],
 
 
     ['131.1', 'bind {}',
@@ -530,56 +528,56 @@ tests = [
         "0002      |  RET",
         'disasm'
     ],
-    ['131.2', 'def x{}; bind {x -> struct}',
+    ['131.2', 'def x{}; bind {x}',
         "== /dev/stdin ==\n"
         "0000    1:7  DEFBLOCK      0 'x'\t   1 ''\n"
         "0003    1:8  ENDBLOCK\n"
         "0004   1:16  DEFUBIND\n"
-        "0005   1:27  BIND          0 'x'\t0x11\n"
-        "0008   1:28  ENDUBIND\n"
+        "0005   1:17  BIND          0 'x'\t0x11\n"
+        "0008   1:18  ENDUBIND\n"
         "0009      |  RET",
         'disasm'
     ],
-    ['131.3', 'def x{}; def y{}; bind {x -> struct; y:all -> slice}',
+    ['131.3', 'def x{}; def y{}; bind {x; y:all}',
         "== /dev/stdin ==\n"
         "0000    1:7  DEFBLOCK      0 'x'\t   1 ''\n"
         "0003    1:8  ENDBLOCK\n"
         "0004   1:16  DEFBLOCK      2 'y'\t   1 ''\n"
         "0007   1:17  ENDBLOCK\n"
         "0008   1:25  DEFUBIND\n"
-        "0009   1:36  BIND          0 'x'\t0x11\n"
-        "0012   1:52  BIND          2 'y'\t0x2F\n"
-        "0015   1:53  ENDUBIND\n"
+        "0009   1:26  BIND          0 'x'\t0x11\n"
+        "0012   1:33  BIND          2 'y'\t0x2F\n"
+        "0015   1:34  ENDUBIND\n"
         "0016      |  RET",
         'disasm'
     ],
-    ['131.4', 'def x{}; def y{}; bind {y -> struct; x:all -> slice}',
+    ['131.4', 'def x{}; def y{}; bind {y; x:all}',
         "== /dev/stdin ==\n"
         "0000    1:7  DEFBLOCK      0 'x'\t   1 ''\n"
         "0003    1:8  ENDBLOCK\n"
         "0004   1:16  DEFBLOCK      2 'y'\t   1 ''\n"
         "0007   1:17  ENDBLOCK\n"
         "0008   1:25  DEFUBIND\n"
-        "0009   1:36  BIND          2 'y'\t0x11\n"
-        "0012   1:52  BIND          0 'x'\t0x2F\n"
-        "0015   1:53  ENDUBIND\n"
+        "0009   1:26  BIND          2 'y'\t0x11\n"
+        "0012   1:33  BIND          0 'x'\t0x2F\n"
+        "0015   1:34  ENDUBIND\n"
         "0016      |  RET",
         'disasm'
     ],
 
     ['132.1', 'bind {}', ''],
-    ['132.2', 'def x{}; bind {x -> struct}',     ''],
-    ['132.3', 'def x{}; bind {x:all -> slice}',  ''],
-    ['132.4', 'def x{}; def y{}; bind {x -> struct; y -> struct}',     ''],
-    ['132.5', 'def x{}; def y{}; bind {x -> struct; y:all -> slice}',  ''],
-    ['132.6', 'def x{}; def y{}; bind {x:all -> slice; y -> struct}',  ''],
+    ['132.2', 'def x{}; bind {x}',      ''],
+    ['132.3', 'def x{}; bind {x:all}',  ''],
+    ['132.4', 'def x{}; def y{}; bind {x; y}',     ''],
+    ['132.5', 'def x{}; def y{}; bind {x; y:all}',  ''],
+    ['132.6', 'def x{}; def y{}; bind {x:all; y}',  ''],
 
-    ['133.1', 'bind {42x}', '',          'err: invalid syntax'],
-    ['133.2', 'bind {x -> struct}', '',  'err: no blocks of type x'],
-    ['133.3', 'def x{}; bind {x:"a" -> struct}', '',  'err: block x:"a" not found'],
-    ['133.4', 'def x{}; bind {x:"a" -> struct}', '',  'err: block x:"a" not found'],
-    ['133.5', 'bind{bind}', '',    'err: expected block type'],
-    ['133.6', 'bind{bind{}}', '',  'err: expected block type'],
+    ['133.1', 'bind {42x}', '',              'err: invalid syntax'],
+    ['133.2', 'bind {x}',   '',              'err: no blocks of type x'],
+    ['133.3', 'def x{}; bind {x:"a"}',  '',  'err: block x:"a" not found'],
+    ['133.4', 'def x{}; bind {x:"a",}', '',  'err: block x:"a" not found'],
+    ['133.5', 'bind{bind}',             '',  'err: expected block type'],
+    ['133.6', 'bind{bind{}}',           '',  'err: expected block type'],
 ]
 
 tests_64b = [

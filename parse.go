@@ -200,9 +200,12 @@ func bindpartStmt(p *parser) {
 		return
 	}
 
-	blockType := p.prev.val
-	bindSel := bindOne
-	selBlockNames := []string{}
+	var (
+		blockType     = p.prev.val
+		selector      = bindOne
+		target        = bindStruct
+		selBlockNames = []string{}
+	)
 
 	errmsg := `expected block selector: 1 first last all "name" "name1","name2"`
 	if p.match(tCOLON) {
@@ -211,13 +214,15 @@ func bindpartStmt(p *parser) {
 			if p.prev.val != "1" {
 				p.error(errmsg)
 			}
-			bindSel = bindOne
+			selector = bindOne
 
 		case p.match(tSTR):
 			name, _ := strconv.Unquote(p.prev.val)
 			selBlockNames = append(selBlockNames, name)
+
 			if p.match(tCOMMA) {
-				bindSel = bindNamedBlocks
+				target = bindSlice
+				selector = bindNamedBlocks
 				for p.match(tSTR) {
 					name, _ = strconv.Unquote(p.prev.val)
 					selBlockNames = append(selBlockNames, name)
@@ -227,17 +232,18 @@ func bindpartStmt(p *parser) {
 					break
 				}
 			} else {
-				bindSel = bindNamedBlock
+				selector = bindNamedBlock
 			}
 
 		case p.match(tIDENT):
 			switch p.prev.val {
 			case "first":
-				bindSel = bindFirst
+				selector = bindFirst
 			case "last":
-				bindSel = bindLast
+				selector = bindLast
 			case "all":
-				bindSel = bindAll
+				selector = bindAll
+				target = bindSlice
 			default:
 				p.error(errmsg)
 			}
@@ -247,34 +253,7 @@ func bindpartStmt(p *parser) {
 		}
 	}
 
-	p.consume(tARROW, "expected '->'")
-	if p.panicMode {
-		return
-	}
-
-	errmsg = "expected bind target ('struct' or 'slice')"
-	p.consume(tIDENT, errmsg)
-	if p.panicMode {
-		return
-	}
-
-	var target bindTarget
-	switch p.prev.val {
-	case "struct":
-		target = bindStruct
-	case "slice":
-		target = bindSlice
-	default:
-		p.error(errmsg)
-	}
-	if bindSel == bindAll && target != bindSlice {
-		p.error("bind of multiple blocks requires slice target")
-	}
-	if p.panicMode {
-		return
-	}
-
-	switch bindSel {
+	switch selector {
 	case bindNamedBlock:
 		p.emitOp(opBINDNB)
 		p.emitUvarint(p.identConst(blockType))
@@ -293,7 +272,7 @@ func bindpartStmt(p *parser) {
 	default:
 		p.emitOp(opBIND)
 		p.emitUvarint(p.identConst(blockType))
-		p.emitByte(byte(target&0xF0) | byte(bindSel&0x0F))
+		p.emitByte(byte(target&0xF0) | byte(selector&0x0F))
 	}
 }
 
