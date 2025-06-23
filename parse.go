@@ -34,11 +34,11 @@ func parse(inputs <-chan string, name string, w writers) (
 	}
 
 	if p.hadError {
-		p.finishStats()
+		p.stats.finish(p.prog)
 		return p.prog, p.stats, errCombined{"parse"}
 	}
 	p.end()
-	p.finishStats()
+	p.stats.finish(p.prog)
 
 	return p.prog, p.stats, nil
 }
@@ -83,9 +83,9 @@ type parseStats struct {
 	codeBytes  int
 }
 
-func (p *parser) finishStats() {
-	p.stats.constants = len(p.prog.constants)
-	p.stats.codeBytes = p.prog.count()
+func (stats *parseStats) finish(prog *Prog) {
+	stats.constants = len(prog.constants)
+	stats.codeBytes = prog.count()
 }
 
 func decl(p *parser) {
