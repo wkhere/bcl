@@ -317,48 +317,23 @@ func (vm *vm) run() error {
 				vm.warning("repeated bind statement overrides previous one")
 			}
 
-			blockType := readConst().(string)
-			bindOpt := readByte()
-
-			if err := vm.bind(blockType, nil, bindOpt); err != nil {
-				return err
-			}
-
-		case opBINDNB:
-			// ( -- )
-			if vm.binding != nil && !vm.umbrellaOpen {
-				vm.warning("repeated bind statement overrides previous one")
-			}
-
-			blockType := readConst().(string)
-			blockName := readConst().(string)
-			bindOpt := readByte()
-
-			if err := vm.bind(blockType, []string{blockName}, bindOpt); err != nil {
-				return err
-			}
-
-		case opBINDNBS:
-			// ( -- )
-			if vm.binding != nil && !vm.umbrellaOpen {
-				vm.warning("repeated bind statement overrides previous one")
-			}
-
-			blockType := readConst().(string)
-			var blockNames []string
-			if n := readUvarint(); n > bindMaxNBlocks {
+			var (
+				bindCode     = readByte()
+				blockType    = readConst().(string)
+				n            = readUvarint()
+				subSelectors []value
+			)
+			if n > bindMaxNBlocks {
 				return vm.runtimeError(
-					"bind: too many named blocks, type=%s, n=%d", blockType, n,
+					"bind: too many selected blocks, type=%s, n=%d", blockType, n,
 				)
-			} else {
-				blockNames = make([]string, n)
 			}
-			for i := range blockNames {
-				blockNames[i] = readConst().(string)
+			subSelectors = make([]value, n)
+			for i := range subSelectors {
+				subSelectors[i] = readConst()
 			}
-			bindOpt := readByte()
 
-			if err := vm.bind(blockType, blockNames, bindOpt); err != nil {
+			if err := vm.bind(bindCode, blockType, subSelectors); err != nil {
 				return err
 			}
 
@@ -375,18 +350,20 @@ func (vm *vm) run() error {
 	}
 }
 
-func (vm *vm) bind(blockType string, blockNames []string, bindOpt byte) error {
-	selector := bindSelector(bindOpt & 0x0F)
-	target := bindTarget(bindOpt & 0xF0)
+func (vm *vm) bind(bindCode byte, blockType string, subSelectors []value) error {
+	var (
+		selector = bindSelector(bindCode & 0x0F)
+		target   = bindTarget(bindCode & 0xF0)
+		blocks   = make([]Block, 0, 1)
+		selected []Block
+		binding  Binding
+	)
 
-	blocks := make([]Block, 0, 1)
 	for _, b := range vm.result {
 		if b.Type == blockType {
 			blocks = append(blocks, b)
 		}
 	}
-	var selectedByName []Block
-	var binding Binding
 
 	switch {
 	case len(blocks) == 0:
@@ -398,11 +375,11 @@ func (vm *vm) bind(blockType string, blockNames []string, bindOpt byte) error {
 		)
 
 	case selector == bindNamedBlock:
-		name := blockNames[0]
+		name := subSelectors[0].(string)
 		var found bool
 		for i := range blocks {
 			if blocks[i].Name == name {
-				selectedByName = []Block{blocks[i]}
+				selected = []Block{blocks[i]}
 				found = true
 				break
 			}
@@ -412,8 +389,8 @@ func (vm *vm) bind(blockType string, blockNames []string, bindOpt byte) error {
 		}
 
 	case selector == bindNamedBlocks:
-		if len(blockNames) == 0 {
-			return vm.runtimeError("bind: empty named blocks list, type=%s", blockType)
+		if len(subSelectors) == 0 {
+			return vm.runtimeError("bind: empty selection of blocks, type=%s", blockType)
 		}
 
 		blockMap := make(map[string]*Block, len(blocks))
@@ -422,12 +399,13 @@ func (vm *vm) bind(blockType string, blockNames []string, bindOpt byte) error {
 			b := &blocks[i]
 			blockMap[b.Name] = b
 		}
-		for _, name := range blockNames {
+		for _, sel := range subSelectors {
+			name := sel.(string)
 			b, ok := blockMap[name]
 			if !ok {
 				return vm.runtimeError("bind: block %s:%q not found", blockType, name)
 			}
-			selectedByName = append(selectedByName, *b)
+			selected = append(selected, *b)
 		}
 	}
 
@@ -442,7 +420,7 @@ func (vm *vm) bind(blockType string, blockNames []string, bindOpt byte) error {
 		binding = StructBinding{Value: blocks[len(blocks)-1]}
 
 	case target == bindStruct && selector == bindNamedBlock:
-		binding = StructBinding{Value: selectedByName[0]}
+		binding = StructBinding{Value: selected[0]}
 
 	case target == bindSlice && selector == bindAll:
 		binding = SliceBinding{Value: blocks}
@@ -457,13 +435,13 @@ func (vm *vm) bind(blockType string, blockNames []string, bindOpt byte) error {
 		binding = SliceBinding{Value: blocks[len(blocks)-1:]}
 
 	case target == bindSlice && selector == bindNamedBlock:
-		binding = SliceBinding{Value: selectedByName}
+		binding = SliceBinding{Value: selected}
 
 	case target == bindSlice && selector == bindNamedBlocks:
-		binding = SliceBinding{Value: selectedByName}
+		binding = SliceBinding{Value: selected}
 
 	default:
-		return vm.runtimeError("invalid bind target and selector: 0x%2x", bindOpt)
+		return vm.runtimeError("invalid bind target and selector: 0x%2x", bindCode)
 	}
 
 	if vm.umbrellaOpen {

@@ -43,13 +43,8 @@ const (
 	opPOP
 	opPOPN
 
-	// since bytecode 1.1:
+	// since bytecode 2.0:
 	opBIND
-	// since bytecode 1.2:
-	opBINDNB
-	// since bytecode 1.3:
-	opBINDNBS
-	// since bytecode 1.4:
 	opDEFUBIND
 	opENDUBIND
 )

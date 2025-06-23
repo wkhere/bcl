@@ -420,19 +420,19 @@ tests = [
         "== /dev/stdin ==\n"
         "0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
         "0003    1:9  ENDBLOCK\n"
-        "0004   1:17  BIND          0 'b'\t0x11\n"
-        "0007      |  RET",
+        "0004   1:17  BIND 0x11     0 'b'\t   0#\n"
+        "0008      |  RET",
         'disasm'
     ],
     ['125.2',   'def b {}; bind b:all',
         "== /dev/stdin ==\n"
         "0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
         "0003    1:9  ENDBLOCK\n"
-        "0004   1:21  BIND          0 'b'\t0x2F\n"
-        "0007      |  RET",
+        "0004   1:21  BIND 0x2F     0 'b'\t   0#\n"
+        "0008      |  RET",
         'disasm'
     ],
-    ['125.3',   'def b {}; def b{x=1}; bind b:last',
+    ['125.3',   'def b {}; def b{x=1}; bind b:first',
         "== /dev/stdin ==\n"
         "0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
         "0003    1:9  ENDBLOCK\n"
@@ -441,11 +441,11 @@ tests = [
         "0008      |  SETFIELD      2 'x'\n"
         "0010      |  POP\n"
         "0011   1:21  ENDBLOCK\n"
-        "0012   1:34  BIND          0 'b'\t0x13\n"
-        "0015      |  RET",
+        "0012   1:35  BIND 0x12     0 'b'\t   0#\n"
+        "0016      |  RET",
         'disasm'
     ],
-    ['125.4',   'def b {}; def b{x=1}; bind b:all',
+    ['125.4',   'def b {}; def b{x=1}; bind b:last',
         "== /dev/stdin ==\n"
         "0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
         "0003    1:9  ENDBLOCK\n"
@@ -454,8 +454,21 @@ tests = [
         "0008      |  SETFIELD      2 'x'\n"
         "0010      |  POP\n"
         "0011   1:21  ENDBLOCK\n"
-        "0012   1:33  BIND          0 'b'\t0x2F\n"
-        "0015      |  RET",
+        "0012   1:34  BIND 0x13     0 'b'\t   0#\n"
+        "0016      |  RET",
+        'disasm'
+    ],
+    ['125.5',   'def b {}; def b{x=1}; bind b:all',
+        "== /dev/stdin ==\n"
+        "0000    1:8  DEFBLOCK      0 'b'\t   1 ''\n"
+        "0003    1:9  ENDBLOCK\n"
+        "0004   1:17  DEFBLOCK      0 'b'\t   1 ''\n"
+        "0007   1:20  ONE\n"
+        "0008      |  SETFIELD      2 'x'\n"
+        "0010      |  POP\n"
+        "0011   1:21  ENDBLOCK\n"
+        "0012   1:33  BIND 0x2F     0 'b'\t   0#\n"
+        "0016      |  RET",
         'disasm'
     ],
 
@@ -470,8 +483,8 @@ tests = [
         "== /dev/stdin ==\n"
         "0000   1:13  DEFBLOCK      0 'b'\t   1 'foo'\n"
         "0003   1:14  ENDBLOCK\n"
-        "0004   1:28  BINDNB        0 'b'\t   2 'foo'\t0x14\n"
-        "0008      |  RET",
+        "0004   1:28  BIND 0x14     0 'b'\t   1#\t   2 'foo'\n"
+        "0009      |  RET",
         'disasm'
     ],
     ['127.2', 'def b "foo"{}; def b "bar"{}; bind b:"bar"',
@@ -480,8 +493,8 @@ tests = [
         "0003   1:14  ENDBLOCK\n"
         "0004   1:28  DEFBLOCK      0 'b'\t   2 'bar'\n"
         "0007   1:29  ENDBLOCK\n"
-        "0008   1:43  BINDNB        0 'b'\t   3 'bar'\t0x14\n"
-        "0012      |  RET",
+        "0008   1:43  BIND 0x14     0 'b'\t   1#\t   3 'bar'\n"
+        "0013      |  RET",
         'disasm'
     ],
 
@@ -499,7 +512,7 @@ tests = [
         "== /dev/stdin ==\n"
         "0000   1:13  DEFBLOCK      0 'b'\t   1 'foo'\n"
         "0003   1:14  ENDBLOCK\n"
-        "0004   1:29  BINDNBS       0 'b'\t   2 'foo'\t0x25\n"
+        "0004   1:29  BIND 0x25     0 'b'\t   1#\t   2 'foo'\n"
         "0009      |  RET",
         'disasm'
     ],
@@ -509,7 +522,7 @@ tests = [
         "0003   1:14  ENDBLOCK\n"
         "0004   1:28  DEFBLOCK      0 'b'\t   2 'bar'\n"
         "0007   1:29  ENDBLOCK\n"
-        "0008   1:49  BINDNBS       0 'b'\t   3 'foo'\t   4 'bar'\t0x25\n"
+        "0008   1:49  BIND 0x25     0 'b'\t   2#\t   3 'foo'\t   4 'bar'\n"
         "0014      |  RET",
         'disasm'
     ],
@@ -533,9 +546,9 @@ tests = [
         "0000    1:7  DEFBLOCK      0 'x'\t   1 ''\n"
         "0003    1:8  ENDBLOCK\n"
         "0004   1:16  DEFUBIND\n"
-        "0005   1:17  BIND          0 'x'\t0x11\n"
-        "0008   1:18  ENDUBIND\n"
-        "0009      |  RET",
+        "0005   1:17  BIND 0x11     0 'x'\t   0#\n"
+        "0009   1:18  ENDUBIND\n"
+        "0010      |  RET",
         'disasm'
     ],
     ['131.3', 'def x{}; def y{}; bind {x; y:all}',
@@ -545,10 +558,10 @@ tests = [
         "0004   1:16  DEFBLOCK      2 'y'\t   1 ''\n"
         "0007   1:17  ENDBLOCK\n"
         "0008   1:25  DEFUBIND\n"
-        "0009   1:26  BIND          0 'x'\t0x11\n"
-        "0012   1:33  BIND          2 'y'\t0x2F\n"
-        "0015   1:34  ENDUBIND\n"
-        "0016      |  RET",
+        "0009   1:26  BIND 0x11     0 'x'\t   0#\n"
+        "0013   1:33  BIND 0x2F     2 'y'\t   0#\n"
+        "0017   1:34  ENDUBIND\n"
+        "0018      |  RET",
         'disasm'
     ],
     ['131.4', 'def x{}; def y{}; bind {y; x:all}',
@@ -558,10 +571,56 @@ tests = [
         "0004   1:16  DEFBLOCK      2 'y'\t   1 ''\n"
         "0007   1:17  ENDBLOCK\n"
         "0008   1:25  DEFUBIND\n"
-        "0009   1:26  BIND          2 'y'\t0x11\n"
-        "0012   1:33  BIND          0 'x'\t0x2F\n"
-        "0015   1:34  ENDUBIND\n"
-        "0016      |  RET",
+        "0009   1:26  BIND 0x11     2 'y'\t   0#\n"
+        "0013   1:33  BIND 0x2F     0 'x'\t   0#\n"
+        "0017   1:34  ENDUBIND\n"
+        "0018      |  RET",
+        'disasm'
+    ],
+    ['131.5', 'def x{}; def y{}; bind {x:first; y:last}',
+        "== /dev/stdin ==\n"
+        "0000    1:7  DEFBLOCK      0 'x'\t   1 ''\n"
+        "0003    1:8  ENDBLOCK\n"
+        "0004   1:16  DEFBLOCK      2 'y'\t   1 ''\n"
+        "0007   1:17  ENDBLOCK\n"
+        "0008   1:25  DEFUBIND\n"
+        "0009   1:32  BIND 0x12     0 'x'\t   0#\n"
+        "0013   1:40  BIND 0x13     2 'y'\t   0#\n"
+        "0017   1:41  ENDUBIND\n"
+        "0018      |  RET",
+        'disasm'
+    ],
+    ['131.6', 'def x{}; def y{}; bind {x:last; y:first}',
+        "== /dev/stdin ==\n"
+        "0000    1:7  DEFBLOCK      0 'x'\t   1 ''\n"
+        "0003    1:8  ENDBLOCK\n"
+        "0004   1:16  DEFBLOCK      2 'y'\t   1 ''\n"
+        "0007   1:17  ENDBLOCK\n"
+        "0008   1:25  DEFUBIND\n"
+        "0009   1:31  BIND 0x13     0 'x'\t   0#\n"
+        "0013   1:40  BIND 0x12     2 'y'\t   0#\n"
+        "0017   1:41  ENDUBIND\n"
+        "0018      |  RET",
+        'disasm'
+    ],
+    ['131.7', 'def x "a"{}; bind {x:"a"}',
+        "== /dev/stdin ==\n"
+        "0000   1:11  DEFBLOCK      0 'x'\t   1 'a'\n"
+        "0003   1:12  ENDBLOCK\n"
+        "0004   1:20  DEFUBIND\n"
+        "0005   1:25  BIND 0x14     0 'x'\t   1#\t   2 'a'\n"
+        "0010   1:26  ENDUBIND\n"
+        "0011      |  RET",
+        'disasm'
+    ],
+    ['131.8', 'def x "a"{}; bind {x:"a",}',
+        "== /dev/stdin ==\n"
+        "0000   1:11  DEFBLOCK      0 'x'\t   1 'a'\n"
+        "0003   1:12  ENDBLOCK\n"
+        "0004   1:20  DEFUBIND\n"
+        "0005   1:26  BIND 0x25     0 'x'\t   1#\t   2 'a'\n"
+        "0010   1:27  ENDUBIND\n"
+        "0011      |  RET",
         'disasm'
     ],
 

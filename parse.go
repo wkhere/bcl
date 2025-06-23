@@ -253,26 +253,23 @@ func bindpartStmt(p *parser) {
 		}
 	}
 
+	p.emitOp(opBIND)
+	p.emitByte(byte(target&0xF0) | byte(selector&0x0F))
+	p.emitUvarint(p.identConst(blockType))
+
 	switch selector {
 	case bindNamedBlock:
-		p.emitOp(opBINDNB)
-		p.emitUvarint(p.identConst(blockType))
+		p.emitUvarint(1)
 		p.emitUvarint(p.makeConst(selBlockNames[0]))
-		p.emitByte(byte(target&0xF0) | byte(bindNamedBlock&0x0F))
 
 	case bindNamedBlocks:
-		p.emitOp(opBINDNBS)
-		p.emitUvarint(p.identConst(blockType))
 		p.emitUvarint(len(selBlockNames))
 		for _, name := range selBlockNames {
 			p.emitUvarint(p.makeConst(name))
 		}
-		p.emitByte(byte(target&0xF0) | byte(bindNamedBlocks&0x0F))
 
 	default:
-		p.emitOp(opBIND)
-		p.emitUvarint(p.identConst(blockType))
-		p.emitByte(byte(target&0xF0) | byte(selector&0x0F))
+		p.emitUvarint(0)
 	}
 }
 
