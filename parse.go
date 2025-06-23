@@ -38,8 +38,8 @@ func parse(inputs <-chan string, name string, w writers) (
 		return p.prog, p.stats, errCombined{"parse"}
 	}
 	p.end()
-	p.stats.finish(p.prog)
 
+	p.stats.finish(p.prog)
 	return p.prog, p.stats, nil
 }
 
