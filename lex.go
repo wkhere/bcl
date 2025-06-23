@@ -84,8 +84,8 @@ func (l *lexer) next() (r rune) {
 				l.width = 0
 				return eof
 			}
-			// continue with leftover + s
 		}
+		// continue with leftover + s
 		l.input = l.input[l.start:l.pos] + s
 		l.posShift += l.start
 		l.lpUpd(s, l.posShift+l.pos-l.start)
