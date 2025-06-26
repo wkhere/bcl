@@ -7,8 +7,8 @@ based on block(s) selector. See [notes](NOTES.md#reflection-revamp).
 More changes:
 * bytecode version 2.0
 * show mismatched bytecode version when reading older bytecode dump
-* iproved warnings, error messages, benchmarks & docs
-* snake: space one in-loop call to unicode func
+* improved warnings, error messages, benchmarks & docs
+* snake: spare one in-loop call to unicode func
 
 ### v0.12.2
 * bind multiple named blocks
