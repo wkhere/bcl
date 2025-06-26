@@ -21,7 +21,8 @@ but more basic:
 * variables with lexical scope
 * nested definitions
 * one-pass lexer, parser and VM executor
-* deserialization aka unmarshalling to static Go structs (possibly nested)
+* deserialization aka unmarshalling to static Go structs (possibly nested) via
+  [bind](NOTES.md#reflection-revamp) statement
 
 While being basic, BCL also has features reaching beyond HCL:
 
@@ -47,7 +48,7 @@ def tunnel "myservice-prod" {
 	}
 }
 
-bind tunnel -> struct
+bind tunnel
 ```
 Go:
 ```Go
