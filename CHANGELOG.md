@@ -1,3 +1,15 @@
+### v0.13.0 "lucky thirteen"
+This version brings refreshed `bind` syntax, allowing for an "umbrella bind"
+to get different block types into Go struct/slices with a single API call.
+Also, the `-> struct|slice` syntax has been removed, in favor of simple inference
+based on block(s) selector.
+
+More changes:
+* bytecode version 2.0
+* show mismatched bytecode version when reading older bytecode dump
+* iproved warnings, error messages, benchmarks & docs
+* snake: space one in-loop call to unicode func
+
 ### v0.12.2
 * bind multiple named blocks
 * allow binding single named block to a 1-element slice
