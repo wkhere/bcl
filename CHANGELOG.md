@@ -1,3 +1,6 @@
+### v0.13.1
+Nothing really changes, just fixed some typos in the changelog itself.
+
 ### v0.13.0 "lucky thirteen"
 This version brings refreshed `bind` syntax, allowing for an "umbrella bind"
 to get different block types into Go struct/slices with a single API call.
