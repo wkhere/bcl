@@ -2,7 +2,7 @@
 This version brings refreshed `bind` syntax, allowing for an "umbrella bind"
 to get different block types into Go struct/slices with a single API call.
 Also, the `-> struct|slice` syntax has been removed, in favor of simple inference
-based on block(s) selector.
+based on block(s) selector. See [notes](NOTES.md#reflection-revamp).
 
 More changes:
 * bytecode version 2.0
