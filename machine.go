@@ -425,18 +425,6 @@ func (vm *vm) bind(bindCode byte, blockType string, subSelectors []value) error 
 	case target == bindSlice && selector == bindAll:
 		binding = SliceBinding{Value: blocks}
 
-	case target == bindSlice && selector == bindOne:
-		fallthrough
-
-	case target == bindSlice && selector == bindFirst:
-		binding = SliceBinding{Value: blocks[:1]}
-
-	case target == bindSlice && selector == bindLast:
-		binding = SliceBinding{Value: blocks[len(blocks)-1:]}
-
-	case target == bindSlice && selector == bindNamedBlock:
-		binding = SliceBinding{Value: selected}
-
 	case target == bindSlice && selector == bindNamedBlocks:
 		binding = SliceBinding{Value: selected}
 
