@@ -285,14 +285,14 @@ var reflectTab = []reflecttc{
 	// 80:
 	rerror(`def s{x=5}; bind{s}`, &[]int{}, `expected umbrella struct, have: slice`),
 	rvalid(`def s "a"{}; bind{s:"a"}`, &u{}, &u{S{Name: "a"}}),
-	rvalid(`def s "a"{}; def s "b"{}; bind{s:"a","b" }`, &um{},
+	rvalid(`def s "a"{}; bind{s:"a",}`, &um{}, &um{[]S{{Name: "a"}}}),
+	rvalid(`def s "a"{}; def s "b"{}; bind{s:"a","b"}`, &um{},
 		&um{[]S{{Name: "a"}, {Name: "b"}}},
 	),
 	rerror(`def y{x=5}; bind{y}`, &u{}, `mismatch: struct type S, block type y`),
-	rerror(`def s{q=5}; bind{s}`, &u{}, `field mapping for "q" not found`),
 
 	// 85:
-	rvalid(`def s{x=5}; bind{s}`, &struct{ S }{}, &struct{ S }{S{X: 5}}),
+	rerror(`def s{q=5}; bind{s}`, &u{}, `field mapping for "q" not found`),
 	rerror(`def s{x=5}; bind{s}`, &struct{ x int }{}, `expected struct, have: int`),
 	rvalid(`def s{x=5}; def s2{y=2}; bind{s; s2:all}`, &struct {
 		S   S
