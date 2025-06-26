@@ -78,10 +78,9 @@ more on errors:
 
 + reflection revamp
   - document bind syntax in the readme
-  ~ umbrella binding
+  + umbrella binding
   + print warning when bind statement is repeated
-  - print warning about possibly unintended use of bind x -> slice
-  - provide binding from the command-line
+  - provide binding from the command-line (but how)
 
 
 - scope issues:
