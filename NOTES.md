@@ -56,26 +56,56 @@ Concatenated prog:
 
 Extra syntax for binding parsed blocks to various structs via reflection:
 
-`bind <block_type>:<block_selector> -> <target_type>`
+`bind <block_type>:<block_selector>`
 
 Examples:
+```HCL
+bind tunnel:1  # there must be just 1 tunnel block; same as:
+bind tunnel
+
+bind tunnel:first
+bind tunnel:last
+bind tunnel:"name"
+bind tunnel:all              # bind to a slice
+bind tunnel:"name1","name2"  # bind to a slice
+bind tunnel:"name",          # trailing comma also means: bind to a slice
 ```
-bind tunnel:1 -> struct   # must be just 1 block of type tunnel; same as:
-bind tunnel   -> struct
 
-bind tunnel:last  -> struct
-bind tunnel:first -> struct
-bind tunnel:all   -> slice
-bind tunnel:"name" -> struct
-bind tunnel:"name1","name2" -> slice
+The Go target is supposed to be a struct or a slice based on cardinality of
+the chosen selector:
+
+* keywords `1` `first` `last` denote cardinality of one,
+* block selected by a name in doublequotes also denote cardinality of one,
+* keyword `all` denotes cardinality of many,
+* multiple blocks selected by doublequoted names, separated by a comma, denote
+cardinality of many,
+* a single named block but with a trailing comma is also about cardinality of many.
+
+When binding to a struct, the Go target should be a pointer to a struct of a type
+matching the block type.
+Similarly, for a slice, the Go target should be a pointer to a slice of structs
+matching the block type.
+
+Often there is a need to bind different kinds of block in a single API invocation.
+For that, another form of `bind` can be used - it is called "umbrella bind":
+
+```HCL
+bind {
+  wormhole:"galaxy42"
+  probe:all
+  setup:1
+}
 ```
+This should correspond on Go side to an "umbrella struct" - can be anonymous struct:
+```Go
+var x struct { W Wormhole; PP []Probe; Setup Setup }
+err := bcl.UnmarshalFile(input, &x)
+```
+Inside such an umbrella same rules apply as for the single `bind` in terms of expecting
+a block-corresponding struct or a slice of them.
 
-Rules for bind targets based on a target type:
+Few extra rules: 
 
-- `struct`: target is a ptr-to-struct of a type matching the block type
-- `slice`:  target is a ptr-to-slice of structs of a type matching the block type
-
-Bind rule can be defined only at the toplevel and correspond to blocks defined
-before. (VM instruction impl should use already evaluated `[]Block`).
-
-Subsequent bind rule ovverrides previous one and should generate a warning.
+* Bind statement can be defined only at the toplevel and corresponds to blocks defined
+before.
+* Subsequent bind statement ovverrides previous one and prints a warning.
