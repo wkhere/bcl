@@ -100,6 +100,9 @@ type S struct {
 	X    int
 }
 
+type u struct{ S }       // umbrella for S
+type um struct{ Ss []S } // umbrella for multiple S
+
 type S2 struct {
 	Name string
 	X    int `bcl:"y"`
@@ -134,16 +137,12 @@ var reflectTab = []reflecttc{
 	rerror(`def any{}; bind any`, 1, "expected pointer, have: int"),
 	rerror(`def any{}; bind any`, struct{}{}, "expected pointer, have: struct"),
 	rvalid(`def any{}; bind any`, &struct{}{}, &struct{}{}),
-	rerror(`def any{}; bind any`, &[]struct{}{},
-		"pointer deref: expected struct, have: slice",
-	),
+	rerror(`def any{}; bind any`, &[]struct{}{}, "expected struct, have: slice"),
 
 	// 15:
 	rerror(`def any{}; bind any`, nil, "expected pointer"),
 	rerror(`def any{}; bind any`, struct{}{}, "expected pointer, have: struct"),
-	rerror(`def any{}; bind any:all`, &struct{}{},
-		"pointer deref: expected slice, have: struct",
-	),
+	rerror(`def any{}; bind any:all`, &struct{}{}, "expected slice, have: struct"),
 	rvalid(`def any{}; bind any:all`, &[]struct{}{}, &[]struct{}{{}}), // empty struct inside
 	// the next one is nasty: would panic if there was no checking for a slice element:
 	rerror(`def int{}; bind int:all`, &[]int{},
@@ -274,6 +273,44 @@ var reflectTab = []reflecttc{
 	),
 	rvalid(`def s "foo"{}; def s "bar"{}; bind s:"foo","bar",`, &[]S{},
 		&[]S{{Name: "foo"}, {Name: "bar"}},
+	),
+
+	// 75:
+	rvalid(`def s{x=5}; bind{s}`, &u{}, &u{S{X: 5}}),
+	rvalid(`def s{x=5}; bind{s:1}`, &u{}, &u{S{X: 5}}),
+	rvalid(`def s{x=5} def s{}; bind{s:first}`, &u{}, &u{S{X: 5}}),
+	rvalid(`def s{x=5} def s{}; bind{s:last} `, &u{}, &u{S{X: 0}}),
+	rvalid(`def s{x=5}; bind{s:all}`, &um{}, &um{[]S{{X: 5}}}),
+
+	// 80:
+	rerror(`def s{x=5}; bind{s}`, &[]int{}, `expected umbrella struct, have: slice`),
+	rvalid(`def s "a"{}; bind{s:"a"}`, &u{}, &u{S{Name: "a"}}),
+	rvalid(`def s "a"{}; def s "b"{}; bind{s:"a","b" }`, &um{},
+		&um{[]S{{Name: "a"}, {Name: "b"}}},
+	),
+	rerror(`def y{x=5}; bind{y}`, &u{}, `mismatch: struct type S, block type y`),
+	rerror(`def s{q=5}; bind{s}`, &u{}, `field mapping for "q" not found`),
+
+	// 85:
+	rvalid(`def s{x=5}; bind{s}`, &struct{ S }{}, &struct{ S }{S{X: 5}}),
+	rerror(`def s{x=5}; bind{s}`, &struct{ x int }{}, `expected struct, have: int`),
+	rvalid(`def s{x=5}; def s2{y=2}; bind{s; s2:all}`, &struct {
+		S   S
+		S2s []S2
+	}{},
+		&struct {
+			S   S
+			S2s []S2
+		}{S{X: 5}, []S2{{X: 2}}},
+	),
+	rerror(`def s{x=5}; def s2{y=2}; bind{s; s2:all}`, &struct {
+		S2s []S2
+		S   S
+	}{},
+		`S2s: expected struct, have: slice`,
+	),
+	rerror(`def a{x=5}; bind{a}`, &struct{ A struct{ Bad int } }{},
+		`A: field mapping for "x" not found`,
 	),
 }
 
