@@ -174,7 +174,7 @@ func InterpretFile(f FileInput, opts ...Option) ([]Block, Binding, error) {
 // If the binding type is a slice, and a slice pointed by target
 // contained any elements, they are overwritten.
 func Bind(target any, binding Binding) error {
-	return copyBlocks(target, binding)
+	return copyBlocksToPtr(target, binding)
 }
 
 // Unmarshal interprets the BCL input and stores the blocks selected via 'bind' statement

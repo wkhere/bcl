@@ -54,7 +54,6 @@ const (
 	tSLASH
 
 	tCOLON
-	tARROW
 
 	tSEMICOLON
 	tCOMMA

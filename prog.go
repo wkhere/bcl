@@ -46,7 +46,7 @@ func (p *Prog) addConst(v value) (idx int) {
 
 func (p *Prog) count() int { return len(p.code) }
 
-// prog dump format, version 1.3
+// prog dump format, version 1.4
 //
 // 2B: bytecode magic, then version: 1B: major, 1B: minor
 // uvarint + n bytes: prog name
@@ -57,8 +57,8 @@ func (p *Prog) count() int { return len(p.code) }
 
 const (
 	bytecodeMagic       = "\xFC\x6C"
-	bytecodeMajor uint8 = 1
-	bytecodeMinor uint8 = 3
+	bytecodeMajor uint8 = 2
+	bytecodeMinor uint8 = 0
 )
 
 func (prog *Prog) Dump(dest io.Writer) error {

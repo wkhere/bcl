@@ -20,14 +20,14 @@ const (
 	bindSlice
 )
 
-type Binding interface {
-	binding()
-}
+type (
+	Binding interface{ binding() }
 
-type StructBinding struct{ Value Block }
+	StructBinding   struct{ Value Block }
+	SliceBinding    struct{ Value []Block }
+	UmbrellaBinding struct{ Parts []Binding }
+)
 
-func (StructBinding) binding() {}
-
-type SliceBinding struct{ Value []Block }
-
-func (SliceBinding) binding() {}
+func (SliceBinding) binding()     {}
+func (StructBinding) binding()    {}
+func (*UmbrellaBinding) binding() {}

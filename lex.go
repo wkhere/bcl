@@ -224,7 +224,6 @@ var twoRuneTokens = map[rune]twoRuneMatch{
 	'!': {'=', tBE},
 	'<': {'=', tLE},
 	'>': {'=', tGE},
-	'-': {'>', tARROW},
 }
 
 var oneRuneTokens = map[rune]tokenType{

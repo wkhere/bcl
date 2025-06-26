@@ -28,6 +28,7 @@ func (p *Prog) disasmInstr(offset int) int {
 	case
 		opNOP, opRET, opPRINT, opPOP,
 		opENDBLOCK,
+		opDEFUBIND, opENDUBIND,
 		opNIL, opZERO, opONE, opTRUE, opFALSE,
 		opEQ, opLT, opGT,
 		opADD, opSUB, opMUL, opDIV, opNEG, opNOT, opUNPLUS:
@@ -49,10 +50,6 @@ func (p *Prog) disasmInstr(offset int) int {
 
 	case opBIND:
 		return bindInstr(p.output, instr, p, offset)
-	case opBINDNB:
-		return bindnbInstr(p.output, instr, p, offset)
-	case opBINDNBS:
-		return bindnbsInstr(p.output, instr, p, offset)
 
 	default:
 		fmt.Fprintln(p.output, "unknown opcode", instr)
@@ -102,41 +99,27 @@ func jumpInstr(w io.Writer, o opcode, sign int, p *Prog, offset int) int {
 }
 
 func bindInstr(w io.Writer, o opcode, p *Prog, offset int) int {
-	idx, n := uvarintFromBytes(p.code[offset+1:])
-	arg := p.code[offset+1+n]
-	fmt.Fprintf(w, "%-10s %4d '%v'\t0x%2X\n", o, idx, p.constants[idx], arg)
-	return offset + 1 + n + 1
-}
-
-func bindnbInstr(w io.Writer, o opcode, p *Prog, offset int) int {
-	idx1, n := uvarintFromBytes(p.code[offset+1:])
-	idx2, m := uvarintFromBytes(p.code[offset+1+n:])
-	arg := p.code[offset+1+n+m]
-	fmt.Fprintf(w, "%-10s %4d '%v'\t%4d '%v'\t0x%2X\n",
-		o, idx1, p.constants[idx1], idx2, p.constants[idx2], arg,
-	)
-	return offset + 1 + n + m + 1
-}
-
-func bindnbsInstr(w io.Writer, o opcode, p *Prog, offset int) int {
-	tidx, n := uvarintFromBytes(p.code[offset+1:])
-	ncnt, m := uvarintFromBytes(p.code[offset+1+n:])
-	names := make([]struct {
+	bindCode := p.code[offset+1]
+	tidx, n := uvarintFromBytes(p.code[offset+2:])
+	ncnt, m := uvarintFromBytes(p.code[offset+2+n:])
+	vv := make([]struct {
 		idx uint64
 		v   value
 	}, ncnt)
-	var k int // cumulative size of name consts
+	var k int // cumulative size of incoming consts
 	for i := uint64(0); i < ncnt; i++ {
-		idx, j := uvarintFromBytes(p.code[offset+1+n+m+k:])
-		names[i].idx, names[i].v = idx, p.constants[idx]
+		idx, j := uvarintFromBytes(p.code[offset+2+n+m+k:])
+		vv[i].idx, vv[i].v = idx, p.constants[idx]
 		k += j
 	}
-	arg := p.code[offset+1+n+m+k]
 
-	fmt.Fprintf(w, "%-10s %4d '%v'", o, tidx, p.constants[tidx])
-	for _, name := range names {
-		fmt.Fprintf(w, "\t%4d '%v'", name.idx, name.v)
+	fmt.Fprintf(w,
+		"%-10s %4d '%v'\t%4d#",
+		fmt.Sprintf("%s 0x%2X", o, bindCode), tidx, p.constants[tidx], ncnt,
+	)
+	for _, v := range vv {
+		fmt.Fprintf(w, "\t%4d '%v'", v.idx, v.v)
 	}
-	fmt.Fprintf(w, "\t0x%2X\n", arg)
-	return offset + 1 + n + m + k + 1
+	fmt.Fprintln(w)
+	return offset + 2 + n + m + k
 }

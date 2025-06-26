@@ -8,7 +8,7 @@ import (
 	"unicode/utf8"
 )
 
-func copyBlocks(target any, binding Binding) error {
+func copyBlocksToPtr(target any, binding Binding) error {
 	if binding == nil {
 		return fmt.Errorf("no binding")
 	}
@@ -18,23 +18,31 @@ func copyBlocks(target any, binding Binding) error {
 		return fmt.Errorf("bind target: expected pointer, have: %s", k)
 	}
 
+	err := copyBlocks(targetPtr.Elem(), binding)
+	if err != nil {
+		return fmt.Errorf("bind target: %w", err)
+	}
+	return nil
+}
+
+func copyBlocks(targetValue reflect.Value, binding Binding) error {
 	switch b := binding.(type) {
 
 	case StructBinding:
-		targetStruct := targetPtr.Elem()
+		targetStruct := targetValue
 		if k := targetStruct.Kind(); k != reflect.Struct {
-			return fmt.Errorf("bind target: pointer deref: expected struct, have: %s", k)
+			return fmt.Errorf("expected struct, have: %s", k)
 		}
 
 		return copyBlock(targetStruct, b.Value)
 
 	case SliceBinding:
-		targetSlice := targetPtr.Elem()
+		targetSlice := targetValue
 		if k := targetSlice.Kind(); k != reflect.Slice {
-			return fmt.Errorf("bind target: pointer deref: expected slice, have: %s", k)
+			return fmt.Errorf("expected slice, have: %s", k)
 		}
 		if k := targetSlice.Type().Elem().Kind(); k != reflect.Struct {
-			return fmt.Errorf("bind target: slice element deref: expected struct, have: %s", k)
+			return fmt.Errorf("slice element deref: expected struct, have: %s", k)
 		}
 
 		blocks := b.Value
@@ -47,6 +55,19 @@ func copyBlocks(target any, binding Binding) error {
 		}
 
 		targetSlice.Set(newSlice)
+
+	case *UmbrellaBinding:
+		targetUmbrella := targetValue
+		if k := targetUmbrella.Kind(); k != reflect.Struct {
+			return fmt.Errorf("bind target: pointer deref: expected umbrella struct, have: %s", k)
+		}
+		t := targetUmbrella.Type()
+		for i, part := range b.Parts {
+			err := copyBlocks(targetUmbrella.Field(i), part)
+			if err != nil {
+				return fmt.Errorf("%s: %w", t.Field(i).Name, err)
+			}
+		}
 
 	default:
 		return fmt.Errorf("unknown binding type %T", binding)

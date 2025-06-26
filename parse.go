@@ -149,6 +149,7 @@ func blockStmt(p *parser) {
 
 	p.consume(tLCURLY, "expected '{'")
 
+	// todo: block names should also be idents
 	p.defBlock(p.identConst(blockType), p.makeConst(blockName))
 	defer p.endBlock()
 
@@ -171,14 +172,41 @@ func blockStmt(p *parser) {
 }
 
 func bindStmt(p *parser) {
+	if p.match(tLCURLY) {
+
+		p.emitOp(opDEFUBIND)
+
+		for !p.check(tRCURLY) && !p.checkEnd() {
+			bindpartStmt(p)
+			if p.panicMode {
+				p.advance()
+			}
+			p.match(tSEMICOLON) // optional
+		}
+
+		if p.hadLexFail {
+			return
+		}
+		p.consume(tRCURLY, "expected '}'")
+		p.emitOp(opENDUBIND)
+
+	} else {
+		bindpartStmt(p)
+	}
+}
+
+func bindpartStmt(p *parser) {
 	p.consume(tIDENT, "expected block type")
 	if p.panicMode {
 		return
 	}
 
-	blockType := p.prev.val
-	bindSel := bindOne
-	selBlockNames := []string{}
+	var (
+		blockType     = p.prev.val
+		selector      = bindOne
+		target        = bindStruct
+		selBlockNames = []string{}
+	)
 
 	errmsg := `expected block selector: 1 first last all "name" "name1","name2"`
 	if p.match(tCOLON) {
@@ -187,13 +215,15 @@ func bindStmt(p *parser) {
 			if p.prev.val != "1" {
 				p.error(errmsg)
 			}
-			bindSel = bindOne
+			selector = bindOne
 
 		case p.match(tSTR):
 			name, _ := strconv.Unquote(p.prev.val)
 			selBlockNames = append(selBlockNames, name)
+
 			if p.match(tCOMMA) {
-				bindSel = bindNamedBlocks
+				target = bindSlice
+				selector = bindNamedBlocks
 				for p.match(tSTR) {
 					name, _ = strconv.Unquote(p.prev.val)
 					selBlockNames = append(selBlockNames, name)
@@ -203,17 +233,18 @@ func bindStmt(p *parser) {
 					break
 				}
 			} else {
-				bindSel = bindNamedBlock
+				selector = bindNamedBlock
 			}
 
 		case p.match(tIDENT):
 			switch p.prev.val {
 			case "first":
-				bindSel = bindFirst
+				selector = bindFirst
 			case "last":
-				bindSel = bindLast
+				selector = bindLast
 			case "all":
-				bindSel = bindAll
+				selector = bindAll
+				target = bindSlice
 			default:
 				p.error(errmsg)
 			}
@@ -223,53 +254,25 @@ func bindStmt(p *parser) {
 		}
 	}
 
-	p.consume(tARROW, "expected '->'")
-	if p.panicMode {
-		return
-	}
+	p.emitOp(opBIND)
+	p.emitByte(byte(target&0xF0) | byte(selector&0x0F))
+	p.emitUvarint(p.identConst(blockType))
 
-	errmsg = "expected bind target ('struct' or 'slice')"
-	p.consume(tIDENT, errmsg)
-	if p.panicMode {
-		return
-	}
-
-	var target bindTarget
-	switch p.prev.val {
-	case "struct":
-		target = bindStruct
-	case "slice":
-		target = bindSlice
-	default:
-		p.error(errmsg)
-	}
-	if bindSel == bindAll && target != bindSlice {
-		p.error("bind of multiple blocks requires slice target")
-	}
-	if p.panicMode {
-		return
-	}
-
-	switch bindSel {
+	switch selector {
 	case bindNamedBlock:
-		p.emitOp(opBINDNB)
-		p.emitUvarint(p.identConst(blockType))
+		p.emitUvarint(1)
+		// todo: send block name as ident
 		p.emitUvarint(p.makeConst(selBlockNames[0]))
-		p.emitByte(byte(target&0xF0) | byte(bindNamedBlock&0x0F))
 
 	case bindNamedBlocks:
-		p.emitOp(opBINDNBS)
-		p.emitUvarint(p.identConst(blockType))
 		p.emitUvarint(len(selBlockNames))
+		// todo: send block names as idents
 		for _, name := range selBlockNames {
 			p.emitUvarint(p.makeConst(name))
 		}
-		p.emitByte(byte(target&0xF0) | byte(bindNamedBlocks&0x0F))
 
 	default:
-		p.emitOp(opBIND)
-		p.emitUvarint(p.identConst(blockType))
-		p.emitByte(byte(target&0xF0) | byte(bindSel&0x0F))
+		p.emitUvarint(0)
 	}
 }
 
