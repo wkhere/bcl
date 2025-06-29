@@ -15,12 +15,12 @@ func copyBlocksToPtr(target any, binding Binding) error {
 
 	targetPtr := reflect.ValueOf(target)
 	if k := targetPtr.Kind(); k != reflect.Pointer {
-		return fmt.Errorf("bind target: expected pointer, have: %s", k)
+		return fmt.Errorf("expected pointer, have: %s", k)
 	}
 
 	err := copyBlocks(targetPtr.Elem(), binding)
 	if err != nil {
-		return fmt.Errorf("bind target: %w", err)
+		return err
 	}
 	return nil
 }
@@ -59,7 +59,7 @@ func copyBlocks(targetValue reflect.Value, binding Binding) error {
 	case *UmbrellaBinding:
 		targetUmbrella := targetValue
 		if k := targetUmbrella.Kind(); k != reflect.Struct {
-			return fmt.Errorf("bind target: pointer deref: expected umbrella struct, have: %s", k)
+			return fmt.Errorf("expected umbrella struct, have: %s", k)
 		}
 		t := targetUmbrella.Type()
 		for i, part := range b.Parts {
