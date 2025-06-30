@@ -71,7 +71,7 @@ Output:
 BCL has statements and expressions.
 
 A block statement has a form
-```
+```hcl
 def block_type "block_name" {
     field1 = value1
     field2 = value2
