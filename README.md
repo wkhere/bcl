@@ -138,7 +138,8 @@ Another constant is `nil`, value of an uninitialized variable (`var a`).
 ### Note on the parser
 
 Versions up to v0.7.x used goyacc, since v0.8.0 there is a top-down Pratt parser
-with bytecode VM.
+with bytecode VM, largely based on the excellent [Crafting Interpreters] book
+by Robert Nystrom.
 
 
 ### Cool stuff
@@ -205,3 +206,4 @@ xstats.pcFinal:       20
 [Interpret]:  https://pkg.go.dev/github.com/wkhere/bcl#Interpret
 [Bind]:       https://pkg.go.dev/github.com/wkhere/bcl#Bind
 [Unmarshal]:  https://pkg.go.dev/github.com/wkhere/bcl#Unmarshal
+[Crafting Interpreters]:   https://craftinginterpreters.com/
