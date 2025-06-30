@@ -11,13 +11,9 @@ Basic Configuration Language.
 __BCL__ is like HCL,
 but instead if being tied to specific HashiCorp products, it brings to the table more features from a typical programming language:
 
-* no dollar-referenced variables; variable name can be used in an expression
-  as it is
 * rich expressions: full numerical arithmetics, operations on strings and booleans
-* dead-simple API: variables get evaluated automatically and fill the fields of
-  the data block where they're referenced;
-  no [strange limitations] of where variables can be defined
-* variables with lexical scope, nested definitions
+* no dollar-referenced variables; just use the variable name
+* variables with lexical scope, nested definitions; no [strange limitations] of where variables can be defined
 * one-pass lexer, parser and VM executor
 * deserialization aka unmarshalling to static Go structs (possibly nested) via
   [bind](NOTES.md#reflection-revamp) statement
