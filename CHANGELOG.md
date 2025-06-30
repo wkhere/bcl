@@ -1,3 +1,7 @@
+### v0.13.2
+* fix error messages in the new reflection code
+* update notes
+
 ### v0.13.1
 Nothing really changes, just fixed some typos in the changelog itself.
 
