@@ -89,7 +89,7 @@ There are no forward declarations.
 Variables are mutable and can be mutated with the `eval x = expr` statement.
 This statement solely exists to allow evaluation of expressions in the context
 expecting stamenents, that is at the toplevel. Please note that inside the block
-the raw statements are allowed, for example `field = value` is actually
+the raw statements are allowed, for example `field = value` is
 an assignment expression, producing the actual block data. So, when in block,
 it's good to remember whether you are operating on fields or variables.
 This may be made more explicit in the future.
