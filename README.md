@@ -117,7 +117,7 @@ the left side must be a string and right side just an int; the result is
 repeating the string given times.
 
 Equality comparisons `==`, `!=` are allowed between all types, including mixing them.
-Obviously values of different non-number types are not equal.
+Obviously values of different types are not equal.
 
 Order comparisons `<`, `>`, , `<=`, `>=` are allowed between numbers and between strings,
 but not between mixed types.
@@ -125,7 +125,7 @@ but not between mixed types.
 There are boolean operators `and`, `or`, `not`, behaving like in Python:
 they are short-cirtuit and retain the type of an operand 
 (`1==1 and 42` will return 42). Non-boolean types can be a boolean operand;
-for this, there is a definition what is considered "falsey": `false`, `nil`,
+there is a definition what is considered "falsey": `false`, `nil`,
 empty string, and zero, again like in Python.
 
 Boolean constants are `true` and `false`.
@@ -139,9 +139,9 @@ with bytecode VM, largely based on the excellent [Crafting Interpreters] book
 by Robert Nystrom.
 
 
-### Cool stuff
+### A glimpse into internals
 
-Internals can be peeked in many ways, here is bytecode disassembly,
+Internals can be peeked in many ways, here is a bytecode disassembly,
 execution trace with stack content, plus some stats:
 ```
 ./bcl -dts <<<'var x=1; def block{eval x=x+2; field=x}'
