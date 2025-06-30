@@ -15,7 +15,7 @@ but instead if being tied to specific HashiCorp products, it brings to the table
 * no dollar-referenced variables; just use the variable name
 * variables with lexical scope, nested definitions; no [strange limitations] of where variables can be defined
 * one-pass lexer, parser and VM executor
-* deserialization aka unmarshalling to static Go structs (possibly nested) via
+* binding aka unmarshalling to static Go structs (possibly nested) via
   [bind](NOTES.md#reflection-revamp) statement
 * optimized to parse very large input if needed
 * planned: make the outside world accessible via environment variables and via catching the command output
@@ -131,6 +131,10 @@ empty string, and zero, again like in Python.
 Boolean constants are `true` and `false`.
 Another constant is `nil`, value of an uninitialized variable (`var a`).
 
+
+### BCL&rarr;Go binding
+
+Please refer to the [reflection notes](NOTES.md#reflection-revamp).
 
 ### Note on the parser
 
