@@ -1,3 +1,6 @@
+### v0.13.3
+* update readme & API docs
+
 ### v0.13.2
 * fix error messages in the new reflection code
 * update notes
