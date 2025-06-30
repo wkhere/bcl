@@ -17,6 +17,7 @@ but instead if being tied to specific HashiCorp products, it brings to the table
 * one-pass lexer, parser and VM executor
 * deserialization aka unmarshalling to static Go structs (possibly nested) via
   [bind](NOTES.md#reflection-revamp) statement
+* optimized to parse very large input if needed
 * planned: make the outside world accessible via environment variables and via catching the command output
 
 ### Example:
