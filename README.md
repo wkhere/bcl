@@ -17,13 +17,11 @@ but instead if being tied to specific HashiCorp products, it brings to the table
 * dead-simple API: variables get evaluated automatically and fill the fields of
   the data block where they're referenced;
   no [strange limitations] of where variables can be defined
-* variables with lexical scope
-* nested definitions
+* variables with lexical scope, nested definitions
 * one-pass lexer, parser and VM executor
 * deserialization aka unmarshalling to static Go structs (possibly nested) via
   [bind](NOTES.md#reflection-revamp) statement
-* planned: make the outside world accessible via environment variables, or via
-  running a command and catching its output
+* planned: make the outside world accessible via environment variables and via catching the command output
 
 ### Example:
 BCL:
