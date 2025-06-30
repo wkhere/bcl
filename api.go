@@ -146,9 +146,14 @@ func InterpretFile(f FileInput, opts ...Option) ([]Block, Binding, error) {
 	return Execute(p, opts...)
 }
 
-// Bind binds the blocks selection (defined via binding) to the target.
-// Target can be actually a struct or a slice of structs, and must correspond
-// to a concrete Binding implementation, right now: [StructBinding] or [SliceBinding].
+// Bind binds the blocks selection to the target.
+// Target can be a struct, a slice of structs, or an umbrella struct containing
+// variations of the former.
+// Target must correspond to the blocks selection given by a concrete [Binding] type:
+// [StructBinding], [SliceBinding] or [UmbrellaBinding].
+// Binding is typically returned by [Interpret]/[InterpretFile]
+// based on what was given in BCL in the `bind` statement
+// - see the "[Reflection revamp]" notes.
 //
 // When inside the struct (or the slice), the requirements are:
 //   - struct type name should correspond to the BCL block type
@@ -173,6 +178,8 @@ func InterpretFile(f FileInput, opts ...Option) ([]Block, Binding, error) {
 //
 // If the binding type is a slice, and a slice pointed by target
 // contained any elements, they are overwritten.
+//
+// [Reflection revamp]: https://github.com/wkhere/bcl/blob/master/NOTES.md#reflection-revamp
 func Bind(target any, binding Binding) error {
 	return copyBlocksToPtr(target, binding)
 }
