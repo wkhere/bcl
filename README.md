@@ -96,6 +96,8 @@ This may be made more explicit in the future.
 
 The last stament in the clan is `print expr` which is useful for debugging.
 
+The hash sign `#` makes a comment until the end of the line.
+
 More on expressions below.
 
 ### Expressions, data conversions
