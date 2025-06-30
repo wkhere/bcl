@@ -8,25 +8,22 @@ BCL
 
 Basic Configuration Language.
 
-__BCL__ is like HCL (the language driving Terraform, Packer and friends),
-but more basic:
+__BCL__ is like HCL,
+but instead if being tied to specific HashiCorp products, it brings to the table more features from a typical programming language:
 
 * no dollar-referenced variables; variable name can be used in an expression
   as it is
+* rich expressions: full numerical arithmetics, operations on strings and booleans
 * block starts with `def` keyword; seems to be more general
   compared to Terraform's `resource` keyword
 * dead-simple API: variables get evaluated automatically and fill the fields of
-  the output structure;
+  the data block where they're referenced;
   no [strange limitations] of where variables can be defined
 * variables with lexical scope
 * nested definitions
 * one-pass lexer, parser and VM executor
 * deserialization aka unmarshalling to static Go structs (possibly nested) via
   [bind](NOTES.md#reflection-revamp) statement
-
-While being basic, BCL also has features reaching beyond HCL:
-
-* rich expressions operating on strings, int & float numbers, and booleans
 * planned: make the outside world accessible via environment variables, or via
   running a command and catching its output
 
