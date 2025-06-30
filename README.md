@@ -71,8 +71,14 @@ Output:
 BCL has statements and expressions.
 
 A block statement has a form
-`def block_type "block_name" { field1 = value1; field2 = value2 }`
-(block name is optional, semicolon also; multiple lines are fine).
+```
+def block_type "block_name" {
+    field1 = value1
+    field2 = value2
+}
+```
+Block name is optional, field assignments can also be squeezed into one line
+and separated by `;` semicolon.
 Such block after running [Interpret] will be available as 
 a [Block] with a map of fields,
 and can be put into a static Go struct via [Bind] or [Unmarshal].
