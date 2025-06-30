@@ -14,8 +14,6 @@ but instead if being tied to specific HashiCorp products, it brings to the table
 * no dollar-referenced variables; variable name can be used in an expression
   as it is
 * rich expressions: full numerical arithmetics, operations on strings and booleans
-* block starts with `def` keyword; seems to be more general
-  compared to Terraform's `resource` keyword
 * dead-simple API: variables get evaluated automatically and fill the fields of
   the data block where they're referenced;
   no [strange limitations] of where variables can be defined
