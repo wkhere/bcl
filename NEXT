@@ -104,4 +104,4 @@ more on errors:
 
 - print expr1, expr2
 
-- disallow '-' as an output file, like for --bdump
+- disallow '-' as an output file for --bdump
