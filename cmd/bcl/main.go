@@ -7,16 +7,24 @@ import (
 	"github.com/wkhere/bcl"
 )
 
-func open(file string) (*os.File, error) {
+func openInput(file string) (*os.File, error) {
 	if file == "-" {
 		return os.Stdin, nil
 	}
 	return os.Open(file)
 }
 
+func openOutput(file string, force bool) (*os.File, error) {
+	flag := os.O_WRONLY | os.O_CREATE
+	if !force {
+		flag |= os.O_EXCL
+	}
+	return os.OpenFile(file, flag, 0644)
+}
+
 func run(a *parsedArgs) (err error) {
 
-	f, err := open(a.file)
+	f, err := openInput(a.file)
 	if err != nil {
 		return err
 	}
@@ -41,7 +49,7 @@ func run(a *parsedArgs) (err error) {
 	}
 
 	if a.bdump {
-		bf, err := os.Create(a.bdumpFile)
+		bf, err := openOutput(a.bdumpFile, a.force)
 		if err != nil {
 			return fmt.Errorf("dump: %w", err)
 		}

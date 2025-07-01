@@ -14,6 +14,7 @@ type parsedArgs struct {
 	stats  bool
 	bdump  bool
 	bload  bool
+	force  bool
 
 	bdumpFile string
 	bloadFile string
@@ -24,6 +25,7 @@ type parsedArgs struct {
 const usage = "usage: bcl" +
 	" [-d|--disasm] [-t|--trace] [-r|--result] [-s|--stats]" +
 	" [--bdump|--bdump=BFILE] [--bload|--bload=BFILE]" +
+	" [-f|--force]" +
 	" [FILE|-]"
 
 func parseArgs(args []string) (a parsedArgs, _ error) {
@@ -50,6 +52,10 @@ flags:
 
 		case arg == "-s", arg == "--stats":
 			a.stats = true
+			continue
+
+		case arg == "-f", arg == "--force":
+			a.force = true
 			continue
 
 		case strings.HasPrefix(arg, "--bdump"):

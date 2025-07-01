@@ -106,4 +106,4 @@ more on errors:
 
 - --bdump:
   + disallow '-' as an output file
-  - don't silently overwrite output file
+  + don't overwrite output file unless -f is given
