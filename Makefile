@@ -7,6 +7,9 @@ src: stringer $(generated) go.mod go.sum *.go cmd/bcl/*.go
 bcl: src
 	go build ./cmd/bcl
 
+install: src
+	go install ./cmd/bcl
+
 tokentype_string.go: token.go
 	go generate token.go
 
@@ -47,4 +50,4 @@ stringer: $(shell go env GOPATH)/bin/stringer
 $(shell go env GOPATH)/bin/stringer:
 	go install golang.org/x/tools/cmd/stringer@latest
 
-.PHONY: default generated src clean test test-py test-race test-full bench cov stringer
+.PHONY: default generated src install clean test test-py test-race test-full bench cov stringer
