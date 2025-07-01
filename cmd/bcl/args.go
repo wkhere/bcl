@@ -85,18 +85,13 @@ flags:
 			break flags
 
 		case len(arg) > 2 && arg[0] == '-':
-			var nonLetter bool
-			var oneLetterFlags []string
+			oneLetterFlags := make([]string, 0, len(arg)-1)
 			for _, c := range arg[1:] {
 				if c >= 'a' && c <= 'z' {
 					oneLetterFlags = append(oneLetterFlags, "-"+string(c))
 				} else {
-					nonLetter = true
-					break
+					return a, fmt.Errorf("unknown flag: %s\n%s", arg, usage)
 				}
-			}
-			if nonLetter {
-				return a, fmt.Errorf("unknown flag: %s\n%s", arg, usage)
 			}
 			args = append(args[:1], append(oneLetterFlags, args[1:]...)...)
 			continue
