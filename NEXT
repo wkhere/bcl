@@ -105,5 +105,5 @@ more on errors:
 - print expr1, expr2
 
 - --bdump:
-  - disallow '-' as an output file
+  + disallow '-' as an output file
   - don't silently overwrite output file

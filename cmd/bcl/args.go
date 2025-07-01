@@ -112,16 +112,22 @@ flags:
 		return a, fmt.Errorf("too many file args\n%s", usage)
 	}
 
-	if a.bdump && a.bdumpFile == "" {
-		if !strings.HasSuffix(a.file, ".bcl") {
-			return a, fmt.Errorf(
-				"--bdump requires knowing BFILE name, "+
-					"either given as a flag, or derived from FILE"+
-					"\n%s",
-				usage,
-			)
+	if a.bdump {
+		switch a.bdumpFile {
+		case "":
+			if !strings.HasSuffix(a.file, ".bcl") {
+				return a, fmt.Errorf(
+					"--bdump requires knowing BFILE name, "+
+						"either given as a flag, or derived from FILE"+
+						"\n%s",
+					usage,
+				)
+			}
+			a.bdumpFile = a.file[:len(a.file)-len(".bcl")] + ".bcb"
+
+		case "-":
+			return a, fmt.Errorf("`-` is not a valid BFILE for --bdump")
 		}
-		a.bdumpFile = a.file[:len(a.file)-len(".bcl")] + ".bcb"
 	}
 
 	if a.bload {
