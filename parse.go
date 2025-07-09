@@ -149,8 +149,7 @@ func blockStmt(p *parser) {
 
 	p.consume(tLCURLY, "expected '{'")
 
-	// todo: block names should also be idents
-	p.defBlock(p.identConst(blockType), p.makeConst(blockName))
+	p.defBlock(p.identConst(blockType), p.identConst(blockName))
 	defer p.endBlock()
 
 	p.beginScope()
@@ -261,14 +260,12 @@ func bindpartStmt(p *parser) {
 	switch selector {
 	case bindNamedBlock:
 		p.emitUvarint(1)
-		// todo: send block name as ident
-		p.emitUvarint(p.makeConst(selBlockNames[0]))
+		p.emitUvarint(p.identConst(selBlockNames[0]))
 
 	case bindNamedBlocks:
 		p.emitUvarint(len(selBlockNames))
-		// todo: send block names as idents
 		for _, name := range selBlockNames {
-			p.emitUvarint(p.makeConst(name))
+			p.emitUvarint(p.identConst(name))
 		}
 
 	default:

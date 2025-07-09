@@ -82,8 +82,8 @@ more on errors:
   + print warning when bind statement is repeated
   - provide binding from the command-line (but how)
 
-- make an option (possibly default) to parse block names as idents
-  and reuse them in bind statement
++ parse block names as idents and reuse them in bind statement
+  - make it an option (possibly default)
 
 - scope issues:
   "eval x=val" inside a block is equivalent to the raw "x=val" expr-statement;

@@ -483,7 +483,7 @@ tests = [
         "== /dev/stdin ==\n"
         "0000   1:13  DEFBLOCK      0 'b'\t   1 'foo'\n"
         "0003   1:14  ENDBLOCK\n"
-        "0004   1:28  BIND 0x14     0 'b'\t   1#\t   2 'foo'\n"
+        "0004   1:28  BIND 0x14     0 'b'\t   1#\t   1 'foo'\n"
         "0009      |  RET",
         'disasm'
     ],
@@ -493,7 +493,7 @@ tests = [
         "0003   1:14  ENDBLOCK\n"
         "0004   1:28  DEFBLOCK      0 'b'\t   2 'bar'\n"
         "0007   1:29  ENDBLOCK\n"
-        "0008   1:43  BIND 0x14     0 'b'\t   1#\t   3 'bar'\n"
+        "0008   1:43  BIND 0x14     0 'b'\t   1#\t   2 'bar'\n"
         "0013      |  RET",
         'disasm'
     ],
@@ -512,7 +512,7 @@ tests = [
         "== /dev/stdin ==\n"
         "0000   1:13  DEFBLOCK      0 'b'\t   1 'foo'\n"
         "0003   1:14  ENDBLOCK\n"
-        "0004   1:29  BIND 0x25     0 'b'\t   1#\t   2 'foo'\n"
+        "0004   1:29  BIND 0x25     0 'b'\t   1#\t   1 'foo'\n"
         "0009      |  RET",
         'disasm'
     ],
@@ -522,7 +522,7 @@ tests = [
         "0003   1:14  ENDBLOCK\n"
         "0004   1:28  DEFBLOCK      0 'b'\t   2 'bar'\n"
         "0007   1:29  ENDBLOCK\n"
-        "0008   1:49  BIND 0x25     0 'b'\t   2#\t   3 'foo'\t   4 'bar'\n"
+        "0008   1:49  BIND 0x25     0 'b'\t   2#\t   1 'foo'\t   2 'bar'\n"
         "0014      |  RET",
         'disasm'
     ],
@@ -608,7 +608,7 @@ tests = [
         "0000   1:11  DEFBLOCK      0 'x'\t   1 'a'\n"
         "0003   1:12  ENDBLOCK\n"
         "0004   1:20  DEFUBIND\n"
-        "0005   1:25  BIND 0x14     0 'x'\t   1#\t   2 'a'\n"
+        "0005   1:25  BIND 0x14     0 'x'\t   1#\t   1 'a'\n"
         "0010   1:26  ENDUBIND\n"
         "0011      |  RET",
         'disasm'
@@ -618,7 +618,7 @@ tests = [
         "0000   1:11  DEFBLOCK      0 'x'\t   1 'a'\n"
         "0003   1:12  ENDBLOCK\n"
         "0004   1:20  DEFUBIND\n"
-        "0005   1:26  BIND 0x25     0 'x'\t   1#\t   2 'a'\n"
+        "0005   1:26  BIND 0x25     0 'x'\t   1#\t   1 'a'\n"
         "0010   1:27  ENDUBIND\n"
         "0011      |  RET",
         'disasm'
