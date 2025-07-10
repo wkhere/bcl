@@ -46,7 +46,7 @@ func (p *Prog) addConst(v value) (idx int) {
 
 func (p *Prog) count() int { return len(p.code) }
 
-// prog dump format, version 1.4
+// prog dump format:
 //
 // 2B: bytecode magic, then version: 1B: major, 1B: minor
 // uvarint + n bytes: prog name
