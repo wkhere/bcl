@@ -61,7 +61,7 @@
 0086      |  SETFIELD     15 'enabled'
 0088      |  POP
 0089   20:2  ENDBLOCK
-0090  22:34  DEFBLOCK     16 'service1'	  17 'another-service1'
+0090  22:32  DEFBLOCK     16 'service'	  17 'another-service'
 0093  23:14  CONST        18 'yet'
 0095  23:20  CONST        19 '.'
 0097      |  ADD
@@ -149,5 +149,14 @@
 0225      |  POP
 0226   44:3  ENDBLOCK
 0227   45:2  ENDBLOCK
-0228   46:1  POPN         12
-0230      |  RET
+0228  47:21  DEFBLOCK     16 'service'	  49 'this'
+0231  47:47  CONST        50 'this.as.well.com'
+0233      |  SETFIELD     13 'host'
+0235      |  POP
+0236  47:49  ENDBLOCK
+0237   50:7  DEFUBIND
+0238  51:10  BIND 0x11     9 'tunnel'	   0#
+0242  52:17  BIND 0x25    16 'service'	   1#	  49 'this'
+0247   53:2  ENDUBIND
+0248   54:1  POPN         12
+0250      |  RET

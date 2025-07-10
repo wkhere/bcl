@@ -19,7 +19,7 @@ def tunnel "hostyhost-service1" {
 	enabled = not cond_long
 }
 
-def service1 "another-service1" {
+def service "another-service" {
 	host = "yet" + "." + "another.com"
 	local_port  = service1_local_base_port + 1
 	remote_port = service1_default_port
@@ -42,4 +42,12 @@ def just_a_test "test" {
 	def inner "inner-thing" {
 		field2 = "pi=" + field1
 	}
+}
+
+def service "this" { host = "this.as.well.com" }
+
+
+bind {
+	tunnel:1
+	service:"this",
 }
