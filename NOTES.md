@@ -51,6 +51,11 @@ Concatenated prog:
   and an index to that table with each pos (tbd)
 * simpler and less changes to the API
 
+Variation:
+
+* prog can be concatenated, but chunks need to have 1-1 correspondence to functions, like in the book; so, what is in prog will become a chunk tied to a single file - no complications with linePos then
+
+
 
 ## Reflection revamp
 
