@@ -1,3 +1,10 @@
+### v0.13.4
+* reflection: implicit BCL int -> Go float64 conversion
+* parser: block names are interned, producing less constants
+* cmd/bcl: --bdump improvements
+* cmd/bcl: one-letter flags optimization
+* improved docs, notes, comments, tests
+
 ### v0.13.3
 * update readme & API docs
 
