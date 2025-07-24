@@ -80,6 +80,8 @@ more on errors:
   + print warning when bind statement is repeated
   - provide binding from the command-line (but how)
 
+- reflection: allow assigning BCL int to Go float64, with an implicit conversion
+
 + parse block names as idents and reuse them in bind statement
   - make it an option (possibly default)
 

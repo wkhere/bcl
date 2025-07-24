@@ -121,6 +121,7 @@ func copyBlock(v reflect.Value, block Block) error {
 		}
 
 		if st, bt := f.Type, vx.Type(); !bt.AssignableTo(st) {
+			// todo: implicit conversion of a BCL int to Go float64
 			return fmt.Errorf(
 				"type mismatch for the mapped field: struct.%s has %s, block.%s has %s",
 				f.Name, st, name, bt,
