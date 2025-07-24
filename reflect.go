@@ -116,15 +116,19 @@ func copyBlock(v reflect.Value, block Block) error {
 		namei := f.Index[0]
 		vx := reflect.ValueOf(x)
 
-		if vx.Type().AssignableTo(reflect.TypeOf(Block{})) {
-			return copyBlock(v.Field(namei), x.(Block))
-		}
+		switch t := vx.Type(); {
 
-		if st, bt := f.Type, vx.Type(); !bt.AssignableTo(st) {
-			// todo: implicit conversion of a BCL int to Go float64
+		case t.AssignableTo(reflect.TypeOf(Block{})):
+			return copyBlock(v.Field(namei), x.(Block))
+
+		case t.Kind() == reflect.Int && f.Type.Kind() == reflect.Float64:
+			x = float64(vx.Int())
+			vx = reflect.ValueOf(x)
+
+		case !t.AssignableTo(f.Type):
 			return fmt.Errorf(
 				"type mismatch for the mapped field: struct.%s has %s, block.%s has %s",
-				f.Name, st, name, bt,
+				f.Name, f.Type, name, t,
 			)
 		}
 

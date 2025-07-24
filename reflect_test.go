@@ -118,6 +118,11 @@ type S4 struct {
 	DontCare any
 }
 
+type S5 struct {
+	X float64
+	I int
+}
+
 var reflectTab = []reflecttc{
 
 	rerror(``, nil, "no binding"),
@@ -312,6 +317,13 @@ var reflectTab = []reflecttc{
 	rerror(`def a{x=5}; bind{a}`, &struct{ A struct{ Bad int } }{},
 		`A: field mapping for "x" not found`,
 	),
+
+	// 90
+	rvalid(`def s5{}; bind s5`, &S5{}, &S5{}),
+	rvalid(`def s5{x=2}; bind s5`, &S5{}, &S5{X: 2.0}),
+	rvalid(`def s5{x=2.2}; bind s5`, &S5{}, &S5{X: 2.2}),
+	rvalid(`def s5{i=3}; bind s5`, &S5{}, &S5{I: 3}),
+	rerror(`def s5{i=3.2}; bind s5`, &S5{}, `type mismatch.+struct.I has int, block.i has float64`),
 }
 
 func TestReflect(t *testing.T) {
