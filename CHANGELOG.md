@@ -69,7 +69,7 @@ blocks to Go structs (single struct or a slice of structs).
 
 ### v0.10.11
 * test.py: allow backticks in error messages
-* lex: return syntax errors for "skicky tokens"
+* lex: return syntax errors for "sticky tokens"
 * cmd/bcl: better error for --bdump flag
 
 ### v0.10.10
