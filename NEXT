@@ -107,3 +107,6 @@ more on errors:
 - --bdump:
   + disallow '-' as an output file
   + don't overwrite output file unless -f is given
+
+
+- future: use for creating damn kubernetes objects
