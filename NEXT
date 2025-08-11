@@ -110,3 +110,4 @@ more on errors:
 
 
 - future: use for creating damn kubernetes objects
+  - some format for required fields structure
