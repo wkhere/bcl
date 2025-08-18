@@ -1,3 +1,7 @@
+### v0.13.5
+* license: anti-mining changes
+* readme polishing, notes update
+
 ### v0.13.4
 * reflection: implicit BCL int -> Go float64 conversion
 * parser: block names are interned, producing less constants
