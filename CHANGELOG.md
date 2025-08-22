@@ -1,4 +1,4 @@
-### v0.13.5
+### v0.13.6
 * license: anti-mining changes
 * readme polishing, notes update
 
