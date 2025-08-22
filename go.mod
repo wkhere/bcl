@@ -8,6 +8,7 @@ require (
 )
 
 retract (
+	v0.13.6
 	v0.13.5
 	v0.10.0
 	v0.8.4
