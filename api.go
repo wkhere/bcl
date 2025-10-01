@@ -100,7 +100,7 @@ func parseWithOpts(inputs <-chan string, name string, opts []Option) (*Prog, err
 		prog.disasm()
 	}
 	if cf.stats {
-		printPStats(cf.output, pstats)
+		pstats.print(cf.output)
 	}
 	return prog, err
 }
@@ -122,7 +122,7 @@ func Execute(prog *Prog, opts ...Option) (result []Block, binding Binding, err e
 
 	result, binding, xstats, err := execute(prog, vmConfig{cf.trace})
 	if cf.stats {
-		printXStats(cf.output, xstats)
+		xstats.print(cf.output)
 	}
 	return result, binding, err
 }
