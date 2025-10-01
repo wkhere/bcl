@@ -5,8 +5,8 @@ import (
 )
 
 func parse(inputs <-chan string, name string, w writers) (
-	*Prog,
-	parseStats, error,
+	_ *Prog,
+	pstats parseStats, _ error,
 ) {
 	linePos := newLineCalc()
 
@@ -24,6 +24,7 @@ func parse(inputs <-chan string, name string, w writers) (
 	}
 
 	p.prog.initForParse()
+	defer pstats.finish(p.prog)
 
 	p.advance()
 
@@ -34,12 +35,10 @@ func parse(inputs <-chan string, name string, w writers) (
 	}
 
 	if p.hadError {
-		p.stats.finish(p.prog)
 		return p.prog, p.stats, errCombined{"parse"}
 	}
 	p.end()
 
-	p.stats.finish(p.prog)
 	return p.prog, p.stats, nil
 }
 
