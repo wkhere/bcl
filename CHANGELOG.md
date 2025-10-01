@@ -1,3 +1,6 @@
+### v0.13.8
+* pstats/xstats small fixes
+
 ### v0.13.7
 * license: anti-mining changes
 * readme polishing, notes update
