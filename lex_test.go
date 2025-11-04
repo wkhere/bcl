@@ -154,7 +154,7 @@ func TestLexerManyInputs(t *testing.T) {
 	}
 }
 
-func ExampleLexer() {
+func Example_lexer() {
 	runExample("0")
 	runExample("1")
 	runExample("-3.14")
