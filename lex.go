@@ -245,6 +245,13 @@ var oneRuneTokens = map[rune]tokenType{
 	',': tCOMMA,
 }
 
+type matchState[M any] struct{ match M }
+
+func (st *matchState[M]) matches(r rune, m map[rune]M) (ok bool) {
+	st.match, ok = m[r]
+	return ok
+}
+
 const (
 	digits      = "0123456789"
 	hexdigits   = digits + "abcdefABCDEF"
@@ -253,31 +260,13 @@ const (
 
 func lexStart(l *lexer) stateFn {
 
-	r := l.next()
-	r2m, r2ok := twoRuneTokens[r]
-	r1t, r1ok := oneRuneTokens[r]
+	var r2st matchState[twoRuneMatch]
+	var r1st matchState[tokenType]
 
-	switch {
+	switch r := l.next(); {
 	case r == eof:
 		l.emit(tEOF)
 		return nil
-	case r2ok:
-		r2 := l.next()
-		if r2 == r2m.r2 {
-			l.emit(r2m.typ)
-			return lexStart
-		}
-		l.backup()
-		if !r1ok {
-			return l.fail(
-				"expected char %q to start token %q", r,
-				fmt.Sprintf("%c%c", r, r2m.r2),
-			)
-		}
-		fallthrough
-	case r1ok:
-		l.emit(r1t)
-		return lexStart
 	case isSpace(r):
 		return lexSpace
 	case r == lineComment:
@@ -288,6 +277,23 @@ func lexStart(l *lexer) stateFn {
 		return lexKeywordOrIdent
 	case isDigit(r):
 		return lexNumber
+	case r2st.matches(r, twoRuneTokens):
+		r2 := l.next()
+		if r2 == r2st.match.r2 {
+			l.emit(r2st.match.typ)
+			return lexStart
+		}
+		l.backup()
+		if !r1st.matches(r, oneRuneTokens) {
+			return l.fail(
+				"expected char %q to start token %q", r,
+				fmt.Sprintf("%c%c", r, r2st.match.r2),
+			)
+		}
+		fallthrough
+	case r1st.matches(r, oneRuneTokens):
+		l.emit(r1st.match)
+		return lexStart
 	default:
 		return l.fail("unknown char %#U", r)
 	}
