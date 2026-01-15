@@ -278,8 +278,7 @@ func lexStart(l *lexer) stateFn {
 	case isDigit(r):
 		return lexNumber
 	case r2st.matches(r, twoRuneTokens):
-		r2 := l.next()
-		if r2 == r2st.match.r2 {
+		if l.next() == r2st.match.r2 {
 			l.emit(r2st.match.typ)
 			return lexStart
 		}
