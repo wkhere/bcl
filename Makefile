@@ -8,7 +8,7 @@ bcl: src
 	go build ./cmd/bcl
 
 install: src
-	go install ./cmd/bcl
+	go install -ldflags=-s ./cmd/bcl
 
 tokentype_string.go: token.go
 	go generate token.go
