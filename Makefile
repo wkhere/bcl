@@ -48,6 +48,6 @@ cov: src
 
 stringer: $(shell go env GOPATH)/bin/stringer
 $(shell go env GOPATH)/bin/stringer:
-	go install golang.org/x/tools/cmd/stringer@latest
+	go install -ldflags=-s golang.org/x/tools/cmd/stringer@latest
 
 .PHONY: default generated src install clean test test-py test-race test-full bench cov stringer
