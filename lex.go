@@ -10,7 +10,7 @@ import (
 
 // API
 
-// newLexer creates new nexer and runs its loop.
+// newLexer creates new lexer and runs its loop.
 func newLexer(inputs <-chan string, linePosUpdater func(string, int)) *lexer {
 	l := &lexer{
 		inputs: inputs,
