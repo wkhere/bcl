@@ -88,9 +88,9 @@ func (l *lexer) next() (r rune) {
 		// continue with leftover + s
 		l.input = l.input[l.start:l.pos] + s
 		l.posShift += l.start
-		l.lpUpd(s, l.posShift+l.pos-l.start)
 		l.pos -= l.start
 		l.start = 0
+		l.lpUpd(s, l.posShift+l.pos)
 	}
 	r, l.width = utf8.DecodeRuneInString(l.input[l.pos:])
 	if l.width == 0 {
