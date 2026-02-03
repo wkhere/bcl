@@ -77,7 +77,10 @@ const (
 
 // next gets the next rune from the input.
 func (l *lexer) next() (r rune) {
-	if l.pos >= len(l.input) {
+	if l.pos > len(l.input) {
+		panic("pos>len(input)")
+	}
+	if l.pos == len(l.input) {
 		s, ok := <-l.inputs
 		if !ok {
 			if l.pos == l.start {
@@ -86,7 +89,7 @@ func (l *lexer) next() (r rune) {
 			}
 		}
 		// continue with leftover + s
-		l.input = l.input[l.start:l.pos] + s
+		l.input = l.input[l.start:] + s
 		l.posShift += l.start
 		l.pos -= l.start
 		l.start = 0
