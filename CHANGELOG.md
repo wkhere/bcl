@@ -1,3 +1,10 @@
+### v0.13.9
+* lexer: explicit panic if pos ever goes beyond input 
+* lexer: r2/r1 tokens checked later in the switch, with matchState struct
+* lexer: small optimizations
+* makefile: install stripped binaries
+* fix the naming of an example test
+
 ### v0.13.8
 * pstats/xstats small fixes
 
