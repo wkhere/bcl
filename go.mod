@@ -1,6 +1,6 @@
 module github.com/wkhere/bcl
 
-go 1.21
+go 1.21.0
 
 require (
 	github.com/akedrou/textdiff v0.0.0-20230423230343-2ebdcebdccc1
