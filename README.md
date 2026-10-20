@@ -146,7 +146,7 @@ Another constant is `nil`, value of an uninitialized variable (`var a`).
 
 Please refer to the [reflection notes](NOTES.md#reflection-revamp).
 
-### Note on the parser
+### A note on parser implementations
 
 Versions up to v0.7.x used goyacc, since v0.8.0 there is a top-down Pratt parser
 with bytecode VM, largely based on the excellent [Crafting Interpreters] book
