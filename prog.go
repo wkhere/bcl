@@ -207,12 +207,19 @@ func (prog *Prog) Load(src io.Reader) (err error) {
 		return fmt.Errorf("lfs size: %d lines, max %d", m, maxLines)
 	}
 	prog.linePos = &lineCalc{lfs: make([]int, m)}
+	prev := -1
 	for i := range prog.linePos.lfs {
 		x, err := uvarintFromBuf(r)
 		if err != nil {
 			return fmt.Errorf("lfs[%d]: %w", i, err)
 		}
+		// linefeed offsets are strictly increasing; this also rejects
+		// values that overflow int
+		if int(x) <= prev {
+			return fmt.Errorf("lfs[%d]: not increasing", i)
+		}
 		prog.linePos.lfs[i] = int(x)
+		prev = int(x)
 	}
 
 	_, err = r.ReadByte()
