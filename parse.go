@@ -44,6 +44,10 @@ func parse(inputs <-chan string, name string, w writers) (
 		p.errorAt(&p.current, fmt.Sprintf("code too large: %d bytes, max %d", n, maxCodeLen))
 		return p.prog, p.stats, errCombined{"parse"}
 	}
+	if n := len(p.linePos.lfs); n > maxLines {
+		p.errorAt(&p.current, fmt.Sprintf("too many lines: %d, max %d", n, maxLines))
+		return p.prog, p.stats, errCombined{"parse"}
+	}
 
 	return p.prog, p.stats, nil
 }

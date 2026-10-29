@@ -67,6 +67,9 @@ func (prog *Prog) Dump(dest io.Writer) error {
 	if len(prog.code) > maxCodeLen {
 		return fmt.Errorf("code too large: %d bytes, max %d", len(prog.code), maxCodeLen)
 	}
+	if len(prog.linePos.lfs) > maxLines {
+		return fmt.Errorf("too many lines: %d, max %d", len(prog.linePos.lfs), maxLines)
+	}
 
 	w := bufio.NewWriterSize(dest, 4096)
 	w.Write(append([]byte(bytecodeMagic), bytecodeMajor, bytecodeMinor))
@@ -200,8 +203,11 @@ func (prog *Prog) Load(src io.Reader) (err error) {
 	if err != nil {
 		return fmt.Errorf("lfs size: %w", err)
 	}
-	prog.linePos = &lineCalc{lfs: make([]int, int(m))}
-	for i := 0; i < int(m); i++ {
+	if m > maxLines {
+		return fmt.Errorf("lfs size: %d lines, max %d", m, maxLines)
+	}
+	prog.linePos = &lineCalc{lfs: make([]int, m)}
+	for i := range prog.linePos.lfs {
 		x, err := uvarintFromBuf(r)
 		if err != nil {
 			return fmt.Errorf("lfs[%d]: %w", i, err)
