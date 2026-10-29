@@ -1,6 +1,8 @@
 package bcl
 
 import (
+	"bufio"
+	"bytes"
 	"math"
 	"testing"
 	"testing/quick"
@@ -116,5 +118,13 @@ func TestEncodingValuesQC(t *testing.T) {
 		if err := quick.Check(f, qcConf); err != nil {
 			t.Error(err)
 		}
+	}
+}
+
+func TestDecodingInvalidType(t *testing.T) {
+	r := bufio.NewReader(bytes.NewReader([]byte{0xfe}))
+	_, err := valueFromBuf(r)
+	if _, ok := err.(errInvalidType); !ok {
+		t.Errorf("want errInvalidType, have: %v", err)
 	}
 }

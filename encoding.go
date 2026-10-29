@@ -188,7 +188,7 @@ func valueFromBuf(r *bufio.Reader) (value, error) {
 		return nil, nil
 
 	default:
-		panic(errInvalidType{b[0]})
+		return nil, errInvalidType{b[0]}
 	}
 }
 
@@ -196,7 +196,7 @@ type errInvalidType struct{ byte }
 type errInvalidValue struct{ value }
 
 func (e errInvalidType) Error() string {
-	return fmt.Sprintf("invalid type: %q", e.byte)
+	return fmt.Sprintf("invalid type: 0x%02x", e.byte)
 }
 
 func (e errInvalidValue) Error() string {
