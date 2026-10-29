@@ -2,6 +2,7 @@ package bcl_test
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"reflect"
 	"strings"
@@ -60,12 +61,64 @@ func testDumpWithTrailingData(input []byte, t *testing.T) {
 	}
 }
 
+func testLoadTruncated(input []byte, t *testing.T) {
+	t.Helper()
+
+	prog, err := bcl.Parse(input, "input", bcl.OptOutput(io.Discard))
+	if err != nil {
+		t.Errorf("parse error: %v", err)
+		return
+	}
+
+	b := new(bytes.Buffer)
+	err = prog.Dump(b)
+	if err != nil {
+		t.Errorf("dump error: %v", err)
+		return
+	}
+	full := b.Bytes()
+
+	load := func(p []byte) (err error) {
+		defer func() {
+			if x := recover(); x != nil {
+				err = fmt.Errorf("panic: %v", x)
+			}
+		}()
+		_, err = bcl.LoadProg(bytes.NewReader(p), "input", bcl.OptOutput(io.Discard))
+		return err
+	}
+
+	for i := range full {
+		err := load(full[:i])
+		switch {
+		case err == nil:
+			t.Errorf("truncated at %d/%d: no error", i, len(full))
+		case strings.HasPrefix(err.Error(), "panic:"):
+			t.Errorf("truncated at %d/%d: %v", i, len(full), err)
+		}
+	}
+}
+
+// varintsInput has multi-byte uvarints in various places:
+// int constant, string length, and enough code for large positions.
+var varintsInput = []byte(`
+var i = 123456789
+var f = 3.14
+var s = "` + strings.Repeat("x", 300) + `"
+def blk "name" { x = i; y = f; z = s; w = true; n = nil }
+`)
+
 func TestBasicDumpLoad(t *testing.T) {
 	testDumpLoad(basicInput, t)
 }
 
 func TestDumpWithTrailingData(t *testing.T) {
 	testDumpWithTrailingData(basicInput, t)
+}
+
+func TestLoadTruncated(t *testing.T) {
+	testLoadTruncated(basicInput, t)
+	testLoadTruncated(varintsInput, t)
 }
 
 func benchDumpLoad(input []byte, b *testing.B) {
