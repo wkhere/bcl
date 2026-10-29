@@ -23,11 +23,13 @@ func testDumpLoad(input []byte, t *testing.T) {
 	err = prog.Dump(b)
 	if err != nil {
 		t.Errorf("dump error: %v", err)
+		return
 	}
 
 	prog2, err := bcl.LoadProg(b, "input", bcl.OptOutput(io.Discard))
 	if err != nil {
 		t.Errorf("load error: %v", err)
+		return
 	}
 
 	if !reflect.DeepEqual(prog2, prog) {
