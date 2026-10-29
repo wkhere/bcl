@@ -1,3 +1,4 @@
+### v0.13.10
 * fix the minimum go version
 * readme polishing
 * limits: strings 16MB, code 32MB, 8M lines; enforced in parser, Dump and Load
