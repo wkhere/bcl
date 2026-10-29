@@ -1,4 +1,5 @@
 * parser: makeConst simplified, comments clarified
+* lex, ParseFile: fix hang on empty read chunk
 
 ### v0.13.10
 * fix the minimum go version

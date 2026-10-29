@@ -78,9 +78,9 @@ func ParseFile(f FileInput, opts ...Option) (prog *Prog, _ error) {
 
 	go func() {
 		p, err := parseWithOpts(inpc, f.Name(), opts)
-		if err != nil {
-			close(done)
-		}
+		// release the reader if the lexer stopped before the end of input;
+		// must precede perr send, as rerr is received first:
+		close(done)
 		prog = p
 		perr <- err
 	}()

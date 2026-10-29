@@ -82,6 +82,9 @@ func (l *lexer) next() (r rune) {
 	}
 	if l.pos == len(l.input) {
 		s, ok := <-l.inputs
+		for ok && s == "" { // empty chunk is not eof
+			s, ok = <-l.inputs
+		}
 		if !ok {
 			if l.pos == l.start {
 				l.width = 0
