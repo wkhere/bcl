@@ -2,6 +2,7 @@ package bcl
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 )
@@ -196,9 +197,13 @@ func (prog *Prog) Load(src io.Reader) (err error) {
 		prog.linePos.lfs[i] = int(x)
 	}
 
-	_, err = r.Read(b[:1])
-	if err == io.EOF {
+	_, err = r.ReadByte()
+	switch err {
+	case io.EOF:
 		return nil
+	case nil:
+		return errors.New("unexpected trailing data")
+	default:
+		return err
 	}
-	return err
 }
