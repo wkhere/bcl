@@ -62,6 +62,7 @@ const (
 	bytecodeMinor uint8 = 0
 )
 
+// Dump writes bytecode to the dest writer; on error, dest might hold partial data.
 func (prog *Prog) Dump(dest io.Writer) error {
 	w := bufio.NewWriterSize(dest, 4096)
 	w.Write(append([]byte(bytecodeMagic), bytecodeMajor, bytecodeMinor))
@@ -80,11 +81,17 @@ func (prog *Prog) Dump(dest io.Writer) error {
 
 	n = uvarintToBytes(p, uint64(len(prog.constants)))
 	w.Write(p[:n])
-	for _, v := range prog.constants {
+	for i, v := range prog.constants {
 		// all but string can fit in a fixed buffer
 		if s, ok := v.(string); ok {
-			if 2+len(s) > len(p) {
-				p = make([]byte, 2+len(s))
+			if len(s) > maxStringLen {
+				return fmt.Errorf(
+					"constant[%d]: string too long: %d bytes, max %d", i, len(s), maxStringLen,
+				)
+			}
+			wantedLen := 1 + 9 + len(s) // type + max varint for size + string
+			if wantedLen > len(p) {
+				p = make([]byte, wantedLen)
 			}
 		}
 		n = valueToBytes(p, v)
@@ -112,17 +119,16 @@ func (prog *Prog) Load(src io.Reader) (err error) {
 	r := bufio.NewReaderSize(src, 4096)
 
 	var b [2]byte
-	var n int
 	var m uint64
 
-	_, err = io.ReadFull(r, b[:2])
+	_, err = readPart(r, b[:2])
 	if err != nil {
 		return fmt.Errorf("magic header: %w", err)
 	}
 	if string(b[:2]) != bytecodeMagic {
 		return fmt.Errorf("invalid magic header")
 	}
-	_, err = io.ReadFull(r, b[:2])
+	_, err = readPart(r, b[:2])
 	if err != nil {
 		return fmt.Errorf("bcode version: %w", err)
 	}
@@ -135,28 +141,19 @@ func (prog *Prog) Load(src io.Reader) (err error) {
 		)
 	}
 
-	m, err = uvarintFromBuf(r)
+	prog.name, err = stringFromBuf(r)
 	if err != nil {
-		return fmt.Errorf("name size: %w", err)
+		return fmt.Errorf("name: %w", err)
 	}
-	p, err := r.Peek(int(m))
-	if err != nil {
-		return fmt.Errorf("name too short: %w", err)
-	}
-	r.Discard(int(m))
-	prog.name = string(p)
 
 	m, err = uvarintFromBuf(r)
 	if err != nil {
 		return fmt.Errorf("code size: %w", err)
 	}
 	prog.code = make([]byte, m)
-	n, err = io.ReadFull(r, prog.code)
-	if n < int(m) {
-		if err != nil {
-			return fmt.Errorf("code too short: %w", err)
-		}
-		return fmt.Errorf("code too short")
+	_, err = readPart(r, prog.code)
+	if err != nil {
+		return fmt.Errorf("code too short: %w", err)
 	}
 
 	m, err = uvarintFromBuf(r)

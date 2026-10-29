@@ -1,6 +1,7 @@
 package bcl
 
 import (
+	"fmt"
 	"strconv"
 )
 
@@ -787,6 +788,10 @@ func (p *parser) identConst(name string) int {
 }
 
 func (p *parser) makeConst(v value) int {
+	if s, ok := v.(string); ok && len(s) > maxStringLen {
+		p.error(fmt.Sprintf("string too long: %d bytes, max %d", len(s), maxStringLen))
+	}
+
 	// in case of some values like empty str, cache like identConst:
 	var cache bool
 	if v == "" {
@@ -827,7 +832,11 @@ func (p *parser) errorAt(t *token, msg string) {
 		p.log.Print(" at end")
 	case tERR, tFAIL: // nop
 	default:
-		p.log.Printf(" at '%s'", t.val)
+		v := t.val
+		if len(v) > 40 {
+			v = v[:40] + "..."
+		}
+		p.log.Printf(" at '%s'", v)
 	}
 
 	p.log.Printf(": %s\n", msg)

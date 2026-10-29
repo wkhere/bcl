@@ -37,6 +37,27 @@ func uvarintFromBuf(r *bufio.Reader) (uint64, error) {
 	return x, err
 }
 
+func stringFromBuf(r *bufio.Reader) (string, error) {
+	k, err := uvarintFromBuf(r)
+	if err != nil {
+		return "", err
+	}
+	if k > maxStringLen {
+		return "", fmt.Errorf("string too long: %d bytes, max %d", k, maxStringLen)
+	}
+	p := make([]byte, k)
+	_, err = readPart(r, p)
+	return string(p), err
+}
+
+func readPart(r io.Reader, p []byte) (n int, err error) {
+	n, err = io.ReadFull(r, p)
+	if err == io.EOF {
+		err = io.ErrUnexpectedEOF
+	}
+	return n, err
+}
+
 func varintToBytes(p []byte, x int64) int {
 	return uvarintToBytes(p, i64ToU64(x))
 }
@@ -128,7 +149,7 @@ func valueFromBytes(p []byte) (value, int) {
 
 func valueFromBuf(r *bufio.Reader) (value, error) {
 	var b [1]byte
-	_, err := io.ReadFull(r, b[:1])
+	_, err := readPart(r, b[:1])
 	if err != nil {
 		return nil, err
 	}
@@ -146,15 +167,10 @@ func valueFromBuf(r *bufio.Reader) (value, error) {
 		return math.Float64frombits(stdbinary.BigEndian.Uint64(p)), err
 
 	case typeSTR:
-		p, _ := r.Peek(9)
-		k, i := uvarintFromBytes(p)
-		r.Discard(i)
-		p, _ = r.Peek(int(k))
-		_, err = r.Discard(len(p))
-		return string(p), err
+		return stringFromBuf(r)
 
 	case typeBOOL:
-		_, err = io.ReadFull(r, b[:1])
+		_, err = readPart(r, b[:1])
 		return b[0] != 0, err
 
 	case typeNIL:
