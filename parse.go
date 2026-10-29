@@ -798,6 +798,7 @@ func (p *parser) identConst(name string) int {
 
 func (p *parser) makeConst(v value) int {
 	if s, ok := v.(string); ok && len(s) > maxStringLen {
+		// report but keep the const, so idx stays valid; parse fails via hadError
 		p.error(fmt.Sprintf("string too long: %d bytes, max %d", len(s), maxStringLen))
 	}
 
