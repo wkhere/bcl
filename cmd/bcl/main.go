@@ -57,6 +57,22 @@ func openOutput(file string, force bool, inputSt fileStat) (*os.File, error) {
 	return f, nil
 }
 
+// removePartial removes a partial file if it's a regular file, not following a symlink.
+func removePartial(file string) {
+	st, err := lstatPath(file)
+	switch {
+	case err != nil:
+		logf("can't remove partial output: %v\n", err)
+	case !st.isRegular():
+		logf("partial output left in %s: not a regular file\n", file)
+	default:
+		err = os.Remove(file)
+		if err != nil {
+			logf("can't remove partial output: %v\n", err)
+		}
+	}
+}
+
 func run(a *parsedArgs) (err error) {
 
 	f, st, err := openInput(a.file)
@@ -92,6 +108,7 @@ func run(a *parsedArgs) (err error) {
 		err = prog.Dump(bf)
 		safeClose(bf, &err)
 		if err != nil {
+			removePartial(a.bdumpFile)
 			return fmt.Errorf("dump: %w", err)
 		}
 	}
@@ -130,6 +147,10 @@ func main() {
 func die(exitcode int, err error) {
 	fmt.Fprintln(os.Stderr, err)
 	os.Exit(exitcode)
+}
+
+func logf(format string, a ...any) {
+	fmt.Fprintf(os.Stderr, format, a...)
 }
 
 func safeClose(f *os.File, errp *error) {

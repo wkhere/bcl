@@ -7,9 +7,11 @@ import (
 	"syscall"
 )
 
-// fileStat is the part of the file status needed to compare files.
-// On unix it comes from fstat(2) directly: os.File.Stat would return
-// os.FileInfo, which makes the linker keep much of the time package.
+// fileStat is the part of the file status needed to compare files
+// and check their type.
+// On unix it comes from fstat(2)/lstat(2) directly: os.File.Stat and
+// os.Lstat would return os.FileInfo, which makes the linker keep much
+// of the time package.
 type fileStat struct {
 	st syscall.Stat_t
 }
@@ -27,6 +29,16 @@ func statFile(f *os.File) (s fileStat, err error) {
 	}
 	if err != nil {
 		return s, &os.PathError{Op: "fstat", Path: f.Name(), Err: err}
+	}
+	return s, nil
+}
+
+// lstatPath doesn't follow a symlink, so it describes what os.Remove
+// would remove.
+func lstatPath(name string) (s fileStat, err error) {
+	err = syscall.Lstat(name, &s.st)
+	if err != nil {
+		return s, &os.PathError{Op: "lstat", Path: name, Err: err}
 	}
 	return s, nil
 }
