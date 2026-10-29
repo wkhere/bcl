@@ -114,16 +114,16 @@ func (prog *Prog) Load(src io.Reader) (err error) {
 	var n int
 	var m uint64
 
-	n, _ = r.Read(b[:2])
-	if n != 2 {
-		return fmt.Errorf("missing magic header")
+	_, err = io.ReadFull(r, b[:2])
+	if err != nil {
+		return fmt.Errorf("magic header: %w", err)
 	}
 	if string(b[:2]) != bytecodeMagic {
 		return fmt.Errorf("invalid magic header")
 	}
-	n, _ = r.Read(b[:2])
-	if n != 2 {
-		return fmt.Errorf("missing bcode major/minor version")
+	_, err = io.ReadFull(r, b[:2])
+	if err != nil {
+		return fmt.Errorf("bcode version: %w", err)
 	}
 	if b[0] != bytecodeMajor {
 		return fmt.Errorf("invalid bcode major version: have %d.x, want %d.x", b[0], bytecodeMajor)
