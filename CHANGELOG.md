@@ -1,3 +1,5 @@
+* parser: makeConst simplified, comments clarified
+
 ### v0.13.10
 * fix the minimum go version
 * readme polishing
