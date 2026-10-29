@@ -797,24 +797,26 @@ func (p *parser) identConst(name string) int {
 }
 
 func (p *parser) makeConst(v value) int {
-	if s, ok := v.(string); ok && len(s) > maxStringLen {
+	s, isString := v.(string)
+	if isString && len(s) > maxStringLen {
 		// report but keep the const, so idx stays valid; parse fails via hadError
 		p.error(fmt.Sprintf("string too long: %d bytes, max %d", len(s), maxStringLen))
 	}
 
-	// in case of some values like empty str, cache like identConst:
-	var cache bool
-	if v == "" {
-		idx, ok := p.identRefs[""]
+	// special values (currently: empty str) are cached too, in identRefs;
+	// no clash, as an ident can't be empty
+	var newcached bool
+	if isString && s == "" {
+		idx, ok := p.identRefs[s]
 		if ok {
 			return idx
 		}
-		cache = true
+		newcached = true
 	}
 
 	idx := p.currentProg().addConst(v)
-	if cache {
-		p.identRefs[v.(string)] = idx
+	if newcached {
+		p.identRefs[s] = idx
 	}
 	return idx
 }
