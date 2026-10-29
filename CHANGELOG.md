@@ -1,3 +1,4 @@
+### v0.13.12
 * lex: fix runes split across read chunks
 
 ### v0.13.11
