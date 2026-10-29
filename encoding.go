@@ -7,7 +7,7 @@ import (
 	"io"
 	"math"
 
-	"github.com/mohae/uvarint"
+	"github.com/wkhere/uvarint"
 )
 
 func u16ToBytes(p []byte, x uint16) {
@@ -28,9 +28,13 @@ func uvarintFromBytes(p []byte) (uint64, int) {
 }
 
 func uvarintFromBuf(r *bufio.Reader) (uint64, error) {
-	p, err := r.Peek(9)
-	if err != nil && err != io.EOF {
-		return 0, err
+	p, err := r.Peek(1)
+	if err != nil {
+		return 0, partialEOF(err)
+	}
+	p, err = r.Peek(uvarint.UvarintLen(p))
+	if err != nil {
+		return 0, partialEOF(err)
 	}
 	x, n := uvarintFromBytes(p)
 	_, err = r.Discard(n)
@@ -52,10 +56,14 @@ func stringFromBuf(r *bufio.Reader) (string, error) {
 
 func readPart(r io.Reader, p []byte) (n int, err error) {
 	n, err = io.ReadFull(r, p)
+	return n, partialEOF(err)
+}
+
+func partialEOF(err error) error {
 	if err == io.EOF {
 		err = io.ErrUnexpectedEOF
 	}
-	return n, err
+	return err
 }
 
 func varintToBytes(p []byte, x int64) int {
@@ -65,6 +73,11 @@ func varintToBytes(p []byte, x int64) int {
 func varintFromBytes(p []byte) (int64, int) {
 	u, n := uvarintFromBytes(p)
 	return u64ToI64(u), n
+}
+
+func varintFromBuf(r *bufio.Reader) (int64, error) {
+	u, err := uvarintFromBuf(r)
+	return u64ToI64(u), err
 }
 
 func i64ToU64(x int64) uint64 {
@@ -156,15 +169,13 @@ func valueFromBuf(r *bufio.Reader) (value, error) {
 
 	switch c := typecode(b[0]); c {
 	case typeINT:
-		p, _ := r.Peek(9)
-		x, i := varintFromBytes(p)
-		_, err = r.Discard(i)
+		x, err := varintFromBuf(r)
 		return int(x), err
 
 	case typeFLOAT:
-		p, _ := r.Peek(8)
-		_, err = r.Discard(len(p))
-		return math.Float64frombits(stdbinary.BigEndian.Uint64(p)), err
+		var bf [8]byte
+		_, err = readPart(r, bf[:])
+		return math.Float64frombits(stdbinary.BigEndian.Uint64(bf[:])), err
 
 	case typeSTR:
 		return stringFromBuf(r)
