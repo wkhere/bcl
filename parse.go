@@ -40,6 +40,11 @@ func parse(inputs <-chan string, name string, w writers) (
 	}
 	p.end()
 
+	if n := p.prog.count(); n > maxCodeLen {
+		p.errorAt(&p.current, fmt.Sprintf("code too large: %d bytes, max %d", n, maxCodeLen))
+		return p.prog, p.stats, errCombined{"parse"}
+	}
+
 	return p.prog, p.stats, nil
 }
 

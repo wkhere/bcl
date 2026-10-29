@@ -64,6 +64,10 @@ const (
 
 // Dump writes bytecode to the dest writer; on error, dest might hold partial data.
 func (prog *Prog) Dump(dest io.Writer) error {
+	if len(prog.code) > maxCodeLen {
+		return fmt.Errorf("code too large: %d bytes, max %d", len(prog.code), maxCodeLen)
+	}
+
 	w := bufio.NewWriterSize(dest, 4096)
 	w.Write(append([]byte(bytecodeMagic), bytecodeMajor, bytecodeMinor))
 
@@ -150,6 +154,9 @@ func (prog *Prog) Load(src io.Reader) (err error) {
 	if err != nil {
 		return fmt.Errorf("code size: %w", err)
 	}
+	if m > maxCodeLen {
+		return fmt.Errorf("code size: %d bytes, max %d", m, maxCodeLen)
+	}
 	prog.code = make([]byte, m)
 	_, err = readPart(r, prog.code)
 	if err != nil {
@@ -160,8 +167,12 @@ func (prog *Prog) Load(src io.Reader) (err error) {
 	if err != nil {
 		return fmt.Errorf("constants size: %w", err)
 	}
-	prog.constants = make([]value, int(m))
-	for i := 0; i < int(m); i++ {
+	// each constant is referenced at least once in the code
+	if m > uint64(len(prog.code)) {
+		return fmt.Errorf("constants size: %d exceeds code size %d", m, len(prog.code))
+	}
+	prog.constants = make([]value, m)
+	for i := range prog.constants {
 		prog.constants[i], err = valueFromBuf(r)
 		if err != nil {
 			return fmt.Errorf("constant[%d]: %w", i, err)
@@ -172,8 +183,12 @@ func (prog *Prog) Load(src io.Reader) (err error) {
 	if err != nil {
 		return fmt.Errorf("positions size: %w", err)
 	}
-	prog.positions = make([]int, int(m))
-	for i := 0; i < int(m); i++ {
+	// each code byte has its position
+	if m != uint64(len(prog.code)) {
+		return fmt.Errorf("positions size: %d, want code size %d", m, len(prog.code))
+	}
+	prog.positions = make([]int, m)
+	for i := range prog.positions {
 		x, err := uvarintFromBuf(r)
 		if err != nil {
 			return fmt.Errorf("position[%d]: %w", i, err)
