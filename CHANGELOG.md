@@ -1,5 +1,12 @@
 * fix the minimum go version
 * readme polishing
+* limits: strings 16MB, code 32MB, 8M lines; enforced in parser, Dump and Load
+* Dump: fix panic on strings longer than 240B
+* Load: fix strings longer than 4KB being truncated
+* Load: no panics on truncated or corrupted bytecode, errors instead
+* Load: report read errors, reject trailing data
+* Load: sanity checks of constants, positions and line feeds against code
+* uvarint: switch to wkhere/uvarint fork
 
 ### v0.13.9
 * lexer: explicit panic if pos ever goes beyond input 
