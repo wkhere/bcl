@@ -7,24 +7,59 @@ import (
 	"github.com/wkhere/bcl"
 )
 
-func openInput(file string) (*os.File, error) {
+func openInput(file string) (f *os.File, st fileStat, err error) {
 	if file == "-" {
-		return os.Stdin, nil
+		f = os.Stdin
+		st, err = statFile(f)
+		return f, st, err
 	}
-	return os.Open(file)
+
+	f, err = os.Open(file)
+	if err != nil {
+		return nil, st, err
+	}
+	st, err = statFile(f)
+	if err != nil {
+		f.Close()
+		return nil, st, err
+	}
+	return f, st, nil
 }
 
-func openOutput(file string, force bool) (*os.File, error) {
+// openOutput opens the file for writing, refusing to clobber the input.
+// Truncation happens only after the same-file check, so that a symlink
+// or hardlink pointing to the input can't destroy it.
+func openOutput(file string, force bool, inputSt fileStat) (*os.File, error) {
 	flag := os.O_WRONLY | os.O_CREATE
 	if !force {
 		flag |= os.O_EXCL
 	}
-	return os.OpenFile(file, flag, 0644)
+	f, err := os.OpenFile(file, flag, 0644)
+	if err != nil {
+		return nil, err
+	}
+	st, err := statFile(f)
+	if err != nil {
+		f.Close()
+		return nil, err
+	}
+	if st.sameFile(inputSt) {
+		f.Close()
+		return nil, fmt.Errorf("%s: same file as the input", file)
+	}
+	if st.isRegular() {
+		err = f.Truncate(0)
+		if err != nil {
+			f.Close()
+			return nil, err
+		}
+	}
+	return f, nil
 }
 
 func run(a *parsedArgs) (err error) {
 
-	f, err := openInput(a.file)
+	f, st, err := openInput(a.file)
 	if err != nil {
 		return err
 	}
@@ -49,7 +84,7 @@ func run(a *parsedArgs) (err error) {
 	}
 
 	if a.bdump {
-		bf, err := openOutput(a.bdumpFile, a.force)
+		bf, err := openOutput(a.bdumpFile, a.force, st)
 		if err != nil {
 			return fmt.Errorf("dump: %w", err)
 		}
