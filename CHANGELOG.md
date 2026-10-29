@@ -7,6 +7,9 @@
 * Load: report read errors, reject trailing data
 * Load: sanity checks of constants, positions and line feeds against code
 * uvarint: switch to wkhere/uvarint fork
+* cmd: --bdump -f truncates the existing output file (was leaving stale bytes)
+* cmd: remove partial --bdump output on error
+* cmd: refuse --bdump to the input file, also via symlink or hardlink
 
 ### v0.13.9
 * lexer: explicit panic if pos ever goes beyond input 
