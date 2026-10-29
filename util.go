@@ -6,8 +6,8 @@ import (
 )
 
 // logger is a good enough solution for parser error logs.
-// Stdlib log.Logger features, like support for concurrent writes, is not needed
-// here, as the parser is sequential.
+// Stdlib log.Logger features, like support for concurrent writes,
+// are not needed here, as the parser is sequential.
 type logger struct {
 	w io.Writer
 }
