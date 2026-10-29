@@ -1,3 +1,5 @@
+* lex: fix runes split across read chunks
+
 ### v0.13.11
 * parser: makeConst simplified, comments clarified
 * lex, ParseFile: fix hang on empty read chunk

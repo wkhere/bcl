@@ -62,6 +62,32 @@ func TestParseFileEmptyChunk(t *testing.T) {
 	}
 }
 
+func TestParseFileSplitRune(t *testing.T) {
+	// a rune split across chunks used to be decoded as two RuneErrors;
+	// here a non-breaking space, which the lexer must see whole
+	src := "var a = 1 eval a"
+	i := len("var a = 1") + 1
+
+	for _, chunks := range [][]string{
+		{src[:i], src[i:]},
+		{src[:i], "", src[i : i+1], src[i+1:]}, // empty chunk inside a rune
+		bytewise(src),
+	} {
+		_, err := bcl.ParseFile(&chunkfile{chunks: chunks})
+		if err != nil {
+			t.Errorf("%q: %v", chunks, err)
+		}
+	}
+}
+
+func bytewise(s string) []string {
+	cc := make([]string, len(s))
+	for i := 0; i < len(s); i++ {
+		cc[i] = s[i : i+1]
+	}
+	return cc
+}
+
 type chunkfile struct{ chunks []string }
 
 func (c *chunkfile) Read(p []byte) (int, error) {

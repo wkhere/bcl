@@ -80,18 +80,16 @@ func (l *lexer) next() (r rune) {
 	if l.pos > len(l.input) {
 		panic("pos>len(input)")
 	}
-	if l.pos == len(l.input) {
+	// a chunk can end in the middle of a rune, so read on until it's complete
+	for l.pos == len(l.input) ||
+		l.input[l.pos] >= utf8.RuneSelf && !utf8.FullRuneInString(l.input[l.pos:]) {
 		s, ok := <-l.inputs
-		for ok && s == "" { // empty chunk is not eof
-			s, ok = <-l.inputs
-		}
 		if !ok {
-			if l.pos == l.start {
-				l.width = 0
-				return eof
-			}
+			// no more input: the tail is decoded below, giving eof if empty,
+			// or RuneError if it's a truncated rune
+			break
 		}
-		// continue with leftover + s
+		// continue with leftover + s; an empty chunk is not eof, just loops
 		l.input = l.input[l.start:] + s
 		l.posShift += l.start
 		l.pos -= l.start
