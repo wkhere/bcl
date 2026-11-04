@@ -3,7 +3,7 @@ module github.com/wkhere/bcl
 go 1.21.0
 
 require (
-	github.com/akedrou/textdiff v0.0.0-20230423230343-2ebdcebdccc1
+	github.com/akedrou/textdiff v0.1.0
 	github.com/wkhere/uvarint v0.0.0-20261029113142-dd3675f0d1c9
 )
 

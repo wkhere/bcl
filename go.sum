@@ -1,4 +1,6 @@
 github.com/akedrou/textdiff v0.0.0-20230423230343-2ebdcebdccc1 h1:XfKKiQL7irIGI7nfu4a6IKhrgUHvKwhH/AnuHgZy/+U=
 github.com/akedrou/textdiff v0.0.0-20230423230343-2ebdcebdccc1/go.mod h1:PJwvxBpzqjdeomc0r8Hgc+xJC7k6z+k371tffCGXR2M=
+github.com/akedrou/textdiff v0.1.0 h1:K7nbOVQju7/coCXnJRJ2fsltTwbSvC+M4hKBUJRBRGY=
+github.com/akedrou/textdiff v0.1.0/go.mod h1:a9CCC49AKtFTmVDNFHDlCg7V/M7C7QExDAhb2SkL6DQ=
 github.com/wkhere/uvarint v0.0.0-20261029113142-dd3675f0d1c9 h1:7YzcxJxq1PnpaTIeBvNK40fSXM+4ok/oBCPzf6pGCJE=
 github.com/wkhere/uvarint v0.0.0-20261029113142-dd3675f0d1c9/go.mod h1:f/wjSJpxkd+mG2nPN9qzhfXnR+94sp7e28759pVQQN4=
