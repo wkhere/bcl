@@ -1,3 +1,7 @@
+### v0.13.13
+* lex: fix quadratic behavior for tokens/comments spanning many chunks
+* lex: fix line positions after a rune split across chunks
+
 ### v0.13.12
 * lex: fix runes split across read chunks
 
