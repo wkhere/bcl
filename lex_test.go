@@ -214,6 +214,30 @@ func TestLexerBigTokenAlloc(t *testing.T) {
 	}
 }
 
+func TestLexerSplitRuneLinePos(t *testing.T) {
+	// a chunk following a split rune used to have its line feeds recorded
+	// too early, by the number of rune's bytes in the previous chunk
+	src := "var a = \"é€😀\"\n# é€😀\n\nvar b = \"😀\"\n"
+
+	lfs := func(chunks []string) []int {
+		c := make(chan string, len(chunks))
+		for _, s := range chunks {
+			c <- s
+		}
+		close(c)
+		lc := newLineCalc()
+		tstream(newLexer(c, lc.add).tokens).collect()
+		return lc.lfs
+	}
+
+	want := lfs([]string{src})
+	for n := 1; n < len(src); n++ {
+		if have := lfs(eachN(src, n)); !reflect.DeepEqual(have, want) {
+			t.Errorf("chunk size %d: have line feeds %v, want %v", n, have, want)
+		}
+	}
+}
+
 func BenchmarkLexerBigToken(b *testing.B) {
 	for _, mb := range []int{1, 2, 4} {
 		chunks := eachN(`"`+strings.Repeat("x", mb<<20)+`"`, 4096)

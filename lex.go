@@ -92,7 +92,8 @@ func (l *lexer) next() (r rune) {
 		}
 		// continue with leftover + s; an empty chunk is not eof, just loops
 		l.addChunk(s)
-		l.lpUpd(s, l.posShift+l.pos)
+		// s starts where the old input ended; pos can be earlier, at a split rune
+		l.lpUpd(s, l.posShift+len(l.input)-len(s))
 	}
 	r, l.width = utf8.DecodeRuneInString(l.input[l.pos:])
 	if l.width == 0 {
