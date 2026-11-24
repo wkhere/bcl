@@ -2,8 +2,8 @@ package bcl
 
 import (
 	"fmt"
-	"reflect"
 	"runtime"
+	"slices"
 	"strings"
 	"testing"
 )
@@ -15,6 +15,20 @@ func (s tstream) collect() (a []token) {
 		a = append(a, x)
 	}
 	return a
+}
+
+// equalTokens compares errors by message, as they are created anew each time.
+func equalTokens(a, b []token) bool {
+	return slices.EqualFunc(a, b, func(x, y token) bool {
+		if (x.err == nil) != (y.err == nil) {
+			return false
+		}
+		if x.err != nil && x.err.Error() != y.err.Error() {
+			return false
+		}
+		x.err, y.err = nil, nil
+		return x == y
+	})
 }
 
 // shorter syntax in tab literals:
@@ -134,7 +148,7 @@ func TestLexerSingleInput(t *testing.T) {
 		close(c)
 		l := newLexer(c, dummyLcUpd)
 		res := tstream(l.tokens).collect()
-		if !reflect.DeepEqual(res, tc.tokens) {
+		if !equalTokens(res, tc.tokens) {
 			t.Errorf("tc#%d mismatch:\nhave %v\nwant %v", tc.i, res, tc.tokens)
 		}
 	}
@@ -150,7 +164,7 @@ func TestLexerManyInputs(t *testing.T) {
 		close(c)
 		l := newLexer(c, dummyLcUpd)
 		res := tstream(l.tokens).collect()
-		if !reflect.DeepEqual(res, tc.tokens) {
+		if !equalTokens(res, tc.tokens) {
 			t.Errorf("tc#%d mismatch:\nhave %v\nwant %v", tc.i, res, tc.tokens)
 		}
 	}
@@ -189,7 +203,7 @@ func TestLexerBigTokens(t *testing.T) {
 
 	for _, n := range []int{1, 2, 7, 100, 4096} {
 		have := lexChunks(eachN(src, n))
-		if !reflect.DeepEqual(have, want) {
+		if !equalTokens(have, want) {
 			t.Errorf("chunk size %d: tokens differ from the single chunk case", n)
 		}
 	}
@@ -232,7 +246,7 @@ func TestLexerSplitRuneLinePos(t *testing.T) {
 
 	want := lfs([]string{src})
 	for n := 1; n < len(src); n++ {
-		if have := lfs(eachN(src, n)); !reflect.DeepEqual(have, want) {
+		if have := lfs(eachN(src, n)); !slices.Equal(have, want) {
 			t.Errorf("chunk size %d: have line feeds %v, want %v", n, have, want)
 		}
 	}
