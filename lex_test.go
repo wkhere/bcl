@@ -3,6 +3,7 @@ package bcl
 import (
 	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -151,6 +152,57 @@ func TestLexerManyInputs(t *testing.T) {
 		if !reflect.DeepEqual(res, tc.tokens) {
 			t.Errorf("tc#%d mismatch:\nhave %v\nwant %v", tc.i, res, tc.tokens)
 		}
+	}
+}
+
+func lexChunks(chunks []string) []token {
+	c := make(chan string, len(chunks))
+	for _, s := range chunks {
+		c <- s
+	}
+	close(c)
+	return tstream(newLexer(c, dummyLcUpd).tokens).collect()
+}
+
+func TestLexerBigTokens(t *testing.T) {
+	// tokens spanning many chunks, mixed with small ones; positions and values
+	// of all of them, incl. ones emitted earlier, must be as with a single chunk
+	str := `"` + strings.Repeat("xé", 5000) + `"`
+	ident := strings.Repeat("ab", 5000)
+	src := "var a = " + str + "\n" +
+		"# " + strings.Repeat("comment é ", 1000) + "\n" +
+		"var " + ident + " = 42 " + str + "\n@"
+
+	want := lexChunks([]string{src})
+	if n := len(want); n != 11 {
+		t.Fatalf("have %d tokens, want 11", n)
+	}
+	for _, i := range []int{3, 8} {
+		if have := want[i].val; have != str {
+			t.Errorf("token #%d: wrong string of len %d", i, len(have))
+		}
+	}
+	if have := want[5].val; have != ident {
+		t.Errorf("wrong ident of len %d", len(have))
+	}
+
+	for _, n := range []int{1, 2, 7, 100, 4096} {
+		have := lexChunks(eachN(src, n))
+		if !reflect.DeepEqual(have, want) {
+			t.Errorf("chunk size %d: tokens differ from the single chunk case", n)
+		}
+	}
+}
+
+func BenchmarkLexerBigToken(b *testing.B) {
+	for _, mb := range []int{1, 2, 4} {
+		chunks := eachN(`"`+strings.Repeat("x", mb<<20)+`"`, 4096)
+		b.Run(fmt.Sprintf("%dMB", mb), func(b *testing.B) {
+			b.SetBytes(int64(mb << 20))
+			for i := 0; i < b.N; i++ {
+				lexChunks(chunks)
+			}
+		})
 	}
 }
 
