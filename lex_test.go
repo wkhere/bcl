@@ -3,6 +3,7 @@ package bcl
 import (
 	"fmt"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -190,6 +191,25 @@ func TestLexerBigTokens(t *testing.T) {
 		have := lexChunks(eachN(src, n))
 		if !reflect.DeepEqual(have, want) {
 			t.Errorf("chunk size %d: tokens differ from the single chunk case", n)
+		}
+	}
+}
+
+func TestLexerBigTokenAlloc(t *testing.T) {
+	// recopying the token on each chunk used to make this quadratic:
+	// ca 128x of the input size allocated here
+	const size = 1 << 20
+	for _, tc := range []struct{ name, src string }{
+		{"string", `"` + strings.Repeat("x", size) + `"`},
+		{"comment", "#" + strings.Repeat("x", size) + "\n"},
+	} {
+		chunks := eachN(tc.src, 4096)
+		var m0, m1 runtime.MemStats
+		runtime.ReadMemStats(&m0)
+		lexChunks(chunks)
+		runtime.ReadMemStats(&m1)
+		if x := (m1.TotalAlloc - m0.TotalAlloc) / size; x > 16 {
+			t.Errorf("%s: allocated %dx of the input size, want max 16x", tc.name, x)
 		}
 	}
 }

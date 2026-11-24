@@ -34,6 +34,7 @@ const tokensBufSize = 10
 type lexer struct {
 	inputs     <-chan string
 	input      string
+	buf        strings.Builder // holds input if a token spans chunks, else empty
 	lpUpd      func(string, int)
 	start, pos int
 	posShift   int
@@ -90,10 +91,7 @@ func (l *lexer) next() (r rune) {
 			break
 		}
 		// continue with leftover + s; an empty chunk is not eof, just loops
-		l.input = l.input[l.start:] + s
-		l.posShift += l.start
-		l.pos -= l.start
-		l.start = 0
+		l.addChunk(s)
 		l.lpUpd(s, l.posShift+l.pos)
 	}
 	r, l.width = utf8.DecodeRuneInString(l.input[l.pos:])
@@ -102,6 +100,25 @@ func (l *lexer) next() (r rune) {
 	}
 	l.pos += l.width
 	return r
+}
+
+// addChunk makes the input continue with s.
+// It is separate from next to keep the latter fast.
+func (l *lexer) addChunk(s string) {
+	if leftover := l.input[l.start:]; len(leftover) < len(s) {
+		l.buf.Reset()
+		l.input = leftover + s
+		l.posShift += l.start
+		l.pos -= l.start
+		l.start = 0
+		return
+	}
+	// big token: append, as recopying it per each chunk is quadratic
+	if l.buf.Len() == 0 {
+		l.buf.WriteString(l.input)
+	}
+	l.buf.WriteString(s)
+	l.input = l.buf.String()
 }
 
 // backup steps back one rune.
